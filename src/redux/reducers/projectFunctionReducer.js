@@ -1,71 +1,25 @@
 import {
-    CHANGE_CREATEMEMBER,
-    CHANGE_DELETEMEMBER, CHANGE_FUNCTIONDESCRIPTION, CHANGE_FUNCTIONMANAGE,
+    CHANGE_FUNCTIONDESCRIPTION, CHANGE_FUNCTIONMANAGE,
     CHANGE_MANAGEMEMBER,
-    CHANGE_MODIFYMEMBER,
     CHANGE_PERISSIONS,
     CHANGE_ROLES,
-    CHANGE_SUPERIOR_ID, CHANGE_USER_ID, CREATE_FUNCTION,
+    CHANGE_SUPERIOR_ID, CHANGE_UPLOADSTATE, CHANGE_USER_ID, CREATE_FUNCTION,
     CREATE_MEMBER, DELETE_FUNCTION,
-    DELETE_MEMBER, FUNCTION_MANAGESTATE, MODIFY_FUNCTION, MODIFY_MANAGESTATE,
-    MODIFY_MEMBER, SET_FUNCTIONID, SET_FUNCTIONSUPERIOR, UPDATE_FUNCTION, UPDATE_MEMBER
+    DELETE_MEMBER, FUNCTION_MANAGESTATE, GET_FUNCTIONS, GET_MEMBERS, MODIFY_FUNCTION, MODIFY_MANAGESTATE,
+    MODIFY_MEMBER, SET_FUNCTIONID, SET_FUNCTIONSUPERIOR, SET_SUPERIORFUNCTIONS, UPDATE_FUNCTION, UPDATE_MEMBER
 } from "../actions";
 
 const initialState = {
-    firstFunctions: [
-        {
-            functionId: '001',
-            superiorId: '001',
-            functionDescription: '1'
-        },
-        {
-            functionId: '002',
-            superiorId: '002',
-            functionDescription: '2'
-        },
-        {
-            functionId: '003',
-            superiorId: '003',
-            functionDescription: '3'
-        }
-    ],
-    secondFunctions: [
-        {
-            functionId: '001001',
-            superiorId: '001',
-            functionDescription: '11'
-        },
-        {
-            functionId: '001002',
-            superiorId: '001',
-            functionDescription: '12'
-        },
-        {
-            functionId: '002001',
-            superiorId: '002',
-            functionDescription: '21'
-        },
-        {
-            functionId: '003001',
-            superiorId: '003',
-            functionDescription: '31'
-        },
-        {
-            functionId: '003002',
-            superiorId: '003',
-            functionDescription: '32'
-        },
-        {
-            functionId: '003003',
-            superiorId: '003',
-            functionDescription: '33'
-        }
-    ],
+    firstFunctions: [],
+    secondFunctions: [],
     isManaging: false,
+    isUploading: false,
+    uploadedData: '',
     manageState: 'null',
     currentFunctionId: '',
     currentSuperiorId: '',
-    currentDescription: ''
+    currentDescription: '',
+    superiorFunctions: []
 }
 
 function plus1(id) {
@@ -81,46 +35,66 @@ function plus1(id) {
     }
 }
 
+let sortFn = (a, b) => {
+    if(a.functionId < b.functionId)
+        return -1;
+    if(a.functionId > b.functionId)
+        return 1;
+    if(a.functionId === b.functionId)
+        return 0
+}
+
 export default function projectFunction(state=initialState, action){
     switch (action.type) {
+        case GET_FUNCTIONS:
+            return {...state, firstFunctions: action.payload.firstFunctions, secondFunctions: action.payload.secondFunctions}
+        case SET_SUPERIORFUNCTIONS:
+            return {...state, superiorFunctions: action.payload}
         case CHANGE_FUNCTIONMANAGE:
             return {...state, isManaging: action.payload};
+        case CHANGE_UPLOADSTATE:
+            return {...state, isUploading: action.payload};
         case FUNCTION_MANAGESTATE:
             return {...state, manageState: action.payload};
         case CREATE_FUNCTION:
-            // if(action.payload.superiorId === 'self'){
-            //     let str = state.firstFunctions[state.firstFunctions.length-1].functionId;
-            //     return {...state, firstFunctions: [...state.firstFunctions, {functionId: plus1(str), superiorId: plus1(str), functionDescription: action.payload.description}]}
-            // }else{
-            //     let i=0;
-            //     for(; i<state.secondFunctions.length; i++){
-            //         if(state.secondFunctions.superiorId===action.payload.superiorId){
-            //             break;
-            //         }
-            //     }
-            //     for(; i<state.secondFunctions.length; i++){
-            //         if(state.secondFunctions.superiorId!==action.payload.superiorId){
-            //             break;
-            //         }
-            //     }
-            // }
-            let newFunction1;
             if(action.payload.superiorId === 'self'){
-                newFunction1 = {
-                    functionId: action.payload.functionId,
-                    superiorId: action.payload.functionId,
-                    functionDescription: action.payload.functionDescription
+                if(state.firstFunctions.length === 0){
+                    return {...state, firstFunctions: [...state.firstFunctions, {functionId: '001', superiorId: '001', functionDescription: action.payload.functionDescription}]}
                 }
-                return {...state, firstFunctions: [...state.firstFunctions, newFunction1], manageState: ''}
+                state.firstFunctions.sort(sortFn);
+                let str = state.firstFunctions[state.firstFunctions.length-1].functionId;
+                return {...state, firstFunctions: [...state.firstFunctions, {functionId: plus1(str), superiorId: plus1(str), functionDescription: action.payload.functionDescription}]}
             }else{
-                newFunction1 = {
-                    functionId: action.payload.functionId,
-                    superiorId: action.payload.superiorId,
-                    functionDescription: action.payload.functionDescription
+                state.secondFunctions.sort(sortFn);
+                let i=0;
+                let flag = true;
+                for(; i<state.secondFunctions.length; i++){
+                    if(state.secondFunctions[i].superiorId===action.payload.superiorId){
+                        flag = false;
+                        break;
+                    }
                 }
-                return {...state, secondFunctions: [...state.secondFunctions, newFunction1], manageState: ''}
+                for(; i<state.secondFunctions.length; i++){
+                    if(state.secondFunctions[i].superiorId!==action.payload.superiorId){
+                        break;
+                    }
+                }
+                if(flag){
+                    let arr = state.secondFunctions;
+                    arr.push({functionId: action.payload.superiorId+'001', superiorId: action.payload.superiorId, functionDescription: action.payload.functionDescription});
+                    arr.sort(sortFn);
+                    return {...state, secondFunctions: arr}
+                }else{
+                    let arr = state.secondFunctions;
+                    let str = arr[i-1].functionId;
+                    console.log(str);
+                    arr.push({functionId: plus1(str), superiorId: action.payload.superiorId, functionDescription: action.payload.functionDescription})
+                    arr.sort(sortFn);
+                    return {...state, secondFunctions: arr};
+                }
             }
         case MODIFY_FUNCTION:
+            console.log(action.payload);
             if(action.payload.functionId.length === 6){
                 let arr1 = state.secondFunctions.filter((item) => {
                    return item.functionId !== action.payload.functionId
@@ -131,6 +105,7 @@ export default function projectFunction(state=initialState, action){
                     functionDescription: action.payload.functionDescription
                 }
                 arr1.push(newFunction2);
+                arr1.sort(sortFn);
                 return {...state, secondFunctions: arr1, manageState: ''}
             }else{
                 let arr2 = state.firstFunctions.filter((item) => {
@@ -142,6 +117,7 @@ export default function projectFunction(state=initialState, action){
                     functionDescription: action.payload.functionDescription
                 }
                 arr2.push(newFunction3);
+                arr2.sort(sortFn);
                 return {...state, firstFunctions: arr2, manageState: ''}
             }
         case DELETE_FUNCTION:

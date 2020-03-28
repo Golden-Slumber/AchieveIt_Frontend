@@ -5,13 +5,15 @@ import {
     CHANGE_KEYWORD,
     CHANGE_MAINFUNCTION,
     CHANGE_MAINTECH,
-    CHANGE_MILESTONE, CHANGE_PROJECTID,
-    CHANGE_PROJECTNAME,
+    CHANGE_MILESTONE, CHANGE_MOREPROJECT, CHANGE_PROJECTID,
+    CHANGE_PROJECTNAME, CHANGE_PROJECTPAGE,
     CHANGE_STARTTIME, GET_RELATIVE_PROJECTS,
     PROJECT_SETUP,
     SEARCH_PROJECT
 } from "./actionTypes";
 import history from '../../history';
+import {BASE_URL, PAGE_SIZE} from "../../constants";
+import {formFailed} from "./userActions";
 
 export function changeKeyword(keyword){
     return {
@@ -20,86 +22,120 @@ export function changeKeyword(keyword){
     }
 }
 
-export function getRelativeProjects(){
-
-    //todo /project/listRelative pages
-
+export function changeProjectPage(currentPage){
     return {
-        type: GET_RELATIVE_PROJECTS,
-        payload: [
-            {
-                id: '123',
-                name: '123',
-                status: '123'
-            },
-            {
-                id: '123',
-                name: '123',
-                status: '123'
-            },
-            {
-                id: '123',
-                name: '123',
-                status: '123'
-            }
-        ]
+        type: CHANGE_PROJECTPAGE,
+        payload: currentPage
     }
 }
 
-export function searchProject(keyword){
+export function getRelativeProjects(currentPage){
 
-    //todo /project/search pages
-
+    let content = {page_size: PAGE_SIZE, current_page: currentPage}
     return async (dispatch) => {
-        dispatch({
-            type: CHANGE_KEYWORD,
-            payload: ''
-        });
-        dispatch({
-            type: SEARCH_PROJECT,
-            payload: [
-                {
-                    projectId: keyword,
-                    projectName: keyword,
-                    projectStatus: keyword
-                },
-                {
-                    projectId: keyword,
-                    projectName: keyword,
-                    projectStatus: keyword
-                },
-                {
-                    projectId: keyword,
-                    projectName: keyword,
-                    projectStatus: keyword
+        await fetch(BASE_URL+'/project/listRelative', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(content)
+        }).then(res => res.json()
+        ).then(data => {
+            console.log(data);
+            if(data.status === 'SUCCESS'){
+                let arr = [];
+                if(data.result !== null){
+                    arr = data.result.map((item, index) => {
+                        return {id: item.project_id, name: item.project_name, status: item.status}
+                    });
                 }
-            ]
+                dispatch({
+                    type: GET_RELATIVE_PROJECTS,
+                    payload: arr
+                });
+                dispatch({
+                    type: CHANGE_MOREPROJECT,
+                    payload:arr.length>=PAGE_SIZE
+                });
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
         });
+    }
+}
+
+export function searchProject(keyword, currentPage){
+
+    let content = {key_word:keyword, page_size:PAGE_SIZE, current_page:currentPage}
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(content),
+            credentials: 'include'
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch({
+                    type: CHANGE_KEYWORD,
+                    payload: ''
+                });
+                dispatch({
+                    type: SEARCH_PROJECT,
+                    payload: data.result
+                });
+            }else{
+                dispatch(formFailed('search'));
+            }
+        }).catch(error => {
+            console.log(error);
+            dispatch(formFailed('search'));
+        });
+        dispatch(changeKeyword(''));
     }
 }
 
 export function projectSetup(projectId, projectName, customer, startTime, endTime, milestone, mainTech, businessField, mainFunction) {
 
-    //todo /project/setUp
-
     let projectSetupInfo = {
-        projectId: projectId,
-        projectName: projectName,
-        customer: customer,
-        startTime: startTime,
-        endTime: endTime,
+        project_id: projectId,
+        project_name: projectName,
+        referred_outer_customer_id: customer,
+        scheduled_start_time: startTime,
+        scheduled_end_time: endTime,
         milestone: milestone,
-        mainTech: mainTech,
-        businessField: businessField,
-        mainFunction: mainFunction
+        technology: mainTech,
+        referred_business_field_id: businessField,
+        main_function: mainFunction
     }
 
     return async (dispatch) => {
-        history.push('/project');
-        dispatch({
-            type: PROJECT_SETUP,
-            payload: projectSetupInfo
+        await fetch(BASE_URL+'/project/setUp', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(projectSetupInfo),
+            credentials: 'include'
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                history.push('/project');
+                dispatch(changeProjectPage(1));
+                dispatch(getRelativeProjects(1));
+            }else{
+                dispatch(formFailed('setup'));
+            }
+        }).catch(error => {
+            console.log(error);
+            dispatch(formFailed('setup'));
         });
+
     }
 }
 

@@ -8,11 +8,14 @@ import {
     LOGIN_SUCCESS,
     TIMELINE_INIT,
     USERID_SET,
-    CLOSE_ILLEGAL_ACCESS, SWITCH_HOME
+    CLOSE_ILLEGAL_ACCESS, SWITCH_HOME, CHANGE_FAILEDSTATE
 } from "./actionTypes";
-import { switchHome, switchIndex } from "./pageSwitchActions";
-import { BASE_URL } from "../../constants";
+import {switchHome, switchIndex} from "./pageSwitchActions";
+import {BASE_URL} from "../../constants";
 import {getRelativeProjects} from "./projectHomeActions";
+import MD5 from 'crypto-js/md5';
+import {formFailed, setGlobalRole, setUserName} from "./userActions";
+import cookie from "react-cookies";
 
 export function login(password, username) {
     // return async (dispatch) => {
@@ -47,15 +50,40 @@ export function login(password, username) {
     //     });
     // }
 
-    //todo /user/globalrole
-
-
     return async (dispatch) => {
-        history.push('/project');
-        dispatch(getRelativeProjects());
-        dispatch({
-            type: LOGIN_SUCCESS,
-            payload: "globalrole"
+        let cryptoPassword = MD5(password).toString();
+        console.log(cryptoPassword);
+        let content = {username: username, password: cryptoPassword};
+        await fetch(BASE_URL+'/user/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(content)
+        }).then(res => res.json()
+        ).then(data => {
+            console.log(data);
+            if (data.status === 'SUCCESS') {
+                console.log(data.result.JWT);
+                // let date = new Date();
+                // date.setTime(date.getTime()+(5*60*60*1000));
+                // document.cookie = "JWT = " + data.result.JWT + "; expires = " +date.toUTCString();
+                // cookie.save('JWT', data.result.JWT, {path: '/'});
+                history.push('/project');
+                // dispatch(getRelativeProjects());
+                dispatch({
+                    type: LOGIN_SUCCESS
+                });
+                dispatch(setUserName(username));
+                dispatch(setGlobalRole());
+            } else {
+                console.log(data.status);
+                dispatch(formFailed('login'));
+            }
+        }).catch(error=>{
+            console.log('error');
+            dispatch(formFailed('login'));
         });
     }
 }
@@ -77,11 +105,5 @@ export function changeUsername(username) {
 export function logOut() {
     return {
         type: LOG_OUT
-    }
-}
-
-export function closeLoginFail() {
-    return {
-        type: CLOSE_LOGIN_FAIL
     }
 }

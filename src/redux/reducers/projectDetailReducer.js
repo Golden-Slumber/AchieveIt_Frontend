@@ -11,14 +11,14 @@ import {
 
 const initialState = {
     projectId: 'PeojectID',
-    projectName: 'XXX',
-    customer: 'XXX',
-    startTime: 'XXX',
-    endTime: 'XXX',
-    milestone: 'XXX',
-    mainTech: 'XXX',
-    businessField: 'XXX',
-    mainFunction: 'XXX',
+    projectName: '',
+    customer: '',
+    startTime: '',
+    endTime: '',
+    milestone: '',
+    mainTech: '',
+    businessField: '',
+    mainFunction: '',
     isModifying: false
 };
 

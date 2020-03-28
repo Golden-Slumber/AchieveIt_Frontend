@@ -8,6 +8,9 @@ import projectMember from "./projectMemberReducer";
 import projectFunction from "./projectFunctionReducer";
 import projectDevice from "./projectDeviceReducer";
 import projectRisk from "./projectRiskReducer";
+import userReducer from "./userReducer";
+import projectDependency from "./dependencyReducer";
+import projectMenu from "./projectMenuReducer";
 
 let rootReducer = combineReducers({
    _currentPage: currentPage,
@@ -18,7 +21,10 @@ let rootReducer = combineReducers({
    _projectMember: projectMember,
    _projectFunction: projectFunction,
    _projectDevice: projectDevice,
-   _projectRisk: projectRisk
+   _projectRisk: projectRisk,
+   _userReducer: userReducer,
+   _projectDependency: projectDependency,
+   _projectMenu: projectMenu
 });
 
 export default rootReducer;

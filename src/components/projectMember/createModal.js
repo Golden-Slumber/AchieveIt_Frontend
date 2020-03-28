@@ -11,7 +11,7 @@ import {
     changeRoles,
     changeSuperiorId,
     changeUserId,
-    createMember
+    createMember, setRoleOptions, setSuperiorOptions
 } from "../../redux/actions";
 
 
@@ -21,25 +21,27 @@ const globalStyles = {
     minHeight: '100em',
 };
 
-const options = [
-    {key: '1', value: '2', text: '3'},
-    {key: '4', value: '5', text: '6'},
-    {key: '7', value: '8', text: '9'}
-];
-
 export class CreateModal extends React.Component {
 
     static propTypes = {
+        globalRole: PropTypes.string,
+        members: PropTypes.array,
+        roleOptions: PropTypes.array,
+        superiorOptions: PropTypes.array,
         currentUserId: PropTypes.string,
         currentSuperiorId: PropTypes.string,
-        currentRoles: PropTypes.array,
+        currentRoleId: PropTypes.string,
+        currentRoleName: PropTypes.string,
         currentPermissions: PropTypes.array,
+        personnelOptions: PropTypes.array,
         changeUserId: PropTypes.func,
         changeSuperiorId: PropTypes.func,
         changeRoles: PropTypes.func,
         changePermissions: PropTypes.func,
         createMember: PropTypes.func,
-        cancelManage: PropTypes.func
+        cancelManage: PropTypes.func,
+        setRoleOptions: PropTypes.func,
+        setSuperiorOptions: PropTypes.func
     };
 
     constructor(props) {
@@ -47,7 +49,18 @@ export class CreateModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.createMember(this.props.currentUserId, this.props.currentSuperiorId, this.props.currentRoles, this.props.currentPermissions);
+        this.props.createMember(this.props.currentUserId, this.props.currentSuperiorId, this.props.currentRoleId, this.props.currentRoleName);
+    }
+
+    handleChangeMember = (e, data) => {
+        this.props.changeUserId(e, data);
+        this.props.setRoleOptions(this.props.globalRole, this.props.members, this.props.currentUserId);
+    }
+
+    handleChangeRole = (e, data) => {
+        this.props.changeRoles(e, data);
+        let str = data.value.split(' ');
+        this.props.setSuperiorOptions(str[1], this.props.members, this.props.currentUserId);
     }
 
     render() {
@@ -68,8 +81,10 @@ export class CreateModal extends React.Component {
                                     fluid
                                     search
                                     selection
-                                    options={options}
-                                    onChange={this.props.changeUserId}
+                                    options={this.props.personnelOptions}
+                                    onChange={(e, data) => {
+                                        this.handleChangeMember(e, data);
+                                    }}
                                 />
                             </div>
                             <div className="field">
@@ -77,11 +92,12 @@ export class CreateModal extends React.Component {
                                 <Dropdown
                                     placeholder='选择该人员在项目中的角色'
                                     fluid
-                                    multiple
                                     search
                                     selection
-                                    options={options}
-                                    onChange={this.props.changeRoles}
+                                    options={this.props.roleOptions}
+                                    onChange={(e, data) => {
+                                        this.handleChangeRole(e, data);
+                                    }}
                                 />
                             </div>
                             <div className="field">
@@ -91,20 +107,8 @@ export class CreateModal extends React.Component {
                                     fluid
                                     search
                                     selection
-                                    options={options}
+                                    options={this.props.superiorOptions}
                                     onChange={this.props.changeSuperiorId}
-                                />
-                            </div>
-                            <div className="field">
-                                <label>权限</label>
-                                <Dropdown
-                                    placeholder='选择该人员所拥有的权限'
-                                    fluid
-                                    multiple
-                                    search
-                                    selection
-                                    options={options}
-                                    onChange={this.props.changePermissions}
                                 />
                             </div>
                         </form>
@@ -128,8 +132,14 @@ export class CreateModal extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
     currentUserId: state._projectMember.currentUserId,
     currentSuperiorId: state._projectMember.currentSuperiorId,
-    currentRoles: state._projectMember.currentRoles,
-    currentPermissions: state._projectMember.currentPermissions
+    currentRoleId: state._projectMember.currentRoleId,
+    currentRoleName: state._projectMember.currentRoleName,
+    currentPermissions: state._projectMember.currentPermissions,
+    globalRole: state._userReducer.globalRole,
+    personnelOptions: state._projectDependency.personnelOptions,
+    members: state._projectMember.members,
+    roleOptions: state._projectMember.roleOptions,
+    superiorOptions: state._projectMember.superiorOptions,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -139,8 +149,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     changeSuperiorId: (e, data) => {
         dispatch(changeSuperiorId(data.value));
     },
-    changeRoles: (e, {value}) => {
-        dispatch(changeRoles(value));
+    changeRoles: (e, data) => {
+        let str = data.value.split(' ');
+        dispatch(changeRoles(str[0], str[1]));
     },
     changePermissions: (e, {value}) => {
         dispatch(changePermissions(value));
@@ -150,6 +161,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     cancelManage: () => {
         dispatch(cancelManage());
+    },
+    setRoleOptions: (globalRole, members, user_id) => {
+        dispatch(setRoleOptions(globalRole, members, user_id));
+    },
+    setSuperiorOptions: (role, members, user_id) => {
+        dispatch(setSuperiorOptions(role, members, user_id));
     }
 });
 

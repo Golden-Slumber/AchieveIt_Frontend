@@ -25,7 +25,13 @@
     "redux-thunk": "2.3.0",
     "semantic-ui-css": "2.4.1",
     "semantic-ui-react": "0.88.2",
-    "superagent": "5.2.2"
+    "superagent": "5.2.2",
+    "mockjs": "^1.1.0",
+    "fetch-mock": "^9.3.1",
+    "crypto-js": "^4.0.0",
+    "react-cookies": "^0.1.1",
+    "react-csv-reader": "^3.0.4",
+    "react-csv": "^2.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

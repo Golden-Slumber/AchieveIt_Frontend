@@ -3,9 +3,10 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon, Dropdown} from "semantic-ui-react";
+import {Button, Container, Icon, Dropdown, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
+    cancelModify,
     modifyBusinessField,
     modifyCustomer,
     modifyEndTime, modifyMainFunction, modifyMainTech, modifyMilestone,
@@ -14,18 +15,13 @@ import {
     modifyStartTime
 } from "../../redux/actions";
 import {startCreating} from "../../redux/actions/projectMemberActions";
+import {closeFailed} from "../../redux/actions/userActions";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
     fontFamily: 'Arial',
     minHeight: '100em',
 };
-
-const options = [
-    {key: '1', value: '2', text: '3'},
-    {key: '4', value: '5', text: '6'},
-    {key: '7', value: '8', text: '9'}
-]
 
 export class ProjectDetailChange extends React.Component {
 
@@ -40,6 +36,10 @@ export class ProjectDetailChange extends React.Component {
         businessField: PropTypes.string,
         mainFunction: PropTypes.string,
         isModifying: PropTypes.bool,
+        projectIdsOptions: PropTypes.array,
+        customersOptions: PropTypes.array,
+        businessFieldsOptions: PropTypes.array,
+        failed: PropTypes.string,
         modifyProjectInfo: PropTypes.func,
         modifyProjectName: PropTypes.func,
         modifyCustomer: PropTypes.func,
@@ -49,13 +49,37 @@ export class ProjectDetailChange extends React.Component {
         modifyMainTech: PropTypes.func,
         modifyBusinessField: PropTypes.func,
         modifyMainFunction: PropTypes.func,
+        closeFailed: PropTypes.func,
+        cancelModify: PropTypes.func
     };
 
     constructor(props) {
         super(props);
     }
 
+    handleModifyClick = () => {
+        this.props.modifyProjectInfo(this.props.projectId, this.props.projectName, this.props.customer, this.props.startTime,
+                                    this.props.endTime, this.props.milestone, this.props.mainTech, this.props.businessField, this.props.mainFunction);
+    }
+
+    handleCancelClick = () => {
+        this.props.cancelModify(this.props.projectId);
+    }
+
     render() {
+
+        let detailChangeFailedMessage;
+        if(this.props.failed === 'modifyProjectDetail'){
+            detailChangeFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            detailChangeFailedMessage = null;
+        }
 
         return (
             <form className="ui form">
@@ -71,23 +95,19 @@ export class ProjectDetailChange extends React.Component {
                         fluid
                         search
                         selection
-                        options={options}
+                        options={this.props.customersOptions}
+                        value={this.props.customer}
                         onChange={this.props.modifyCustomer}
                     />
-                    {/*<select className="ui search dropdown" id="search-select" onChange={this.props.modifyCustomer}>*/}
-                    {/*    <option value="">State</option>*/}
-                    {/*    <option value="1">1</option>*/}
-                    {/*    <option value="2">2</option>*/}
-                    {/*</select>*/}
                 </div>
                 <div className="field">
                     <label>开始时间</label>
-                    <input type="text" placeholder="开始时间" value={this.props.startTime}
+                    <input type="text" placeholder="开始时间：格式为yyyy-MM-dd HH:mm:ss" value={this.props.startTime}
                            onChange={this.props.modifyStartTime}/>
                 </div>
                 <div className="field">
                     <label>结束时间</label>
-                    <input type="text" placeholder="结束时间" value={this.props.endTime}
+                    <input type="text" placeholder="结束时间：格式为yyyy-MM-dd HH:mm:ss" value={this.props.endTime}
                            onChange={this.props.modifyEndTime}/>
                 </div>
                 <div className="field">
@@ -107,7 +127,8 @@ export class ProjectDetailChange extends React.Component {
                         fluid
                         search
                         selection
-                        options={options}
+                        options={this.props.businessFieldsOptions}
+                        value={this.props.businessField}
                         onChange={this.props.modifyBusinessField}
                     />
                 </div>
@@ -116,7 +137,9 @@ export class ProjectDetailChange extends React.Component {
                     <input type="text" placeholder="主要功能" value={this.props.mainFunction}
                            onChange={this.props.modifyMainFunction}/>
                 </div>
-                <div className="ui button" tabIndex="0" onClick={this.props.modifyProjectInfo}>完成修改</div>
+                {detailChangeFailedMessage}
+                <div className="ui button" tabIndex="0" onClick={this.handleCancelClick}>取消</div>
+                <div className="ui button" tabIndex="0" onClick={this.handleModifyClick} style={{float: 'right'}}>完成修改</div>
             </form>
         );
     };
@@ -133,11 +156,15 @@ const mapStateToProps = (state, ownProps) => ({
     businessField: state._projectDetail.businessField,
     mainFunction: state._projectDetail.mainFunction,
     isModifying: state._projectDetail.isModifying,
+    projectIdsOptions: state._projectDependency.projectIdsOptions,
+    customersOptions: state._projectDependency.customersOptions,
+    businessFieldsOptions: state._projectDependency.businessFieldsOptions,
+    failed: state._userReducer.failed
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    modifyProjectInfo: () => {
-        dispatch(modifyProjectInfo());
+    modifyProjectInfo: (projectId, projectName, customer, startTime, endTime, milestone, mainTech, businessField, mainFunction) => {
+        dispatch(modifyProjectInfo(projectId, projectName, customer, startTime, endTime, milestone, mainTech, businessField, mainFunction));
     },
     modifyProjectName: (event) => {
         dispatch(modifyProjectName(event.target.value));
@@ -163,6 +190,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     modifyMainFunction: (event) => {
         dispatch(modifyMainFunction(event.target.value));
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
+    },
+    cancelModify: (projectId) => {
+        dispatch(cancelModify(projectId));
     }
 });
 

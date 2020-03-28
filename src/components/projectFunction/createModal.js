@@ -34,7 +34,8 @@ export class CreateModal extends React.Component {
         setSuperiorId: PropTypes.func,
         changeFunctionDescription: PropTypes.func,
         createFunction: PropTypes.func,
-        cancelFunctionManage: PropTypes.func
+        cancelFunctionManage: PropTypes.func,
+        superiorFunctions: PropTypes.array
     };
 
     constructor(props) {
@@ -42,6 +43,7 @@ export class CreateModal extends React.Component {
     }
 
     handleFinishClick = () => {
+        console.log(this.props.currentDescription);
         this.props.createFunction(this.props.currentFunctionId, this.props.currentSuperiorId, this.props.currentDescription);
     }
 
@@ -57,18 +59,13 @@ export class CreateModal extends React.Component {
                     <div className="description">
                         <form className="ui form">
                             <div className="field">
-                                <label>功能ID</label>
-                                <input type="text" placeholder="功能ID" value={this.props.currentFunctionId}
-                                       onChange={this.props.setFunctionId}/>
-                            </div>
-                            <div className="field">
                                 <label>父功能ID</label>
                                 <Dropdown
                                     placeholder='选择新功能的父功能'
                                     fluid
                                     search
                                     selection
-                                    options={options}
+                                    options={this.props.superiorFunctions}
                                     onChange={this.props.setSuperiorId}
                                 />
                             </div>
@@ -99,6 +96,7 @@ const mapStateToProps = (state, ownProps) => ({
     currentFunctionId: state._projectFunction.currentFunctionId,
     currentSuperiorId: state._projectFunction.currentSuperiorId,
     currentDescription: state._projectFunction.currentDescription,
+    superiorFunctions: state._projectFunction.superiorFunctions
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

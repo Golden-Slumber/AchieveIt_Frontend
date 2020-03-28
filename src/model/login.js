@@ -10,6 +10,7 @@ import {closeLoginFail} from "../redux/actions/loginActions";
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Link} from "react-router-dom";
+import {closeFailed} from "../redux/actions/userActions";
 
 
 export class LoginForm extends React.Component {
@@ -17,11 +18,11 @@ export class LoginForm extends React.Component {
         username: PropTypes.string,
         password: PropTypes.string,
         isLogin: PropTypes.bool,
-        failed: PropTypes.bool,
+        failed: PropTypes.string,
         onChangeUsername: PropTypes.func,
         onChangePassword: PropTypes.func,
         onLogin: PropTypes.func,
-        closeLoginFail: PropTypes.func
+        closeFailed: PropTypes.func
     };
 
     constructor(props) {
@@ -38,6 +39,20 @@ export class LoginForm extends React.Component {
     }
 
     render() {
+
+        let loginFailMessage;
+        if(this.props.failed === 'login'){
+            loginFailMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            loginFailMessage = null;
+        }
+
         return (
 
             <Transition visible={this.state.visible} animation={'fade down'} during={1000}>
@@ -70,14 +85,7 @@ export class LoginForm extends React.Component {
                                     <SubmitButton name={'Login'} expireTime={2}/>
                                 </Segment>
                             </Form>
-                            {
-                                this.props.failed === true ?
-                                    <Message negative={true}>
-                                        <i className={'close icon'} onClick={this.props.closeLoginFail}/>
-                                        <div className={'header'}>Ehh... Something went wrong?</div>
-                                        <p>Take a look at the username and the password. Make sure they are correct.</p>
-                                    </Message>: null
-                            }
+                            {loginFailMessage}
                         </Grid.Column>
                     </Grid>
                 </Segment>
@@ -90,7 +98,7 @@ const mapStateToProps = (state, ownProps) => ({
     username: state._loginReducer.username,
     password: state._loginReducer.password,
     isLogin: state._loginReducer.isLogin,
-    failed: state._loginReducer.failed,
+    failed: state._userReducer.failed
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -100,8 +108,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     onChangePassword: (event) => {
         dispatch(changePassword(event.target.value))
     },
-    closeLoginFail: () => {
-        dispatch(closeLoginFail())
+    closeFailed: () => {
+        dispatch(closeFailed());
     }
 });
 

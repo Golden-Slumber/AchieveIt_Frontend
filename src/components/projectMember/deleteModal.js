@@ -6,26 +6,9 @@ import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Icon, Dropdown} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
-    cancelManage,
-    changePermissions,
-    changeRoles,
-    changeSuperiorId,
-    changeUserId, deleteMember,
-    modifyMember
+    cancelManage, deleteMember,
 } from "../../redux/actions";
 
-
-const globalStyles = {
-    backgroundColor: 'rgb(238, 239, 239)',
-    fontFamily: 'Arial',
-    minHeight: '100em',
-};
-
-const options = [
-    {key: '1', value: '2', text: '3'},
-    {key: '4', value: '5', text: '6'},
-    {key: '7', value: '8', text: '9'}
-];
 
 export class DeleteModal extends React.Component {
 

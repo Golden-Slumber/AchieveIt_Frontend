@@ -16,7 +16,8 @@ export class Home extends React.Component {
     static propTypes = {
         visible: PropTypes.bool,
         illegal: PropTypes.bool,
-        closeIllegalAccess: PropTypes.func
+        closeIllegalAccess: PropTypes.func,
+        isLogin: PropTypes.bool
     };
 
     constructor(props) {
@@ -36,7 +37,7 @@ export class Home extends React.Component {
             <Transition visible={this.state.visible} animation={'fade down'} during={1000}>
                 <Segment vertical style={globalStyles}>
                     {
-                        this.props.illegal === true ?
+                        (this.props.illegal === true)&&(this.props.isLogin === false) ?
                             <div className={'ui floating message'} >
                                 <i className={'close icon'} onClick={this.props.closeIllegalAccess}/>
                                 <p>请先登录.</p>
@@ -59,7 +60,8 @@ export class Home extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-    illegal: state._currentPage.illegal
+    illegal: state._currentPage.illegal,
+    isLogin: state._loginReducer.isLogin
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

@@ -7,6 +7,7 @@ import {Button, Container, Icon} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {startCreatingRisk} from "../../redux/actions/projectRiskActions";
 import CreateModal from "./createModal";
+import ProjectMenu from "../projectMenu/projectMenu";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -59,29 +60,7 @@ export class ProjectRisk extends React.Component {
                         <h1 className="ui header">{this.props.projectId}</h1>
 
                         <Segment style={{minHeight: '30em'}}>
-                            <div className="ui tabular menu">
-                                <Link to={'/projectDetail'}>
-                                    <a className="item">项目信息 </a>
-                                </Link>
-                                <Link to={'/projectMember'}>
-                                    <a className="item">项目成员 </a>
-                                </Link>
-                                <Link to={'/projectFunction'}>
-                                    <a className="item">项目功能 </a>
-                                </Link>
-                                <Link to={'/projectHour'}>
-                                    <a className="item">项目工时</a>
-                                </Link>
-                                <Link to={'/projectDevice'}>
-                                    <a className="item">项目设备 </a>
-                                </Link>
-                                <Link to={'/projectRisk'}>
-                                    <a className="item active">项目风险 </a>
-                                </Link>
-                                <Link to={'/projectDefect'}>
-                                    <a className="item">项目缺陷 </a>
-                                </Link>
-                            </div>
+                            <ProjectMenu />
 
                             {createModal}
                             <table className="ui fixed single line celled table">

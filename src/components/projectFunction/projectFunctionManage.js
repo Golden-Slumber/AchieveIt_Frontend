@@ -8,7 +8,13 @@ import {Link} from "react-router-dom";
 import CreateModal from "./createModal";
 import ModifyModal from "./modifyModal";
 import DeleteModal from "./deleteModal";
-import {startCreating, startModifying, startDeleting, updateFunction} from "../../redux/actions/projectFunctionActions";
+import {
+    startCreating,
+    startModifying,
+    startDeleting,
+    updateFunction,
+    setSuperiorFunctionOptions
+} from "../../redux/actions/projectFunctionActions";
 
 
 const globalStyles = {
@@ -20,13 +26,15 @@ const globalStyles = {
 export class ProjectFunctionManage extends React.Component {
 
     static propTypes = {
+        projectId: PropTypes.string,
         firstFunctions: PropTypes.array,
         secondFunctions: PropTypes.array,
         manageState: PropTypes.string,
         startCreating: PropTypes.func,
         startModifying: PropTypes.func,
         startDeleting: PropTypes.func,
-        updateFunction: PropTypes.func
+        updateFunction: PropTypes.func,
+        setSuperiorFunctionOptions: PropTypes.func
     };
 
     constructor(props) {
@@ -35,6 +43,7 @@ export class ProjectFunctionManage extends React.Component {
 
     handleCreateClick = () => {
         this.props.startCreating();
+        this.props.setSuperiorFunctionOptions(this.props.firstFunctions);
     }
 
     handleModifyClick = (functionId, superiorId) => {
@@ -46,7 +55,7 @@ export class ProjectFunctionManage extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.updateFunction(this.props.firstFunctions, this.props.secondFunctions);
+        this.props.updateFunction(this.props.projectId, this.props.firstFunctions, this.props.secondFunctions);
     }
 
     render() {
@@ -131,15 +140,16 @@ export class ProjectFunctionManage extends React.Component {
                             </table>
                         </div>
                     </div>
-                    <Button content={'创建新功能'} onClick={this.handleCreateClick}/>
-                    <Button content={'完成'} onClick={this.handleFinishClick} style={{float: 'right'}}/>
                 </form>
+                <Button content={'创建新功能'} onClick={this.handleCreateClick}/>
+                <Button content={'完成'} onClick={this.handleFinishClick} style={{float: 'right'}}/>
             </div>
         );
     };
 }
 
 const mapStateToProps = (state, ownProps) => ({
+    projectId: state._projectDetail.projectId,
     firstFunctions: state._projectFunction.firstFunctions,
     secondFunctions: state._projectFunction.secondFunctions,
     manageState: state._projectFunction.manageState
@@ -155,8 +165,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     startDeleting: (functionId) => {
         dispatch(startDeleting(functionId));
     },
-    updateFunction: (firstFunctions, secondFunctions) => {
-        dispatch(updateFunction(firstFunctions, secondFunctions));
+    updateFunction: (projectId, firstFunctions, secondFunctions) => {
+        dispatch(updateFunction(projectId, firstFunctions, secondFunctions));
+    },
+    setSuperiorFunctionOptions: (functions) => {
+        dispatch(setSuperiorFunctionOptions(functions));
     }
 });
 

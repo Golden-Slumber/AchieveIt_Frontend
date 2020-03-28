@@ -41,7 +41,7 @@ export class ModifyModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.modifyFunction(this.props.currentUserId, this.props.currentSuperiorId, this.props.currentRoles, this.props.currentPermissions);
+        this.props.modifyFunction(this.props.currentFunctionId, this.props.currentSuperiorId, this.props.currentDescription);
     }
 
     render() {

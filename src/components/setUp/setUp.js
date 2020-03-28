@@ -3,7 +3,7 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Dropdown, Icon} from "semantic-ui-react";
+import {Button, Container, Dropdown, Icon, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
     changeBusinessField,
@@ -14,6 +14,7 @@ import {
     changeStartTime,
     projectSetup
 } from "../../redux/actions";
+import {closeFailed} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -21,12 +22,6 @@ const globalStyles = {
     fontFamily: 'Arial',
     minHeight: '100em',
 };
-
-const options = [
-    {key: '1', value: '2', text: '3'},
-    {key: '4', value: '5', text: '6'},
-    {key: '7', value: '8', text: '9'}
-]
 
 export class SetUp extends React.Component {
 
@@ -40,6 +35,10 @@ export class SetUp extends React.Component {
         mainTech: PropTypes.string,
         businessField: PropTypes.string,
         mainFunction: PropTypes.string,
+        projectIdsOptions: PropTypes.array,
+        customersOptions: PropTypes.array,
+        businessFieldsOptions: PropTypes.array,
+        failed: PropTypes.string,
         projectSetup: PropTypes.func,
         changeProjectId: PropTypes.func,
         changeProjectName: PropTypes.func,
@@ -49,7 +48,8 @@ export class SetUp extends React.Component {
         changeMilestone: PropTypes.func,
         changeMainTech: PropTypes.func,
         changeBusinessField: PropTypes.func,
-        changeMainFunction: PropTypes.func
+        changeMainFunction: PropTypes.func,
+        closeFailed: PropTypes.func
     };
 
     handleSetupClick = () => {
@@ -57,6 +57,19 @@ export class SetUp extends React.Component {
     }
 
     render() {
+
+        let setUpFailedMessage;
+        if(this.props.failed === 'setup'){
+            setUpFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            setUpFailedMessage = null;
+        }
 
         return (
 
@@ -73,7 +86,7 @@ export class SetUp extends React.Component {
                                         fluid
                                         search
                                         selection
-                                        options={options}
+                                        options={this.props.projectIdsOptions}
                                         onChange={this.props.changeProjectId}
                                     />
                                 </div>
@@ -88,17 +101,17 @@ export class SetUp extends React.Component {
                                         fluid
                                         search
                                         selection
-                                        options={options}
+                                        options={this.props.customersOptions}
                                         onChange={this.props.changeCustomer}
                                     />
                                 </div>
                                 <div className="field">
                                     <label>开始时间</label>
-                                    <input type="text" placeholder="开始时间" onChange={this.props.changeStartTime}/>
+                                    <input type="text" placeholder="开始时间：格式为yyyy-MM-dd HH:mm:ss" onChange={this.props.changeStartTime}/>
                                 </div>
                                 <div className="field">
                                     <label>结束时间</label>
-                                    <input type="text" placeholder="结束时间" onChange={this.props.changeEndTime}/>
+                                    <input type="text" placeholder="结束时间：格式为yyyy-MM-dd HH:mm:ss" onChange={this.props.changeEndTime}/>
                                 </div>
                                 <div className="field">
                                     <label>里程碑</label>
@@ -115,7 +128,7 @@ export class SetUp extends React.Component {
                                         fluid
                                         search
                                         selection
-                                        options={options}
+                                        options={this.props.businessFieldsOptions}
                                         onChange={this.props.changeBusinessField}
                                     />
                                 </div>
@@ -123,6 +136,7 @@ export class SetUp extends React.Component {
                                     <label>主要功能</label>
                                     <input type="text" placeholder="主要功能" onChange={this.props.changeMainFunction}/>
                                 </div>
+                                {setUpFailedMessage}
                                 <div className="ui button" tabIndex="0" onClick={this.handleSetupClick}>申请立项</div>
                             </form>
                         </Segment>
@@ -144,6 +158,10 @@ const mapStateToProps = (state, ownProps) => ({
     mainTech: state._projectHome.projectSetupInfo.mainTech,
     businessField: state._projectHome.projectSetupInfo.businessField,
     mainFunction: state._projectHome.projectSetupInfo.mainFunction,
+    projectIdsOptions: state._projectDependency.projectIdsOptions,
+    customersOptions: state._projectDependency.customersOptions,
+    businessFieldsOptions: state._projectDependency.businessFieldsOptions,
+    failed: state._userReducer.failed
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -176,6 +194,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     changeMainFunction: (event) => {
         dispatch(changeMainFunction(event.target.value))
+    },
+    closeFailed: () => {
+        dispatch(closeFailed())
     }
 });
 

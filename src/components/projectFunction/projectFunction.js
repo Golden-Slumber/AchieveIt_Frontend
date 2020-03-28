@@ -5,8 +5,10 @@ import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Grid, Icon} from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import {functionManaging} from "../../redux/actions/projectFunctionActions";
+import {functionManaging, startUploading} from "../../redux/actions/projectFunctionActions";
 import ProjectFunctionManage from "./projectFunctionManage";
+import ProjectMenu from "../projectMenu/projectMenu";
+import UploadForm from "./uploadForm";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -17,12 +19,19 @@ const globalStyles = {
 export class ProjectFunction extends React.Component {
 
     static propTypes = {
+        globalRole: PropTypes.string,
         projectId: PropTypes.string,
         firstFunctions: PropTypes.array,
         secondFunctions: PropTypes.array,
         isManaging: PropTypes.bool,
-        startFunctionManaging: PropTypes.func
+        isUploading: PropTypes.bool,
+        startFunctionManaging: PropTypes.func,
+        startUpload: PropTypes.func
     };
+
+    handleUploadClick = () => {
+        this.props.startUpload();
+    }
 
     render() {
 
@@ -43,44 +52,66 @@ export class ProjectFunction extends React.Component {
             );
         });
 
+        let manageButton;
+        if(this.props.globalRole === 'ProjectManager'){
+            manageButton = (
+                <div>
+                    <Button content={'修改项目功能'} onClick={this.props.startFunctionManaging}/>
+                    <Button.Group basic size='small' style={{float: 'right'}}>
+                        <Button icon='upload' onClick={this.handleUploadClick}/>
+                        <Button icon='download' />
+                    </Button.Group>
+                </div>
+            );
+        }else{
+            manageButton = null;
+        }
+
+        let uploadForm;
+        if(this.props.isUploading){
+            uploadForm = (
+                <UploadForm />
+            );
+        }else{
+            uploadForm = null;
+        }
+
         let mainBody;
         if (!this.props.isManaging) {
             mainBody = (
-                <form className="ui form">
-                    <div className="two fields">
-                        <div className="field">
-                            <table className="ui celled structured table">
-                                <thead>
-                                <tr>
-                                    <th>一级功能</th>
-                                    <th>功能描述</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {showFirstFunctions}
-                                </tbody>
-                            </table>
+                <div>
+                    <form className="ui form">
+                        <div className="two fields">
+                            <div className="field">
+                                <table className="ui celled structured table">
+                                    <thead>
+                                    <tr>
+                                        <th>一级功能</th>
+                                        <th>功能描述</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {showFirstFunctions}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="field">
+                                <table className="ui celled structured table">
+                                    <thead>
+                                    <tr>
+                                        <th>二级功能</th>
+                                        <th>功能描述</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {showSecondFunctions}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div className="field">
-                            <table className="ui celled structured table">
-                                <thead>
-                                <tr>
-                                    <th>二级功能</th>
-                                    <th>功能描述</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {showSecondFunctions}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <Button content={'修改项目功能'} onClick={this.props.startFunctionManaging}/>
-                    <Button.Group basic size='small' style={{float: 'right'}}>
-                        <Button icon='upload' />
-                        <Button icon='download' />
-                    </Button.Group>
-                </form>
+                    </form>
+                    {manageButton}
+                </div>
             );
         } else {
             mainBody = (
@@ -97,31 +128,8 @@ export class ProjectFunction extends React.Component {
                         <h1 className="ui header">{this.props.projectId}</h1>
 
                         <Segment style={{minHeight: '30em'}}>
-                            <div className="ui tabular menu">
-                                <Link to={'/projectDetail'}>
-                                    <a className="item">项目信息 </a>
-                                </Link>
-                                <Link to={'/projectMember'}>
-                                    <a className="item">项目成员 </a>
-                                </Link>
-                                <Link to={'/projectFunction'}>
-                                    <a className="item active">项目功能 </a>
-                                </Link>
-                                <Link to={'/projectHour'}>
-                                    <a className="item">项目工时</a>
-                                </Link>
-                                <Link to={'/projectDevice'}>
-                                    <a className="item">项目设备 </a>
-                                </Link>
-                                <Link to={'/projectRisk'}>
-                                    <a className="item">项目风险 </a>
-                                </Link>
-                                <Link to={'/projectDefect'}>
-                                    <a className="item">项目缺陷 </a>
-                                </Link>
-                            </div>
-
-
+                            <ProjectMenu />
+                            {uploadForm}
                             {mainBody}
 
                         </Segment>
@@ -134,15 +142,20 @@ export class ProjectFunction extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
+    globalRole: state._userReducer.globalRole,
     projectId: state._projectDetail.projectId,
     firstFunctions: state._projectFunction.firstFunctions,
     secondFunctions: state._projectFunction.secondFunctions,
     isManaging: state._projectFunction.isManaging,
+    isUploading: state._projectFunction.isUploading
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
     startFunctionManaging: () => {
         dispatch(functionManaging());
+    },
+    startUpload: () => {
+        dispatch(startUploading());
     }
 });
 

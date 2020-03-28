@@ -21,22 +21,26 @@ const globalStyles = {
     minHeight: '100em',
 };
 
-const options = [
-    {key: '1', value: '2', text: '3'},
-    {key: '4', value: '5', text: '6'},
-    {key: '7', value: '8', text: '9'}
+const permissionOptions = [
+    {key: '294208701688971264', value: '294208701688971264', text: 'issue_tracker_modification'},
+    {key: '294208702120984576', value: '294208702120984576', text: 'issue_tracker_access'},
+    {key: '294208708563435520', value: '294208708563435520', text: 'working_hour_modification'},
+    {key: '294208716280954880', value: '294208716280954880', text: 'working_hour_access'},
+    {key: '294208717023346688', value: '294208717023346688', text: 'working_hour_verification'},
+    {key: '294208731082653696', value: '294208731082653696', text: 'project_git_modification'},
+    {key: '294208732491939840', value: '294208732491939840', text: 'project_git_access'},
+    {key: '294208733922197504', value: '294208733922197504', text: 'mail_list_modification'},
+    {key: '294208740175904768', value: '294208740175904768', text: 'mail_list_access'},
+    {key: '294208748191219712', value: '294208748191219712', text: 'file_system_modification'},
+    {key: '294208755745161216', value: '294208755745161216', text: 'file_system_access'}
 ];
 
 export class ModifyModal extends React.Component {
 
     static propTypes = {
+        projectId: PropTypes.string,
         currentUserId: PropTypes.string,
-        currentSuperiorId: PropTypes.string,
-        currentRoles: PropTypes.array,
         currentPermissions: PropTypes.array,
-        changeUserId: PropTypes.func,
-        changeSuperiorId: PropTypes.func,
-        changeRoles: PropTypes.func,
         changePermissions: PropTypes.func,
         modifyMember: PropTypes.func,
         cancelManage: PropTypes.func
@@ -47,7 +51,7 @@ export class ModifyModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.modifyMember(this.props.currentUserId, this.props.currentSuperiorId, this.props.currentRoles, this.props.currentPermissions);
+        this.props.modifyMember(this.props.currentUserId, this.props.projectId, this.props.currentPermissions);
     }
 
     render() {
@@ -56,36 +60,13 @@ export class ModifyModal extends React.Component {
 
             <div className="ui active modal">
                 <div className="header">
-                    修改成员信息
+                    修改成员权限信息
                 </div>
                 <div className="content">
                     <div className="description">
                         <form className="ui form">
                             <div className="field">
                                 <label>人员ID  {this.props.currentUserId}</label>
-                            </div>
-                            <div className="field">
-                                <label>上级</label>
-                                <Dropdown
-                                    placeholder='选择人员的上级'
-                                    fluid
-                                    search
-                                    selection
-                                    options={options}
-                                    onChange={this.props.changeSuperiorId}
-                                />
-                            </div>
-                            <div className="field">
-                                <label>角色</label>
-                                <Dropdown
-                                    placeholder='选择该人员在项目中的角色'
-                                    fluid
-                                    multiple
-                                    search
-                                    selection
-                                    options={options}
-                                    onChange={this.props.changeRoles}
-                                />
                             </div>
                             <div className="field">
                                 <label>权限</label>
@@ -95,7 +76,7 @@ export class ModifyModal extends React.Component {
                                     multiple
                                     search
                                     selection
-                                    options={options}
+                                    options={permissionOptions}
                                     onChange={this.props.changePermissions}
                                 />
                             </div>
@@ -119,26 +100,16 @@ export class ModifyModal extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
     currentUserId: state._projectMember.currentUserId,
-    currentSuperiorId: state._projectMember.currentSuperiorId,
-    currentRoles: state._projectMember.currentRoles,
-    currentPermissions: state._projectMember.currentPermissions
+    currentPermissions: state._projectMember.currentPermissions,
+    projectId: state._projectDetail.projectId
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    changeUserId: (e, data) => {
-        dispatch(changeUserId(data.value));
-    },
-    changeSuperiorId: (e, data) => {
-        dispatch(changeSuperiorId(data.value));
-    },
-    changeRoles: (e, {value}) => {
-        dispatch(changeRoles(value));
-    },
     changePermissions: (e, {value}) => {
         dispatch(changePermissions(value));
     },
-    modifyMember: (userId, superiorId, roles, permissions) => {
-        dispatch(modifyMember(userId, superiorId, roles, permissions));
+    modifyMember: (userId, projectId, permissions) => {
+        dispatch(modifyMember(userId, projectId, permissions));
     },
     cancelManage: () => {
         dispatch(cancelManage())

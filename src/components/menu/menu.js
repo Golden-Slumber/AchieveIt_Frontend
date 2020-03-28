@@ -3,12 +3,14 @@ import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import 'semantic-ui-css/semantic.min.css';
 import {
+    changeKeyword, changeProjectPage,
+    getRelativeProjects,
     logOut
 } from "../../redux/actions";
-import {closeLoginFail,} from "../../redux/actions/loginActions";
 import {connect} from "react-redux";
 import history from "../../history";
 import {Button, Container, Menu, Segment} from "semantic-ui-react";
+import currentPage from "../../redux/reducers/currentPageReducer";
 
 
 const menuStyle = {
@@ -39,10 +41,13 @@ export class StickyMenu extends React.Component {
         token: PropTypes.string,
         end: PropTypes.string,
         globalRole: PropTypes.string,
+        username: PropTypes.string,
         isLogin: PropTypes.bool,
+        currentPage: PropTypes.number,
+        changeProjectPage: PropTypes.func,
         onLogOut: PropTypes.func,
-        updateTimeline: PropTypes.func,
-        onUpdate: PropTypes.func,
+        changeKeyword: PropTypes.func,
+        getRelativeProjects: PropTypes.func
     };
 
     state = {
@@ -52,15 +57,12 @@ export class StickyMenu extends React.Component {
     stickTopMenu = () => this.setState({menuFixed: true});
     unStickTopMenu = () => this.setState({menuFixed: false});
 
-    handleIndexClick = () => {
-        this.props.switchIndex();
-        // if(this.props.isLogin===true)
-        // {
-        //     let d = new Date();
-        //     this.props.updateTimeline(this.props.token, this.props.end.toISOString(), d.toISOString());
-        //     this.props.onUpdate(d);
-        // }
-    };
+    handleProjectClick = () => {
+        this.props.changeProjectPage(1);
+        console.log(this.props.currentPage);
+        this.props.getRelativeProjects(this.props.currentPage);
+        this.props.changeKeyword('');
+    }
 
     render() {
         const {menuFixed, overlayFixed} = this.state;
@@ -69,14 +71,14 @@ export class StickyMenu extends React.Component {
         if (this.props.isLogin) {
             right = (
                 <Menu.Menu position='right'>
-                    <Menu.Item content={this.props.globalRole} style={MenuItemStyle} />
+                    <Menu.Item content={'您好 '+this.props.globalRole+' '+this.props.username} style={MenuItemStyle} />
                     <Menu.Item content={'登出'} onClick={this.props.onLogOut} style={MenuItemStyle}/>
                 </Menu.Menu>
             )
         } else {
             right = (
                 <Menu.Menu position='right'>
-                    <Link to="/login" className='item' style={MenuItemStyle} onClick={this.props.switchLogin}>
+                    <Link to="/login" className='item' style={MenuItemStyle}>
                         登录
                     </Link>
                 </Menu.Menu>
@@ -88,11 +90,11 @@ export class StickyMenu extends React.Component {
                 <Menu boardless fixed={menuFixed ? 'top' : undefined}
                       style={menuFixed ? fixedMenuStyle : menuStyle}>
                     <Container text>
-                        <Link to="/" className='item' onClick={this.props.switchHome}
+                        <Link to="/" className='item'
                               style={MenuItemStyle}>
                             主页
                         </Link>
-                        <Link to="/project" className='item' onClick={this.handleIndexClick}
+                        <Link to="/project" className='item' onClick={this.handleProjectClick}
                               style={MenuItemStyle}>
                             项目
                         </Link>
@@ -106,24 +108,25 @@ export class StickyMenu extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
     isLogin: state._loginReducer.isLogin,
-    globalRole: state._loginReducer.globalRole,
-    token: state._loginReducer.jwtToken
+    globalRole: state._userReducer.globalRole,
+    username: state._userReducer.username,
+    currentPage: state._projectHome.currentPage
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    switchHome: () => {
-        dispatch(closeLoginFail());
-    },
-    switchIndex: () => {
-        dispatch(closeLoginFail());
-    },
-    switchLogin: () => {
-        dispatch(closeLoginFail());
-    },
     onLogOut: () => {
         dispatch(logOut());
         history.push('/');
     },
+    getRelativeProjects: (currentPage) => {
+        dispatch(getRelativeProjects(currentPage));
+    },
+    changeKeyword: (keyWord) => {
+        dispatch(changeKeyword(keyWord));
+    },
+    changeProjectPage: (currentPage) => {
+        dispatch(changeProjectPage(currentPage));
+    }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StickyMenu);

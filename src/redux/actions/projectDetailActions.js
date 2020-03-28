@@ -9,6 +9,8 @@ import {
     PROJECTID_SET
 } from "./actionTypes";
 import history from '../../history';
+import {BASE_URL} from "../../constants";
+import {formFailed} from "./userActions";
 
 export function setProjectId(projectId){
     return {
@@ -21,16 +23,6 @@ export function startModifying(){
     return {
         type: CHANGE_MODIFYSTATE,
         payload: true
-    }
-}
-
-export function modifyProjectInfo(){
-
-    return async (dispatch) => {
-        dispatch({
-            type: CHANGE_MODIFYSTATE,
-            payload: false
-        });
     }
 }
 
@@ -88,4 +80,89 @@ export function modifyMainFunction(mainFunction){
         type: MODIFY_MAINFUNCTION,
         payload: mainFunction
     }
+}
+
+export function getProjectDetail(projectId){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/detail/'+projectId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch(modifyProjectName(data.result.project_name));
+                dispatch(modifyCustomer(data.result.referred_outer_customer_id));
+                dispatch(modifyStartTime(data.result.scheduled_start_time));
+                dispatch(modifyEndTime(data.result.scheduled_end_time));
+                dispatch(modifyMilestone(data.result.milestone));
+                dispatch(modifyMainTech(data.result.technology));
+                dispatch(modifyBusinessField(data.result.referred_business_field_id));
+                dispatch(modifyMainFunction(data.result.main_function));
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+}
+
+export function modifyProjectInfo(projectId, projectName, customer, startTime, endTime, milestone, mainTech, businessField, mainFunction){
+
+    let content = {
+        project_name: projectName,
+        referred_outer_customer_id: customer,
+        scheduled_start_time: startTime,
+        scheduled_end_time: endTime,
+        milestone: milestone,
+        technology: mainTech,
+        referred_business_field_id: businessField,
+        main_function: mainFunction
+    }
+
+    return async (dispatch) => {
+
+        await fetch(BASE_URL+'/project/detail/'+projectId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(content)
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch(getProjectDetail(projectId));
+                dispatch({
+                    type: CHANGE_MODIFYSTATE,
+                    payload: false
+                });
+            }else{
+                console.log(data.status);
+                dispatch(formFailed('modifyProjectDetail'));
+            }
+        }).catch(error => {
+            console.log(error);
+            dispatch(formFailed('modifyProjectDetail'))
+        });
+    }
+}
+
+export function cancelModify(projectId){
+    return async (dispatch) => {
+        dispatch(getProjectDetail(projectId));
+        dispatch({
+            type: CHANGE_MODIFYSTATE,
+            payload: false
+        })
+    }
+}
+
+export function pushProject(projectId){
+    // return async (dispatch) => {
+    //     dispatch
+    // }
 }

@@ -10,23 +10,15 @@ import {
     PROJECT_SETUP,
     CHANGE_PROJECTID,
     CHANGE_CUSTOMER,
-    CHANGE_BUNIESSFIELD, GET_RELATIVE_PROJECTS
+    CHANGE_BUNIESSFIELD, GET_RELATIVE_PROJECTS, CHANGE_PROJECTPAGE, CHANGE_MOREPROJECT
 } from "../actions";
+import currentPage from "./currentPageReducer";
 
 const initialState = {
     keyword: '',
-    projects: [
-        {
-            id: '123',
-            name: '123',
-            status: '123'
-        },
-        {
-            id: '123',
-            name: '123',
-            status: '123'
-        }
-    ],
+    currentPage: 1,
+    more: true,
+    projects: [],
     projectSetupInfo: {
         projectId: '',
         projectName: '',
@@ -44,12 +36,28 @@ export default function projectHome(state = initialState, action) {
     switch (action.type) {
         case CHANGE_KEYWORD:
             return {...state, keyword: action.payload};
+        case CHANGE_PROJECTPAGE:
+            return {...state, currentPage: action.payload};
+        case CHANGE_MOREPROJECT:
+            return {...state, more: action.payload};
         case GET_RELATIVE_PROJECTS:
-            return {...state, projects: action.payload};
+            let arr1;
+            if(state.currentPage === 1){
+                arr1 = action.payload;
+            }else{
+                arr1 =  state.projects.concat(action.payload);
+            }
+            return {...state, projects: arr1};
         case SEARCH_PROJECT:
-            let arr = action.payload.map((item, index) => {
-                return {id: item.projectId, name: item.projectName, status: item.projectStatus}
+            let arr2 = action.payload.map((item, index) => {
+                return {id: item.project_id, name: item.project_name, status: item.status}
             });
+            let arr;
+            if(state.currentPage === 1){
+                arr = arr2;
+            }else{
+                arr = state.projects.concat(arr2);
+            }
             return {...state, projects: arr};
         case CHANGE_PROJECTID:
             return {...state, projectSetupInfo: {...state.projectSetupInfo, projectId: action.payload}}

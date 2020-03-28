@@ -7,75 +7,38 @@ import {
     CHANGE_ROLES,
     CHANGE_SUPERIOR_ID, CHANGE_USER_ID,
     CREATE_MEMBER,
-    DELETE_MEMBER, MODIFY_MANAGESTATE,
-    MODIFY_MEMBER, UPDATE_MEMBER
+    DELETE_MEMBER, GET_MEMBERS, MODIFY_MANAGESTATE,
+    MODIFY_MEMBER, SET_ROLEOPTIONS, SET_SUPERIOROPTIONS, UPDATE_MEMBER
 } from "../actions";
 
 const initialState = {
-    members: [
-        {
-            userId: '1',
-            superiorId: '2',
-            projectRolesId: [
-                '1',
-                '2',
-                '3'
-            ]
-        },
-        {
-            userId: '1',
-            superiorId: '2',
-            projectRolesId: [
-                '1',
-                '2',
-                '3'
-            ]
-        },
-        {
-            userId: '1',
-            superiorId: '2',
-            projectRolesId: [
-                '1',
-                '2',
-                '3'
-            ]
-        }
-    ],
+    members: [],
     isManaging: false,
     manageState: 'null',
     currentUserId: '',
     currentSuperiorId: '',
-    currentRoles: [],
-    currentPermissions: []
+    currentRoleId: '',
+    currentRoleName: '',
+    currentPermissions: [],
+    roleOptions: [],
+    superiorOptions: []
 }
 
 export default function projectMember(state=initialState, action){
     switch (action.type) {
+        case GET_MEMBERS:
+            return {...state, members: action.payload}
         case CHANGE_MANAGEMEMBER:
             return {...state, isManaging: action.payload};
         case MODIFY_MANAGESTATE:
             return {...state, manageState: action.payload};
         case CREATE_MEMBER:
-            let newMember1 = {
-                userId: action.payload.userId,
-                superiorId: action.payload.superiorId,
-                projectRolesId: action.payload.roles
-            }
-            return {...state, members: [...state.members, newMember1], manageState: ''}
+            return {...state, members: [...state.members, action.payload], manageState: ''}
         case MODIFY_MEMBER:
-            let arr1 = state.members.filter((item) => {
-                return item.userId !== action.payload.userId;
-            });
-            let newMember2 = {
-                userId: action.payload.userId,
-                superiorId: action.payload.superiorId,
-                projectRolesId: action.payload.roles
-            }
-            arr1.push(newMember2);
-            return {...state, members: arr1, manageState: ''};
+            return {...state, manageState: ''};
         case DELETE_MEMBER:
             let arr2 = state.members.filter((item) => {
-                return item.userId !== action.payload
+                return item.user_id !== action.payload
             });
             return {...state, members: arr2, manageState: ''};
         case CHANGE_USER_ID:
@@ -83,11 +46,16 @@ export default function projectMember(state=initialState, action){
         case CHANGE_SUPERIOR_ID:
             return {...state, currentSuperiorId: action.payload};
         case CHANGE_ROLES:
-            return {...state, currentRoles: action.payload};
+            console.log('reducer '+action.payload.roleName);
+            return {...state, currentRoleId: action.payload.roleId, currentRoleName: action.payload.roleName};
         case CHANGE_PERISSIONS:
             return {...state, currentPermissions: action.payload};
         case UPDATE_MEMBER:
             return {...state, members: action.payload};
+        case SET_ROLEOPTIONS:
+            return {...state, roleOptions: action.payload};
+        case SET_SUPERIOROPTIONS:
+            return {...state, superiorOptions: action.payload};
         default:
             return state;
     }
