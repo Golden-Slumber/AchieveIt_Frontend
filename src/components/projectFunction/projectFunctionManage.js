@@ -13,8 +13,9 @@ import {
     startModifying,
     startDeleting,
     updateFunction,
-    setSuperiorFunctionOptions
+    setSuperiorFunctionOptions, startUploading
 } from "../../redux/actions/projectFunctionActions";
+import UploadForm from "./uploadForm";
 
 
 const globalStyles = {
@@ -30,15 +31,21 @@ export class ProjectFunctionManage extends React.Component {
         firstFunctions: PropTypes.array,
         secondFunctions: PropTypes.array,
         manageState: PropTypes.string,
+        isUploading: PropTypes.bool,
         startCreating: PropTypes.func,
         startModifying: PropTypes.func,
         startDeleting: PropTypes.func,
         updateFunction: PropTypes.func,
-        setSuperiorFunctionOptions: PropTypes.func
+        setSuperiorFunctionOptions: PropTypes.func,
+        startUpload: PropTypes.func,
     };
 
     constructor(props) {
         super(props);
+    }
+
+    handleUploadClick = () => {
+        this.props.startUpload();
     }
 
     handleCreateClick = () => {
@@ -89,6 +96,15 @@ export class ProjectFunctionManage extends React.Component {
             );
         });
 
+        let uploadForm;
+        if(this.props.isUploading){
+            uploadForm = (
+                <UploadForm />
+            );
+        }else{
+            uploadForm = null;
+        }
+
         let createModal = null;
         if (this.props.manageState === 'create') {
             createModal = (<CreateModal/>);
@@ -107,6 +123,7 @@ export class ProjectFunctionManage extends React.Component {
                 {createModal}
                 {modifyModal}
                 {deleteModal}
+                {uploadForm}
                 <form className="ui form">
                     <div className="two fields">
                         <div className="field">
@@ -142,6 +159,7 @@ export class ProjectFunctionManage extends React.Component {
                     </div>
                 </form>
                 <Button content={'创建新功能'} onClick={this.handleCreateClick}/>
+                <Button icon='upload' onClick={this.handleUploadClick}/>
                 <Button content={'完成'} onClick={this.handleFinishClick} style={{float: 'right'}}/>
             </div>
         );
@@ -152,7 +170,8 @@ const mapStateToProps = (state, ownProps) => ({
     projectId: state._projectDetail.projectId,
     firstFunctions: state._projectFunction.firstFunctions,
     secondFunctions: state._projectFunction.secondFunctions,
-    manageState: state._projectFunction.manageState
+    manageState: state._projectFunction.manageState,
+    isUploading: state._projectFunction.isUploading
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -170,6 +189,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     setSuperiorFunctionOptions: (functions) => {
         dispatch(setSuperiorFunctionOptions(functions));
+    },
+    startUpload: () => {
+        dispatch(startUploading());
     }
 });
 

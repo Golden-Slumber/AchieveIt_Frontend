@@ -14,20 +14,17 @@ const globalStyles = {
     minHeight: '100em',
 };
 
-const options = [
-    {key: '1', value: '2', text: '3'},
-    {key: '4', value: '5', text: '6'},
-    {key: '7', value: '8', text: '9'}
-];
-
 export class CreateModal extends React.Component {
 
     static propTypes = {
+        projectId: PropTypes.string,
         currentWorkingHourId: PropTypes.string,
         currentActivityType: PropTypes.string,
         currentFunctionType: PropTypes.string,
         currentStartTime: PropTypes.string,
         currentEndTime: PropTypes.string,
+        functionHourOptions: PropTypes.array,
+        activityOptions: PropTypes.array,
         changeActivity: PropTypes.func,
         changeFunctionType: PropTypes.func,
         changeWorkEndTime: PropTypes.func,
@@ -41,7 +38,7 @@ export class CreateModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.createWorkingHour(this.props.currentActivityType, this.props.currentFunctionType, this.props.currentStartTime, this.props.currentEndTime);
+        this.props.createWorkingHour(this.props.projectId, this.props.currentActivityType, this.props.currentFunctionType, this.props.currentStartTime, this.props.currentEndTime);
     }
 
     render() {
@@ -62,7 +59,7 @@ export class CreateModal extends React.Component {
                                     fluid
                                     search
                                     selection
-                                    options={options}
+                                    options={this.props.functionHourOptions}
                                     onChange={this.props.changeFunctionType}
                                 />
                             </div>
@@ -73,18 +70,18 @@ export class CreateModal extends React.Component {
                                     fluid
                                     search
                                     selection
-                                    options={options}
+                                    options={this.props.activityOptions}
                                     onChange={this.props.changeActivity}
                                 />
                             </div>
                             <div className="field">
                                 <label>开始时间</label>
-                                <input type="text" placeholder="开始时间" value={this.props.currentStartTime}
+                                <input type="text" placeholder="开始时间：格式为yyyy-MM-dd HH:mm:ss" value={this.props.currentStartTime}
                                        onChange={this.props.changeWorkStartTime}/>
                             </div>
                             <div className="field">
                                 <label>结束时间</label>
-                                <input type="text" placeholder="结束时间" value={this.props.currentEndTime}
+                                <input type="text" placeholder="结束时间：格式为yyyy-MM-dd HH:mm:ss" value={this.props.currentEndTime}
                                        onChange={this.props.changeWorkEndTime}/>
                             </div>
                         </form>
@@ -106,11 +103,14 @@ export class CreateModal extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
+    projectId: state._projectDetail.projectId,
     currentWorkingHourId: state._projectHour.currentWorkingHourId,
     currentActivityType: state._projectHour.currentActivityType,
     currentFunctionType: state._projectHour.currentFunctionType,
     currentStartTime: state._projectHour.currentStartTime,
     currentEndTime: state._projectHour.currentEndTime,
+    functionHourOptions: state._projectHour.functionHourOptions,
+    activityOptions: state._projectHour.activityOptions
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -126,8 +126,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     changeWorkStartTime: (e) => {
         dispatch(changeWorkStartTime(e.target.value));
     },
-    createWorkingHour: (activityType, functionType, startTime, endTime) => {
-        dispatch(createWorkingHour(activityType, functionType, startTime, endTime));
+    createWorkingHour: (projectId, activityType, functionType, startTime, endTime) => {
+        dispatch(createWorkingHour(projectId, activityType, functionType, startTime, endTime));
     },
     cancelHourModal: () => {
         dispatch(cancelHourModal());

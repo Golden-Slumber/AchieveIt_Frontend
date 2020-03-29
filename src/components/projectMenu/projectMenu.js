@@ -13,8 +13,9 @@ import {
     switchHour,
     switchMember, switchRisk
 } from "../../redux/actions/projectMenuActions";
-import {getProjectDetail, getProjectMembers} from "../../redux/actions";
-import {getProjectFunction} from "../../redux/actions/projectFunctionActions";
+import {getProjectDetail, getProjectMembers, getWorkHours} from "../../redux/actions";
+import {getDownloadData, getProjectFunction} from "../../redux/actions/projectFunctionActions";
+import {changeCurrentDevicePage, getDevices} from "../../redux/actions/projectDeviceActions";
 
 
 const globalStyles = {
@@ -44,7 +45,11 @@ export class ProjectMenu extends React.Component {
         switchDefect: PropTypes.func,
         getProjectDetail: PropTypes.func,
         getProjectMembers: PropTypes.func,
-        getProjectFunctions: PropTypes.func
+        getProjectFunctions: PropTypes.func,
+        getDownloadData: PropTypes.func,
+        getWorkHours: PropTypes.func,
+        changeCurrentDevicePage: PropTypes.func,
+        getDevices: PropTypes.func
     };
 
     handleDetailClick = () => {
@@ -60,14 +65,18 @@ export class ProjectMenu extends React.Component {
     handleFunctionClick = () => {
         this.props.switchFunction();
         this.props.getProjectFunctions(this.props.projectId);
+        this.props.getDownloadData(this.props.projectId);
     }
 
     handleHourClick = () => {
-        this.props.switchHour()
+        this.props.switchHour();
+        this.props.getWorkHours(this.props.projectId);
     }
 
     handleDeviceClick = () => {
-        this.props.switchDevice()
+        this.props.switchDevice();
+        this.props.changeCurrentDevicePage(1);
+        this.props.getDevices(1);
     }
 
     handleRiskClick = () => {
@@ -150,6 +159,18 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     getProjectFunctions: (projectId) => {
         dispatch(getProjectFunction(projectId))
+    },
+    getDownloadData: (projectId) => {
+        dispatch(getDownloadData(projectId))
+    },
+    getWorkHours: (projectId) => {
+        dispatch(getWorkHours(projectId))
+    },
+    changeCurrentDevicePage: (currentPage) => {
+        dispatch(changeCurrentDevicePage(currentPage));
+    },
+    getDevices: (currentPage) => {
+        dispatch(getDevices(currentPage));
     }
 });
 

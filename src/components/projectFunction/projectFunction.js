@@ -9,6 +9,7 @@ import {functionManaging, startUploading} from "../../redux/actions/projectFunct
 import ProjectFunctionManage from "./projectFunctionManage";
 import ProjectMenu from "../projectMenu/projectMenu";
 import UploadForm from "./uploadForm";
+import { CSVLink, CSVDownload } from "react-csv";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -24,13 +25,12 @@ export class ProjectFunction extends React.Component {
         firstFunctions: PropTypes.array,
         secondFunctions: PropTypes.array,
         isManaging: PropTypes.bool,
-        isUploading: PropTypes.bool,
         startFunctionManaging: PropTypes.func,
-        startUpload: PropTypes.func
+        downloadData: PropTypes.array
     };
 
-    handleUploadClick = () => {
-        this.props.startUpload();
+    handleDownloadClick = () => {
+        console.log(this.props.downloadData);
     }
 
     render() {
@@ -57,23 +57,11 @@ export class ProjectFunction extends React.Component {
             manageButton = (
                 <div>
                     <Button content={'修改项目功能'} onClick={this.props.startFunctionManaging}/>
-                    <Button.Group basic size='small' style={{float: 'right'}}>
-                        <Button icon='upload' onClick={this.handleUploadClick}/>
-                        <Button icon='download' />
-                    </Button.Group>
+                    <CSVLink  data={this.props.downloadData}><Button icon='download' onClick={this.handleDownloadClick} style={{float: 'right'}}/></CSVLink>
                 </div>
             );
         }else{
             manageButton = null;
-        }
-
-        let uploadForm;
-        if(this.props.isUploading){
-            uploadForm = (
-                <UploadForm />
-            );
-        }else{
-            uploadForm = null;
         }
 
         let mainBody;
@@ -129,7 +117,6 @@ export class ProjectFunction extends React.Component {
 
                         <Segment style={{minHeight: '30em'}}>
                             <ProjectMenu />
-                            {uploadForm}
                             {mainBody}
 
                         </Segment>
@@ -147,7 +134,7 @@ const mapStateToProps = (state, ownProps) => ({
     firstFunctions: state._projectFunction.firstFunctions,
     secondFunctions: state._projectFunction.secondFunctions,
     isManaging: state._projectFunction.isManaging,
-    isUploading: state._projectFunction.isUploading
+    downloadData: state._projectFunction.downloadData
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

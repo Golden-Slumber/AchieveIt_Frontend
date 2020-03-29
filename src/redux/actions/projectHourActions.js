@@ -4,12 +4,63 @@ import {
     CHANGE_HOURMODALSTATE,
     CHANGE_HOURPAGESTATE, CHANGE_VERIFYSTATE, CHANGE_WORKENDTIME,
     CHANGE_WORKSTARTTIME,
-    CREATE_WORKINGHOUR,
-    MODIFY_WORKINGHOUR,
+    CREATE_WORKINGHOUR, GET_FUNCTIONS, GET_VERIFYHOURS, GET_WORKHOURS,
+    MODIFY_WORKINGHOUR, SET_ACTIVITYOPTIONS, SET_FUNCTIONHOUROPTIONS,
     SET_WORKINGHOURID,
     VERIFY_WORKINGHOUR
 
 } from "./actionTypes";
+import {BASE_URL} from "../../constants";
+import {getProjectFunction} from "./projectFunctionActions";
+
+export function getWorkHours(projectId) {
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/workingHour/'+projectId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch({
+                    type: GET_WORKHOURS,
+                    payload: data.result
+                })
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+}
+
+export function getVerifyHours(projectId) {
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/workingHour/verify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({project_id: projectId})
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch({
+                    type: GET_VERIFYHOURS,
+                    payload: data.result
+                })
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+}
 
 export function startManaging(){
     return {
@@ -81,57 +132,96 @@ export function startJudging(workinghourId) {
     }
 }
 
-export function createWorkingHour(activityType, functionType, startTime, endTime){
+export function createWorkingHour(projectId, activityType, functionType, startTime, endTime){
     let newWorkingHour = {
-        workingHourId: 'x',
-        activityType: activityType,
-        functionType: functionType,
-        startTime: startTime,
-        endTime: endTime
+        activity_type_id: activityType,
+        function_id: functionType,
+        start_time: startTime,
+        end_time: endTime
     }
 
     return async (dispatch) => {
-        dispatch({
-            type: CHANGE_HOURMODALSTATE,
-            payload: ''
+        await fetch(BASE_URL+'/project/workingHour/'+projectId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(newWorkingHour)
+        }).then(res => res.json()
+        ).then(data => {
+           if(data.status === 'SUCCESS'){
+               dispatch({
+                   type: CHANGE_HOURMODALSTATE,
+                   payload: ''
+               });
+               dispatch(getWorkHours(projectId));
+           }else{
+               console.log(data.status);
+           }
+        }).catch(error => {
+            console.log(error);
         });
-        dispatch({
-            type: CREATE_WORKINGHOUR,
-            payload: newWorkingHour
+
+    }
+}
+
+export function modifyWorkingHour(projectId, workingHourId, activityType, functionType, startTime, endTime){
+    let newWorkingHour = {
+        working_hour_id: workingHourId,
+        activity_type_id: activityType,
+        function_id: functionType,
+        start_time: startTime,
+        end_time: endTime
+    }
+
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/workingHour/'+projectId+'/'+workingHourId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(newWorkingHour)
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch({
+                    type: CHANGE_HOURMODALSTATE,
+                    payload: ''
+                });
+                dispatch(getWorkHours(projectId));
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
         });
     }
 }
 
-export function modifyWorkingHour(workingHourId, activityType, functionType, startTime, endTime){
-    let newWorkingHour = {
-        workingHourId: workingHourId,
-        activityType: activityType,
-        functionType: functionType,
-        startTime: startTime,
-        endTime: endTime
-    }
-
+export function judgeWorkingHour(projectId, workingHourId, verifyState) {
     return async (dispatch) => {
+        await fetch(BASE_URL+'/project/workingHour/verify', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({project_id: projectId, working_hour_id: workingHourId, verified: verifyState==='true'})
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch(getVerifyHours(projectId));
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        })
         dispatch({
             type: CHANGE_HOURMODALSTATE,
             payload: ''
-        });
-        dispatch({
-            type: MODIFY_WORKINGHOUR,
-            payload: newWorkingHour
-        });
-    }
-}
-
-export function judgeWorkingHour(workingHourId) {
-    return async (dispatch) => {
-        dispatch({
-            type: CHANGE_HOURMODALSTATE,
-            payload: ''
-        });
-        dispatch({
-            type: VERIFY_WORKINGHOUR,
-            payload: workingHourId
         });
     }
 }
@@ -168,5 +258,75 @@ export function changeVerifyState(verifyState){
     return {
         type: CHANGE_VERIFYSTATE,
         payload: verifyState
+    }
+}
+
+export function setFunctionHourOptions(projectId){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/function/'+projectId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                console.log(data.result);
+                let functionHourOptions = [];
+                let arr = data.result.first_level_functions;
+                for(let i=0; i<arr.length; i++){
+                    functionHourOptions.push(
+                        {key: arr[i].id_for_display, value: arr[i].id_for_display, text: arr[i].id_for_display+arr[i].function_description}
+                    );
+                }
+                arr = data.result.second_level_functions;
+                for(let i=0; i<arr.length; i++){
+                    functionHourOptions.push(
+                        {key: arr[i].id_for_display, value: arr[i].id_for_display, text: arr[i].id_for_display+arr[i].function_description}
+                    );
+                }
+                dispatch({
+                    type: SET_FUNCTIONHOUROPTIONS,
+                    payload: functionHourOptions
+                })
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+
+    }
+}
+
+export function setActivityOptions(){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/workingHour/activityType', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                let activityOptions = [];
+                let arr = data.status.result;
+                for(let i=0; i<arr.length; i++){
+                    activityOptions.push({
+                       key: arr[i].activity_type_id, value: arr[i].activity_type_id, text: arr[i].level_1_description+' '+arr[i].level_2_description
+                    });
+                }
+                dispatch({
+                    type: SET_ACTIVITYOPTIONS,
+                    payload: activityOptions
+                })
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        })
     }
 }

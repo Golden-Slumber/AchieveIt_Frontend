@@ -6,6 +6,7 @@ import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Icon} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {cancelHourModal, changeVerifyState, judgeWorkingHour} from "../../redux/actions";
+import Radio from "semantic-ui-react/dist/commonjs/addons/Radio";
 
 
 const globalStyles = {
@@ -17,6 +18,7 @@ const globalStyles = {
 export class VerifyModal extends React.Component {
 
     static propTypes = {
+        projectId: PropTypes.string,
         currentWorkingHourId: PropTypes.string,
         verifyState: PropTypes.string,
         cancelHourModal: PropTypes.func,
@@ -29,7 +31,11 @@ export class VerifyModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.judgeWorkingHour(this.props.currentWorkingHourId);
+        this.props.judgeWorkingHour(this.props.projectId, this.props.currentWorkingHourId, this.props.verifyState);
+    }
+
+    handleChange = (e, {value}) => {
+        this.props.changeVerifyState(value);
     }
 
     render() {
@@ -41,10 +47,20 @@ export class VerifyModal extends React.Component {
                 </div>
                 <div className="content">
                     <div className="description">
-                        <div className="ui slider checkbox">
-                            <input type="checkbox" name="newsletter" onClick={this.props.changeVerifyState}/>
-                            <label>审核通过</label>
-                        </div>
+                        <Radio
+                            label='不通过'
+                            name='radioGroup'
+                            value='false'
+                            checked={this.props.verifyState === 'false'}
+                            onChange={this.handleChange}
+                        />
+                        <Radio
+                            label='通过'
+                            name='radioGroup'
+                            value='true'
+                            checked={this.props.verifyState === 'true'}
+                            onChange={this.handleChange}
+                        />
                     </div>
                 </div>
                 <div className="actions">
@@ -62,6 +78,7 @@ export class VerifyModal extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
+    projectId: state._projectDetail.projectId,
     verifyState: state._projectHour.verifyState,
     currentWorkingHourId: state._projectHour.currentWorkingHourId
 });
@@ -70,11 +87,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     cancelHourModal: () => {
         dispatch(cancelHourModal())
     },
-    judgeWorkingHour: (currentWorkingHourId) => {
-        dispatch(judgeWorkingHour(currentWorkingHourId));
+    judgeWorkingHour: (projectId, currentWorkingHourId, verifyState) => {
+        dispatch(judgeWorkingHour(projectId, currentWorkingHourId, verifyState));
     },
-    changeVerifyState: (e) => {
-        dispatch(changeVerifyState(e.target.value));
+    changeVerifyState: (verifyState) => {
+        dispatch(changeVerifyState(verifyState));
     }
 });
 

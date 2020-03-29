@@ -7,7 +7,13 @@ import {Button, Container, Icon} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import ProjectHourManage from "./projectHourManage";
 import ProjectHourVerify from "./projectHourVerify";
-import {startManaging, startVerifying} from "../../redux/actions/projectHourActions";
+import {
+    getVerifyHours,
+    setActivityOptions,
+    setFunctionHourOptions,
+    startManaging,
+    startVerifying
+} from "../../redux/actions/projectHourActions";
 import ProjectMenu from "../projectMenu/projectMenu";
 
 const globalStyles = {
@@ -23,21 +29,35 @@ export class ProjectHour extends React.Component {
         workingHours: PropTypes.array,
         hourPageState: PropTypes.string,
         startManaging: PropTypes.func,
-        startVerifying: PropTypes.func
+        startVerifying: PropTypes.func,
+        setFunctionHourOptions: PropTypes.func,
+        setActivityOptions: PropTypes.func,
+        getVerifyHours: PropTypes.func
     };
 
     constructor(props) {
         super(props);
     }
 
+    handleManageClick = () => {
+        this.props.startManaging();
+        this.props.setFunctionHourOptions(this.props.projectId);
+        this.props.setActivityOptions();
+    }
+
+    handleVerifyClick = () => {
+        this.props.startVerifying();
+        this.props.getVerifyHours(this.props.projectId);
+    }
+
     render() {
         let showWorkingHours = this.props.workingHours.map((item, index) => {
             return (
                 <tr>
-                    <td>{item.activityType}</td>
-                    <td>{item.functionType}</td>
-                    <td>{item.startTime}</td>
-                    <td>{item.endTime}</td>
+                    <td>{item.referred_activity_type_id}</td>
+                    <td>{item.function_description_snapshot}</td>
+                    <td>{item.start_time}</td>
+                    <td>{item.end_time}</td>
                 </tr>
             );
         });
@@ -68,8 +88,8 @@ export class ProjectHour extends React.Component {
                         </tbody>
                     </table>
 
-                    <Button  content={'管理工时记录'} onClick={this.props.startManaging}/>
-                    <Button  content={'去审核'}  onClick={this.props.startVerifying} style={{float: 'right'}}/>
+                    <Button  content={'管理工时记录'} onClick={this.handleManageClick}/>
+                    <Button  content={'去审核'}  onClick={this.handleVerifyClick} style={{float: 'right'}}/>
                 </div>
             );
         }
@@ -107,6 +127,15 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     startVerifying: () => {
         dispatch(startVerifying())
+    },
+    setFunctionHourOptions: (projectId) => {
+        dispatch(setFunctionHourOptions(projectId));
+    },
+    setActivityOptions: () => {
+        dispatch(setActivityOptions());
+    },
+    getVerifyHours: (projectId) => {
+        dispatch(getVerifyHours(projectId));
     }
 });
 

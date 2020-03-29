@@ -37,12 +37,12 @@ export class ProjectHourManage extends React.Component {
         let showWorkingHours = this.props.workingHours.map((item, index) => {
             return (
                 <tr>
-                    <td>{item.activityType}</td>
-                    <td>{item.functionType}</td>
-                    <td>{item.startTime}</td>
-                    <td>{item.endTime}</td>
+                    <td>{item.referred_activity_type_id}</td>
+                    <td>{item.function_description_snapshot}</td>
+                    <td>{item.start_time}</td>
+                    <td>{item.end_time}</td>
                     <td><Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
-                        this.handleModifyClick(item.workingHourId);
+                        this.handleModifyClick(item.working_hour_id);
                     }}/></td>
                 </tr>
             );

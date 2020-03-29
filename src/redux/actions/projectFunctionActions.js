@@ -1,6 +1,7 @@
 import {
+    CHANGE_DOWNLOADDATA,
     CHANGE_FUNCTIONDESCRIPTION,
-    CHANGE_FUNCTIONMANAGE, CHANGE_UPLOADSTATE,
+    CHANGE_FUNCTIONMANAGE, CHANGE_UPLOADDATA, CHANGE_UPLOADSTATE,
     CREATE_FUNCTION, DELETE_FUNCTION,
     FUNCTION_MANAGESTATE, GET_FUNCTIONS, MODIFY_FUNCTION,
     SET_FUNCTIONID,
@@ -20,7 +21,6 @@ export function getProjectFunction(projectId){
         ).then(data => {
             if(data.status === 'SUCCESS'){
                 console.log(data.result);
-                let arr = data.result
                 let firstFunctions = data.result.first_level_functions.map((item, index) => {
                     return {functionId: item.id_for_display, superiorId: item.superior_display_id, functionDescription: item.function_description}
                 });
@@ -233,10 +233,10 @@ export function changeFunctionDescription(description){
 export function updateFunction(projectId, firstFunctions, secondFunctions){
     let functions = [];
     for(let i=0; i<firstFunctions.length; i++){
-        functions.push({function_id: firstFunctions[i].functionId, function_description: firstFunctions[i].functionDescription, superior_function_id: firstFunctions[i].superiorId});
+        functions.push({id_for_display: firstFunctions[i].functionId, function_description: firstFunctions[i].functionDescription, superior_display_id: firstFunctions[i].superiorId});
     }
     for (let i=0; i<secondFunctions.length; i++){
-        functions.push({function_id: secondFunctions[i].functionId, function_description: secondFunctions[i].functionDescription, superior_function_id: secondFunctions[i].superiorId});
+        functions.push({id_for_display: secondFunctions[i].functionId, function_description: secondFunctions[i].functionDescription, superior_display_id: secondFunctions[i].superiorId});
     }
 
     let content = {
@@ -260,11 +260,102 @@ export function updateFunction(projectId, firstFunctions, secondFunctions){
                     payload: false
                 });
                 dispatch(getProjectFunction(projectId));
+                dispatch(getDownloadData(projectId));
             }else{
                 console.log(data.status);
             }
         }).catch(error => {
             console.log(error);
         });
+    }
+}
+
+export function changeUploadData(data){
+    let uploadData = 'id_for_display,superior_display_id,function_description';
+    for (let i=0; i<data.length; i++){
+        uploadData = uploadData + '\n' + data[i].id_for_display + ',' + data[i].superior_display_id + ',' + data[i].function_description;
+    }
+    console.log(uploadData);
+    return {
+        type: CHANGE_UPLOADDATA,
+        payload: uploadData
+    }
+}
+
+export function getDownloadData(projectId){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/function/download/'+projectId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        }).then(res => res.text()
+        ).then(res => {
+            console.log(res);
+            let rows = res.split('\n');
+            let downloadData = [];
+            for(let i=0; i<rows.length; i++){
+                let temp = rows[i].split(',');
+                downloadData.push(temp);
+            }
+            dispatch({
+                type: CHANGE_DOWNLOADDATA,
+                payload: downloadData
+            })
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+}
+
+export function uploadFunctions(projectId, uploadData){
+
+    // let content = 'project_id='+projectId+'&csv_file='+uploadData;
+    let formData = new FormData();
+    formData.append('project_id', projectId);
+    formData.append('csv_file', uploadData);
+
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/functionParse', {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                console.log(data.result);
+                let firstFunctions = [];
+                let secondFunctions = [];
+                let arr = data.result.functions;
+                for(let i=0; i<arr.length; i++){
+                    if(arr[i].id_for_display.length === 3){
+                        firstFunctions.push({
+                            functionId: arr[i].id_for_display, superiorId: arr[i].id_for_display, functionDescription: arr[i].description
+                        });
+                    }else{
+                        let sup = '';
+                        for(let j=0; j<3; j++){
+                            sup = sup+arr[i].id_for_display[j];
+                        }
+                        secondFunctions.push({
+                            functionId: arr[i].id_for_display, superiorId: sup, functionDescription: arr[i].description
+                        });
+                    }
+                }
+                dispatch({
+                    type: GET_FUNCTIONS,
+                    payload: {
+                        firstFunctions: firstFunctions,
+                        secondFunctions: secondFunctions
+                    }
+                })
+                dispatch(cancelUploading());
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        })
     }
 }

@@ -1,9 +1,10 @@
 import {
+    CHANGE_DOWNLOADDATA,
     CHANGE_FUNCTIONDESCRIPTION, CHANGE_FUNCTIONMANAGE,
     CHANGE_MANAGEMEMBER,
     CHANGE_PERISSIONS,
     CHANGE_ROLES,
-    CHANGE_SUPERIOR_ID, CHANGE_UPLOADSTATE, CHANGE_USER_ID, CREATE_FUNCTION,
+    CHANGE_SUPERIOR_ID, CHANGE_UPLOADDATA, CHANGE_UPLOADSTATE, CHANGE_USER_ID, CREATE_FUNCTION,
     CREATE_MEMBER, DELETE_FUNCTION,
     DELETE_MEMBER, FUNCTION_MANAGESTATE, GET_FUNCTIONS, GET_MEMBERS, MODIFY_FUNCTION, MODIFY_MANAGESTATE,
     MODIFY_MEMBER, SET_FUNCTIONID, SET_FUNCTIONSUPERIOR, SET_SUPERIORFUNCTIONS, UPDATE_FUNCTION, UPDATE_MEMBER
@@ -19,7 +20,9 @@ const initialState = {
     currentFunctionId: '',
     currentSuperiorId: '',
     currentDescription: '',
-    superiorFunctions: []
+    superiorFunctions: [],
+    uploadData: '',
+    downloadData: []
 }
 
 function plus1(id) {
@@ -143,6 +146,10 @@ export default function projectFunction(state=initialState, action){
             return {...state, currentDescription: action.payload};
         case UPDATE_FUNCTION:
             return {...state, firstFunctions: action.payload.firstFunctions, secondFunctions: action.payload.secondFunctions};
+        case CHANGE_UPLOADDATA:
+            return {...state, uploadData: action.payload}
+        case CHANGE_DOWNLOADDATA:
+            return {...state, downloadData: action.payload}
         default:
             return state;
     }

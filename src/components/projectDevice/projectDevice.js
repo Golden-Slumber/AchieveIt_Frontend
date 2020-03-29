@@ -5,11 +5,17 @@ import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Icon} from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import {startChecking, startReturning, startTenancying} from "../../redux/actions/projectDeviceActions";
+import {
+    changeCurrentDevicePage, getDevices,
+    startChecking,
+    startReturning,
+    startTenancying
+} from "../../redux/actions/projectDeviceActions";
 import TenancyModal from "./tenancyModal";
 import ReturnModal from "./returnModal";
 import ProjectDeviceCheck from "./projectDeviceCheck";
 import ProjectMenu from "../projectMenu/projectMenu";
+import currentPage from "../../redux/reducers/currentPageReducer";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -24,13 +30,22 @@ export class ProjectDevice extends React.Component {
         devices: PropTypes.array,
         devicePage: PropTypes.string,
         deviceModal: PropTypes.string,
+        currentPage: PropTypes.number,
+        more: PropTypes.bool,
         startChecking: PropTypes.func,
         startTenancying: PropTypes.func,
-        startReturning: PropTypes.func
+        startReturning: PropTypes.func,
+        changeCurrentDevicePage: PropTypes.func,
+        getDevices: PropTypes.func
     };
 
     handleReturnClick = (deviceId) => {
         this.props.startReturning(deviceId);
+    }
+
+    handleMoreclick = () => {
+        this.props.changeCurrentDevicePage(this.props.currentPage+1);
+        this.props.getDevices(this.props.currentPage);
     }
 
     render() {
@@ -39,6 +54,7 @@ export class ProjectDevice extends React.Component {
             return (
                 <tr>
                     <td>{item.deviceId}</td>
+                    <td>{item.deviceName}</td>
                     <td>{item.deviceStatus}</td>
                     <td><Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
                         this.handleReturnClick(item.deviceId);
@@ -60,6 +76,15 @@ export class ProjectDevice extends React.Component {
             modal = null;
         }
 
+        let moreButton;
+        if(this.props.more){
+            moreButton = (
+                <Button  content={'更多'}  style={{float: 'right'}} onClick={this.handleMoreclick}/>
+            );
+        }else{
+            moreButton = null;
+        }
+
         let mainBody;
         if(this.props.devicePage !== 'check'){
             mainBody = (
@@ -68,9 +93,10 @@ export class ProjectDevice extends React.Component {
                     <table className="ui fixed single line celled table">
                         <thead>
                         <tr>
+                            <th>设备ID</th>
                             <th>设备名</th>
                             <th>状态</th>
-                            <th>归还</th>
+                            <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -78,8 +104,7 @@ export class ProjectDevice extends React.Component {
                         </tbody>
                     </table>
 
-                    <Button  content={'登记设备'} onClick={this.props.startTenancying}/>
-                    <Button  content={'去审核'}  style={{float: 'right'}} onClick={this.props.startChecking}/>
+                    {moreButton}
                 </div>
             );
         }else{
@@ -114,6 +139,8 @@ const mapStateToProps = (state, ownProps) => ({
     devices: state._projectDevice.devices,
     devicePage: state._projectDevice.devicePage,
     deviceModal: state._projectDevice.deviceModal,
+    currentPage: state._projectDevice.currentPage,
+    more: state._projectDevice.more
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -125,6 +152,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     startReturning: (deviceId) => {
         dispatch(startReturning(deviceId))
+    },
+    changeCurrentDevicePage: (currentPage) => {
+        dispatch(changeCurrentDevicePage(currentPage))
+    },
+    getDevices: (currentPage) => {
+        dispatch(getDevices(currentPage));
     }
 });
 

@@ -31,7 +31,8 @@
     "crypto-js": "^4.0.0",
     "react-cookies": "^0.1.1",
     "react-csv-reader": "^3.0.4",
-    "react-csv": "^2.0.1"
+    "react-csv": "^2.0.1",
+    "react-files": "^2.4.8"
   },
   "scripts": {
     "start": "react-scripts start",
