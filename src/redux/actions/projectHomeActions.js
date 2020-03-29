@@ -13,7 +13,8 @@ import {
 } from "./actionTypes";
 import history from '../../history';
 import {BASE_URL, PAGE_SIZE} from "../../constants";
-import {formFailed} from "./userActions";
+import {formFailed, formSuccess} from "./userActions";
+import {updateMember} from "./projectMemberActions";
 
 export function changeKeyword(keyword){
     return {
@@ -100,7 +101,7 @@ export function searchProject(keyword, currentPage){
     }
 }
 
-export function projectSetup(projectId, projectName, customer, startTime, endTime, milestone, mainTech, businessField, mainFunction) {
+export function projectSetup(userId, projectId, projectName, customer, startTime, endTime, milestone, mainTech, businessField, mainFunction) {
 
     let projectSetupInfo = {
         project_id: projectId,
@@ -126,6 +127,8 @@ export function projectSetup(projectId, projectName, customer, startTime, endTim
         ).then(data => {
             if(data.status === 'SUCCESS'){
                 history.push('/project');
+                dispatch(formSuccess('setup'));
+                dispatch(updateMember(projectId, [{user_id: userId, project_role_id: '294226508209937573', superior_id: userId}]));
                 dispatch(changeProjectPage(1));
                 dispatch(getRelativeProjects(1));
             }else{

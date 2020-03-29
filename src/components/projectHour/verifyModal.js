@@ -3,10 +3,11 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon} from "semantic-ui-react";
+import {Button, Container, Icon, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {cancelHourModal, changeVerifyState, judgeWorkingHour} from "../../redux/actions";
 import Radio from "semantic-ui-react/dist/commonjs/addons/Radio";
+import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -23,7 +24,11 @@ export class VerifyModal extends React.Component {
         verifyState: PropTypes.string,
         cancelHourModal: PropTypes.func,
         judgeWorkingHour: PropTypes.func,
-        changeVerifyState: PropTypes.func
+        changeVerifyState: PropTypes.func,
+        failed: PropTypes.string,
+        successful: PropTypes.string,
+        closeFailed: PropTypes.func,
+        closeSuccess: PropTypes.func
     };
 
     constructor(props) {
@@ -39,6 +44,19 @@ export class VerifyModal extends React.Component {
     }
 
     render() {
+
+        let updateFailedMessage;
+        if(this.props.failed === 'verifyWorkHour'){
+            updateFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            updateFailedMessage = null;
+        }
 
         return (
             <div className="ui active modal">
@@ -62,6 +80,7 @@ export class VerifyModal extends React.Component {
                             onChange={this.handleChange}
                         />
                     </div>
+                    {updateFailedMessage}
                 </div>
                 <div className="actions">
                     <div className="ui black deny button" onClick={this.props.cancelHourModal}>
@@ -80,7 +99,9 @@ export class VerifyModal extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
     projectId: state._projectDetail.projectId,
     verifyState: state._projectHour.verifyState,
-    currentWorkingHourId: state._projectHour.currentWorkingHourId
+    currentWorkingHourId: state._projectHour.currentWorkingHourId,
+    failed: state._userReducer.failed,
+    successful: state._userReducer.succesful
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -92,6 +113,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     changeVerifyState: (verifyState) => {
         dispatch(changeVerifyState(verifyState));
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
+    },
+    closeSuccess: () => {
+        dispatch(closeSuccess())
     }
 });
 

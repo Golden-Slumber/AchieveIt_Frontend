@@ -3,7 +3,7 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon} from "semantic-ui-react";
+import {Button, Container, Icon, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
     changeUserId, checkGlobalRole, checkProjectRole,
@@ -15,6 +15,7 @@ import CreateModal from "./createModal";
 import ModifyModal from "./modifyModal";
 import DeleteModal from "./deleteModal";
 import {getPersonnel} from "../../redux/actions/dependencyActions";
+import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -35,7 +36,11 @@ export class ProjectMemberManage extends React.Component {
         startModifying: PropTypes.func,
         startDeleting: PropTypes.func,
         updateMember: PropTypes.func,
-        getPersonnel: PropTypes.func
+        getPersonnel: PropTypes.func,
+        failed: PropTypes.string,
+        successful: PropTypes.string,
+        closeFailed: PropTypes.func,
+        closeSuccess: PropTypes.func
     };
 
     constructor(props) {
@@ -109,11 +114,39 @@ export class ProjectMemberManage extends React.Component {
             deleteModal = (<DeleteModal/>);
         }
 
+        let updateSuccessMessage;
+        if(this.props.successful === 'updatePermission'){
+            updateSuccessMessage = (
+                <Message positive={true}>
+                    <i className={'close icon'} onClick={this.props.closeSuccess}/>
+                    <div className={'header'}>更新已完成</div>
+                    <p>人员权限的更新完成了。</p>
+                </Message>
+            );
+        }else{
+            updateSuccessMessage = null;
+        }
+
+        let updateFailedMessage;
+        if(this.props.failed === 'updateMember'){
+            updateFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            updateFailedMessage = null;
+        }
+
         return (
             <div>
                 {createModal}
                 {modifyModal}
                 {deleteModal}
+                {updateSuccessMessage}
+                {updateFailedMessage}
                 <table className="ui fixed single line celled table">
                     <thead>
                     <tr>
@@ -139,7 +172,9 @@ const mapStateToProps = (state, ownProps) => ({
     members: state._projectMember.members,
     manageState: state._projectMember.manageState,
     globalRole: state._userReducer.globalRole,
-    projectId: state._projectDetail.projectId
+    projectId: state._projectDetail.projectId,
+    failed: state._userReducer.failed,
+    successful: state._userReducer.succesful,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -160,6 +195,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     getPersonnel: () => {
         dispatch(getPersonnel());
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
+    },
+    closeSuccess: () => {
+        dispatch(closeSuccess())
     }
 });
 

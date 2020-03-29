@@ -1,14 +1,15 @@
 import {
-    CHANGE_CURRENTDEVICEPAGE,
+    CHANGE_CURRENTDEVICEPAGE, CHANGE_CURRENTTIME,
     CHANGE_DEVICEMANAGER,
     CHANGE_DEVICEMODAL,
-    CHANGE_DEVICEPAGE, CHANGE_MOREDEVICE, CHANGE_RETURNTIME, GET_DEVICE,
+    CHANGE_DEVICEPAGE, CHANGE_DEVICESTATE, CHANGE_MOREDEVICE, CHANGE_RETURNTIME, CHANGE_VERIFYSTATE, GET_DEVICE,
     RETURN_DEVICE,
-    SET_DEVICEID,
+    SET_DEVICEID, SET_DEVICES,
     TENANCY_DEVICE,
     VERIFY_DEVICE
 } from "./actionTypes";
 import {BASE_URL, PAGE_SIZE} from "../../constants";
+import {formFailed} from "./userActions";
 
 export function changeMoreDevice(more) {
     return {
@@ -24,31 +25,6 @@ export function changeCurrentDevicePage(currentPage){
     }
 }
 
-function getDeviceDetail(device_id){
-    let result = null;
-    fetch(BASE_URL+'/project/device/'+device_id, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-    }).then(res1 => res1.json()
-    ).then(data1 => {
-        if(data1 === 'SUCCESS'){
-            result = {
-                deviceId: device_id,
-                deviceName: data1.result.device_name,
-                deviceStatus: data1.result.device_status
-            }
-        }else{
-            console.log(data1.status);
-        }
-    }).catch(error1 => {
-        console.log(error1);
-    });
-    return result;
-}
-
 export function getDevices(currentPage){
     return async (dispatch) => {
         await fetch(BASE_URL+'/project/device', {
@@ -61,26 +37,21 @@ export function getDevices(currentPage){
         }).then(res => res.json()
         ).then(data => {
             if(data.status === 'SUCCESS'){
-                let arr = data.result.device_id;
-                let devices = [];
-                for(let i=0; i<arr.length; i++){
-                   let device = getDeviceDetail(arr[i].device_id);
-                   if(device!==null)
-                       devices.push(device);
-                }
-                console.log('devices'+devices);
-                dispatch({
-                    type: GET_DEVICE,
-                    payload: devices
+                let arr = data.result.devices.map((item, index) => {
+                    return {deviceId: item.device_id, deviceName: item.device_name, deviceStatus: item.device_status}
                 })
                 dispatch({
-                    type: CHANGE_CURRENTDEVICEPAGE,
-                    payload: devices.length>=PAGE_SIZE
+                    type: GET_DEVICE,
+                    payload: arr
+                })
+                dispatch({
+                    type: CHANGE_MOREDEVICE,
+                    payload: arr.length >= PAGE_SIZE
                 })
             }else{
                 console.log(data.status);
             }
-        }).then(error => {
+        }).catch(error => {
             console.log(error);
         })
     }
@@ -107,10 +78,16 @@ export function cancelDeviceModal(){
     }
 }
 
-export function startTenancying(){
-    return {
-        type: CHANGE_DEVICEMODAL,
-        payload: 'tenancy'
+export function startTenancying(deviceId){
+    return async (dispatch) => {
+        dispatch({
+            type: SET_DEVICEID,
+            payload: deviceId
+        });
+        dispatch({
+            type: CHANGE_DEVICEMODAL,
+            payload: 'tenancy'
+        });
     }
 }
 
@@ -140,46 +117,102 @@ export function startVerifying(deviceId){
     }
 }
 
-export function tenancyDevice(deviceId, returnTime, deviceManager){
+export function tenancyDevice(deviceId, projectId, currentTime, returnTime, deviceManager){
     let newDevice = {
-        deviceId: deviceId,
-        deviceStatus: returnTime+deviceManager
+        referred_device_id:deviceId,
+        referred_project_id:projectId,
+        tenancy_time:currentTime,
+        scheduled_return_time:returnTime,
+        referred_device_manager_id:deviceManager
     }
 
     return async (dispatch) => {
-        dispatch({
-            type: CHANGE_DEVICEMODAL,
-            payload: ''
-        });
-        dispatch({
-            type: TENANCY_DEVICE,
-            payload: newDevice
+        await fetch(BASE_URL+'/project/device/tenancy', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(newDevice)
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch({
+                    type: CHANGE_DEVICEMODAL,
+                    payload: ''
+                });
+                dispatch(changeCurrentDevicePage(1));
+                dispatch(getDevices(1));
+            }else{
+                console.log(data.status);
+                dispatch(formFailed('tenancyDevice'));
+            }
+        }).catch(error => {
+            console.log(error);
+            dispatch(formFailed('tenancyDevice'));
         })
     }
 }
 
-export function returnDevice(deviceId){
+export function returnDevice(projectId, deviceId){
     return async (dispatch) => {
-        dispatch({
-            type: CHANGE_DEVICEMODAL,
-            payload: ''
-        });
-        dispatch({
-            type: RETURN_DEVICE,
-            payload: deviceId
+        await fetch(BASE_URL+'/project/device/'+deviceId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({project_id: projectId, device_status: 'ToBeChecked'})
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch({
+                    type: CHANGE_DEVICEMODAL,
+                    payload: ''
+                });
+                dispatch(changeCurrentDevicePage(1));
+                dispatch(getDevices(1));
+            }else {
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
         })
     }
 }
 
-export function verifyDevice(deviceId){
+export function verifyDevice(deviceId, currentTime, manager, verifyState){
+
+    let content = {
+        referred_device_id: deviceId,
+        examination_time: currentTime,
+        referred_test_id: manager,
+        test_result: verifyState
+    }
     return async (dispatch) => {
-        dispatch({
-            type: CHANGE_DEVICEMODAL,
-            payload: ''
-        });
-        dispatch({
-            type: VERIFY_DEVICE,
-            payload: deviceId
+        await fetch(BASE_URL+'/project/device/check', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(content)
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch({
+                    type: CHANGE_DEVICEMODAL,
+                    payload: ''
+                });
+                dispatch(changeCurrentDevicePage(1));
+                dispatch(getDevices(1));
+            }else{
+                console.log(data.status);
+                dispatch(formFailed('verifyDevice'));
+            }
+        }).catch(error => {
+            console.log(error);
+            dispatch(formFailed('verifyDevice'));
         })
     }
 }
@@ -202,5 +235,19 @@ export function changeDeviceManager(deviceManager){
     return {
         type: CHANGE_DEVICEMANAGER,
         payload:deviceManager
+    }
+}
+
+export function changeCurrentTime(currentTime){
+    return {
+        type: CHANGE_CURRENTTIME,
+        payload: currentTime
+    }
+}
+
+export function changeDeviceVerifyState(verifyState){
+    return {
+        type: CHANGE_DEVICESTATE,
+        payload: verifyState
     }
 }

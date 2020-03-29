@@ -8,6 +8,7 @@ import {
     SET_FUNCTIONSUPERIOR, SET_SUPERIORFUNCTIONS, UPDATE_FUNCTION
 } from "./actionTypes";
 import {BASE_URL} from "../../constants";
+import {formFailed} from "./userActions";
 
 export function getProjectFunction(projectId){
     return async (dispatch) => {
@@ -263,9 +264,11 @@ export function updateFunction(projectId, firstFunctions, secondFunctions){
                 dispatch(getDownloadData(projectId));
             }else{
                 console.log(data.status);
+                dispatch(formFailed('updateFunction'));
             }
         }).catch(error => {
             console.log(error);
+            dispatch(formFailed('updateFunction'));
         });
     }
 }

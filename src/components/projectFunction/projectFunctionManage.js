@@ -3,7 +3,7 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon} from "semantic-ui-react";
+import {Button, Container, Icon, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import CreateModal from "./createModal";
 import ModifyModal from "./modifyModal";
@@ -16,6 +16,7 @@ import {
     setSuperiorFunctionOptions, startUploading
 } from "../../redux/actions/projectFunctionActions";
 import UploadForm from "./uploadForm";
+import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -38,6 +39,10 @@ export class ProjectFunctionManage extends React.Component {
         updateFunction: PropTypes.func,
         setSuperiorFunctionOptions: PropTypes.func,
         startUpload: PropTypes.func,
+        failed: PropTypes.string,
+        successful: PropTypes.string,
+        closeFailed: PropTypes.func,
+        closeSuccess: PropTypes.func
     };
 
     constructor(props) {
@@ -118,6 +123,19 @@ export class ProjectFunctionManage extends React.Component {
             deleteModal = (<DeleteModal/>);
         }
 
+        let updateFailedMessage;
+        if(this.props.failed === 'updateFunction'){
+            updateFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            updateFailedMessage = null;
+        }
+
         return (
             <div>
                 {createModal}
@@ -158,6 +176,7 @@ export class ProjectFunctionManage extends React.Component {
                         </div>
                     </div>
                 </form>
+                {updateFailedMessage}
                 <Button content={'创建新功能'} onClick={this.handleCreateClick}/>
                 <Button icon='upload' onClick={this.handleUploadClick}/>
                 <Button content={'完成'} onClick={this.handleFinishClick} style={{float: 'right'}}/>
@@ -171,7 +190,9 @@ const mapStateToProps = (state, ownProps) => ({
     firstFunctions: state._projectFunction.firstFunctions,
     secondFunctions: state._projectFunction.secondFunctions,
     manageState: state._projectFunction.manageState,
-    isUploading: state._projectFunction.isUploading
+    isUploading: state._projectFunction.isUploading,
+    failed: state._userReducer.failed,
+    successful: state._userReducer.succesful,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -192,6 +213,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     startUpload: () => {
         dispatch(startUploading());
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
+    },
+    closeSuccess: () => {
+        dispatch(closeSuccess())
     }
 });
 

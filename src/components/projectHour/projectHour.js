@@ -3,7 +3,7 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon} from "semantic-ui-react";
+import {Button, Container, Icon, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import ProjectHourManage from "./projectHourManage";
 import ProjectHourVerify from "./projectHourVerify";
@@ -15,6 +15,7 @@ import {
     startVerifying
 } from "../../redux/actions/projectHourActions";
 import ProjectMenu from "../projectMenu/projectMenu";
+import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -32,7 +33,11 @@ export class ProjectHour extends React.Component {
         startVerifying: PropTypes.func,
         setFunctionHourOptions: PropTypes.func,
         setActivityOptions: PropTypes.func,
-        getVerifyHours: PropTypes.func
+        getVerifyHours: PropTypes.func,
+        failed: PropTypes.string,
+        successful: PropTypes.string,
+        closeFailed: PropTypes.func,
+        closeSuccess: PropTypes.func,
     };
 
     constructor(props) {
@@ -62,6 +67,19 @@ export class ProjectHour extends React.Component {
             );
         });
 
+        let getHoursFailedMessage;
+        if(this.props.failed === 'getHoursFailed'){
+            getHoursFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>或许您并没有足够的权限。</p>
+                </Message>
+            );
+        }else{
+            getHoursFailedMessage = null;
+        }
+
         let mainBody;
         if(this.props.hourPageState === 'manage'){
             mainBody = (
@@ -88,6 +106,7 @@ export class ProjectHour extends React.Component {
                         </tbody>
                     </table>
 
+                    {getHoursFailedMessage}
                     <Button  content={'管理工时记录'} onClick={this.handleManageClick}/>
                     <Button  content={'去审核'}  onClick={this.handleVerifyClick} style={{float: 'right'}}/>
                 </div>
@@ -119,6 +138,8 @@ const mapStateToProps = (state, ownProps) => ({
     projectId: state._projectDetail.projectId,
     workingHours: state._projectHour.workingHours,
     hourPageState: state._projectHour.hourPageState,
+    failed: state._userReducer.failed,
+    successful: state._userReducer.succesful,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -136,6 +157,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     getVerifyHours: (projectId) => {
         dispatch(getVerifyHours(projectId));
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
+    },
+    closeSuccess: () => {
+        dispatch(closeSuccess())
     }
 });
 

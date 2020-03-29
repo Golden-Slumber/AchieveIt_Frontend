@@ -3,9 +3,10 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon, Dropdown} from "semantic-ui-react";
+import {Button, Container, Icon, Dropdown, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {cancelHourModal, createWorkingHour, changeActivity, changeFunctionType, changeWorkEndTime, changeWorkStartTime} from "../../redux/actions/projectHourActions";
+import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -30,7 +31,11 @@ export class CreateModal extends React.Component {
         changeWorkEndTime: PropTypes.func,
         changeWorkStartTime: PropTypes.func,
         createWorkingHour: PropTypes.func,
-        cancelHourModal: PropTypes.func
+        cancelHourModal: PropTypes.func,
+        failed: PropTypes.string,
+        successful: PropTypes.string,
+        closeFailed: PropTypes.func,
+        closeSuccess: PropTypes.func
     };
 
     constructor(props) {
@@ -42,6 +47,19 @@ export class CreateModal extends React.Component {
     }
 
     render() {
+
+        let updateFailedMessage;
+        if(this.props.failed === 'createWorkHour'){
+            updateFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            updateFailedMessage = null;
+        }
 
         return (
 
@@ -85,6 +103,7 @@ export class CreateModal extends React.Component {
                                        onChange={this.props.changeWorkEndTime}/>
                             </div>
                         </form>
+                        {updateFailedMessage}
                     </div>
                 </div>
                 <div className="actions">
@@ -110,7 +129,9 @@ const mapStateToProps = (state, ownProps) => ({
     currentStartTime: state._projectHour.currentStartTime,
     currentEndTime: state._projectHour.currentEndTime,
     functionHourOptions: state._projectHour.functionHourOptions,
-    activityOptions: state._projectHour.activityOptions
+    activityOptions: state._projectHour.activityOptions,
+    failed: state._userReducer.failed,
+    successful: state._userReducer.succesful,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -131,6 +152,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     cancelHourModal: () => {
         dispatch(cancelHourModal());
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
+    },
+    closeSuccess: () => {
+        dispatch(closeSuccess())
     }
 });
 

@@ -26,6 +26,7 @@ const globalStyles = {
 export class SetUp extends React.Component {
 
     static propTypes = {
+        user_id: PropTypes.string,
         projectId: PropTypes.string,
         projectName: PropTypes.string,
         customer: PropTypes.string,
@@ -53,7 +54,7 @@ export class SetUp extends React.Component {
     };
 
     handleSetupClick = () => {
-        this.props.projectSetup(this.props.projectId, this.props.projectName, this.props.customer, this.props.startTime, this.props.endTime, this.props.milestone, this.props.mainTech, this.props.businessField, this.props.mainFunction);
+        this.props.projectSetup(this.props.user_id, this.props.projectId, this.props.projectName, this.props.customer, this.props.startTime, this.props.endTime, this.props.milestone, this.props.mainTech, this.props.businessField, this.props.mainFunction);
     }
 
     render() {
@@ -149,6 +150,7 @@ export class SetUp extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
+    user_id: state._userReducer.user_id,
     projectId: state._projectHome.projectSetupInfo.projectId,
     projectName: state._projectHome.projectSetupInfo.projectName,
     customer: state._projectHome.projectSetupInfo.customer,
@@ -165,8 +167,8 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    projectSetup: (projectId, projectName, customer, startTime, endTime, milestone, mainTech, businessField, mainFunction) => {
-        dispatch(projectSetup(projectId, projectName, customer, startTime, endTime, milestone, mainTech, businessField, mainFunction));
+    projectSetup: (userId, projectId, projectName, customer, startTime, endTime, milestone, mainTech, businessField, mainFunction) => {
+        dispatch(projectSetup(userId, projectId, projectName, customer, startTime, endTime, milestone, mainTech, businessField, mainFunction));
     },
     changeProjectId: (event, data) => {
         dispatch(changeProjectId(data.value))

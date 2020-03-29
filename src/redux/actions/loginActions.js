@@ -8,7 +8,7 @@ import {
     LOGIN_SUCCESS,
     TIMELINE_INIT,
     USERID_SET,
-    CLOSE_ILLEGAL_ACCESS, SWITCH_HOME, CHANGE_FAILEDSTATE
+    CLOSE_ILLEGAL_ACCESS, SWITCH_HOME, CHANGE_FAILEDSTATE, SET_USERID
 } from "./actionTypes";
 import {switchHome, switchIndex} from "./pageSwitchActions";
 import {BASE_URL} from "../../constants";
@@ -66,15 +66,14 @@ export function login(password, username) {
             console.log(data);
             if (data.status === 'SUCCESS') {
                 console.log(data.result.JWT);
-                // let date = new Date();
-                // date.setTime(date.getTime()+(5*60*60*1000));
-                // document.cookie = "JWT = " + data.result.JWT + "; expires = " +date.toUTCString();
-                // cookie.save('JWT', data.result.JWT, {path: '/'});
                 history.push('/project');
-                // dispatch(getRelativeProjects());
                 dispatch({
                     type: LOGIN_SUCCESS
                 });
+                dispatch({
+                    type: SET_USERID,
+                    payload: data.result.user_id
+                })
                 dispatch(setUserName(username));
                 dispatch(setGlobalRole());
             } else {

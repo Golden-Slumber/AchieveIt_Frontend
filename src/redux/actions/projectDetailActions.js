@@ -1,5 +1,6 @@
 import {
-    CHANGE_MODIFYSTATE,
+    CHANGE_CHOICE,
+    CHANGE_MODIFYSTATE, CHANGE_PROJECTSTATE, CHANGE_PUSHSTATE,
     MODIFY_BUNIESSFIELD,
     MODIFY_CUSTOMER,
     MODIFY_ENDTIME, MODIFY_MAINFUNCTION,
@@ -161,8 +162,54 @@ export function cancelModify(projectId){
     }
 }
 
-export function pushProject(projectId){
-    // return async (dispatch) => {
-    //     dispatch
-    // }
+export function startPushing(){
+    return {
+        type: CHANGE_PUSHSTATE,
+        payload: true
+    }
+}
+
+export function cancelPushing(){
+    return {
+        type: CHANGE_PUSHSTATE,
+        payload: false
+    }
+}
+
+export function pushProject(projectId, projectStatus){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/status/'+projectId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({status: projectStatus})
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch(cancelPushing());
+            }else{
+                console.log(data.status);
+                dispatch(formFailed('push'));
+            }
+        }).catch(error => {
+            console.log(error);
+            dispatch(formFailed('push'));
+        })
+    }
+}
+
+export function setProjectState(projectState){
+    return {
+        type: CHANGE_PROJECTSTATE,
+        payload: projectState
+    }
+}
+
+export function changeChoice(choice){
+    return {
+        type: CHANGE_CHOICE,
+        payload: choice
+    }
 }

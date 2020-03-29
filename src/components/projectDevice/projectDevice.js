@@ -9,13 +9,14 @@ import {
     changeCurrentDevicePage, getDevices,
     startChecking,
     startReturning,
-    startTenancying
+    startTenancying, startVerifying
 } from "../../redux/actions/projectDeviceActions";
 import TenancyModal from "./tenancyModal";
 import ReturnModal from "./returnModal";
 import ProjectDeviceCheck from "./projectDeviceCheck";
 import ProjectMenu from "../projectMenu/projectMenu";
 import currentPage from "../../redux/reducers/currentPageReducer";
+import VerifyModal from "../projectHour/verifyModal";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -35,17 +36,24 @@ export class ProjectDevice extends React.Component {
         startChecking: PropTypes.func,
         startTenancying: PropTypes.func,
         startReturning: PropTypes.func,
+        startVerifying: PropTypes.func,
         changeCurrentDevicePage: PropTypes.func,
         getDevices: PropTypes.func
     };
 
-    handleReturnClick = (deviceId) => {
-        this.props.startReturning(deviceId);
-    }
-
     handleMoreclick = () => {
         this.props.changeCurrentDevicePage(this.props.currentPage+1);
         this.props.getDevices(this.props.currentPage);
+    }
+
+    handleOperationClick = (deviceId, deviceStatus) => {
+        if(deviceStatus === 'Available'){
+            this.props.startTenancying(deviceId);
+        }else if(deviceStatus === 'Maintaining'){
+            this.props.startReturning(deviceId);
+        }else if(deviceStatus === 'ToBeChecked'){
+            this.props.startVerifying(deviceId);
+        }
     }
 
     render() {
@@ -57,7 +65,7 @@ export class ProjectDevice extends React.Component {
                     <td>{item.deviceName}</td>
                     <td>{item.deviceStatus}</td>
                     <td><Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
-                        this.handleReturnClick(item.deviceId);
+                        this.handleOperationClick(item.deviceId, item.deviceStatus);
                     }}/></td>
                 </tr>
             );
@@ -72,6 +80,8 @@ export class ProjectDevice extends React.Component {
             modal = (
                 <ReturnModal />
             );
+        }else if(this.props.deviceModal === 'verify'){
+            modal = <VerifyModal />;
         }else{
             modal = null;
         }
@@ -147,8 +157,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     startChecking: () => {
         dispatch(startChecking())
     },
-    startTenancying: () => {
-        dispatch(startTenancying())
+    startTenancying: (deviceId) => {
+        dispatch(startTenancying(deviceId))
     },
     startReturning: (deviceId) => {
         dispatch(startReturning(deviceId))
@@ -158,6 +168,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     getDevices: (currentPage) => {
         dispatch(getDevices(currentPage));
+    },
+    startVerifying: (deviceId) => {
+        dispatch(startVerifying(deviceId));
     }
 });
 

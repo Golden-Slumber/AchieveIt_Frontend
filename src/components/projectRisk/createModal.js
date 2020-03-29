@@ -3,7 +3,7 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon, Dropdown} from "semantic-ui-react";
+import {Button, Container, Icon, Dropdown, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
     cancelCreating,
@@ -13,6 +13,7 @@ import {
     changeRiskLevel, changeRiskPerson, changeRiskStatus,
     changeRiskType, createRisk
 } from "../../redux/actions/projectRiskActions";
+import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -22,14 +23,19 @@ const globalStyles = {
 };
 
 const options = [
-    {key: '1', value: '2', text: '3'},
-    {key: '4', value: '5', text: '6'},
-    {key: '7', value: '8', text: '9'}
+    {key: 'PS', value: 'PS', text: 'PS'},
+    {key: 'PD', value: 'PD', text: 'PD'},
+    {key: 'ST', value: 'ST', text: 'ST'},
+    {key: 'CU', value: 'CU', text: 'CU'},
+    {key: 'DE', value: 'DE', text: 'DE'},
+    {key: 'TE', value: 'TE', text: 'TE'},
+    {key: 'BU', value: 'BU', text: 'BU'}
 ];
 
 export class CreateModal extends React.Component {
 
     static propTypes = {
+        projectId: PropTypes.string,
         currentType: PropTypes.string,
         currentDescription: PropTypes.string,
         currentLevel: PropTypes.string,
@@ -37,7 +43,8 @@ export class CreateModal extends React.Component {
         currentCountermeasure: PropTypes.string,
         currentStatus: PropTypes.string,
         currentFrequency: PropTypes.string,
-        currentResponsiblePerson: PropTypes.string,
+        membersOptions: PropTypes.array,
+        currentResponsiblePerson: PropTypes.array,
         changeRiskType: PropTypes.func,
         changeRiskDescription: PropTypes.func,
         changeRiskLevel: PropTypes.func,
@@ -47,7 +54,11 @@ export class CreateModal extends React.Component {
         changeRiskFrequency: PropTypes.func,
         changeRiskPerson: PropTypes.func,
         createRisk: PropTypes.func,
-        cancelCreating: PropTypes.func
+        cancelCreating: PropTypes.func,
+        failed: PropTypes.string,
+        successful: PropTypes.string,
+        closeFailed: PropTypes.func,
+        closeSuccess: PropTypes.func
     };
 
     constructor(props) {
@@ -55,11 +66,24 @@ export class CreateModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.createRisk(this.props.currentType, this.props.currentDescription, this.props.currentLevel, this.props.currentImpact,
+        this.props.createRisk(this.props.projectId, this.props.currentType, this.props.currentDescription, this.props.currentLevel, this.props.currentImpact,
             this.props.currentCountermeasure, this.props.currentStatus, this.props.currentFrequency, this.props.currentResponsiblePerson);
     }
 
     render() {
+
+        let updateFailedMessage;
+        if(this.props.failed === 'createRisk'){
+            updateFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            updateFailedMessage = null;
+        }
 
         return (
 
@@ -82,7 +106,7 @@ export class CreateModal extends React.Component {
                                 />
                             </div>
                             <div className="field">
-                                <label>风向描述</label>
+                                <label>风险描述</label>
                                 <input type="text" placeholder="描述" onChange={this.props.changeRiskDescription}/>
                             </div>
                             <div className="field">
@@ -110,13 +134,15 @@ export class CreateModal extends React.Component {
                                 <Dropdown
                                     placeholder='选择相关者'
                                     fluid
+                                    multiple
                                     search
                                     selection
-                                    options={options}
+                                    options={this.props.membersOptions}
                                     onChange={this.props.changeRiskPerson}
                                 />
                             </div>
                         </form>
+                        {updateFailedMessage}
                     </div>
                 </div>
                 <div className="actions">
@@ -135,6 +161,7 @@ export class CreateModal extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
+    projectId: state._projectDetail.projectId,
     currentType: state._projectRisk.currentType,
     currentDescription: state._projectRisk.currentDescription,
     currentLevel: state._projectRisk.currentLevel,
@@ -143,6 +170,9 @@ const mapStateToProps = (state, ownProps) => ({
     currentStatus: state._projectRisk.currentStatus,
     currentFrequency: state._projectRisk.currentFrequency,
     currentResponsiblePerson: state._projectRisk.currentResponsiblePerson,
+    membersOptions: state._projectRisk.membersOptions,
+    failed: state._userReducer.failed,
+    successful: state._userReducer.succesful
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -167,14 +197,20 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     changeRiskFrequency: (e) => {
         dispatch(changeRiskFrequency(e.target.value))
     },
-    changeRiskPerson: (e, data) => {
-        dispatch(changeRiskPerson(data.value))
+    changeRiskPerson: (e, {value}) => {
+        dispatch(changeRiskPerson(value))
     },
-    createRisk: (type, description, level, impact, counter, status, frequency, person) => {
-        dispatch(createRisk(type, description, level, impact, counter, status, frequency, person))
+    createRisk: (projectId, type, description, level, impact, counter, status, frequency, person) => {
+        dispatch(createRisk(projectId, type, description, level, impact, counter, status, frequency, person))
     },
     cancelCreating: () => {
         dispatch(cancelCreating())
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
+    },
+    closeSuccess: () => {
+        dispatch(closeSuccess())
     }
 });
 

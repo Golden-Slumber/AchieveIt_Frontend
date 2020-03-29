@@ -3,18 +3,19 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon} from "semantic-ui-react";
+import {Button, Container, Icon, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
     changeKeyword,
     changeProjectPage,
     getProjectDetail,
     getRelativeProjects,
-    searchProject
+    searchProject, setProjectState
 } from "../../redux/actions";
 import {setProjectId} from "../../redux/actions";
 import currentPage from "../../redux/reducers/currentPageReducer";
 import {getBusinessFields, getCustomers, getProjectIds} from "../../redux/actions/dependencyActions";
+import {closeFailed} from "../../redux/actions/userActions";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -36,7 +37,10 @@ export class Project extends React.Component{
         changeProjectPage: PropTypes.func,
         getRelativeProjects: PropTypes.func,
         getDependencyInfos: PropTypes.func,
-        getProjectDetail: PropTypes.func
+        getProjectDetail: PropTypes.func,
+        setProjectState: PropTypes.func,
+        failed: PropTypes.string,
+        closeFailed: PropTypes.func
     };
 
     constructor(props) {
@@ -52,9 +56,10 @@ export class Project extends React.Component{
         this.setState({currentKeyWord: this.props.keyword});
     };
 
-    handleProjectClick = (projectId) => {
+    handleProjectClick = (projectId, projectState) => {
         this.props.setProjectId(projectId);
         this.props.getProjectDetail(projectId);
+        this.props.setProjectState(projectState);
     }
 
     handleMoreClick = () => {
@@ -75,7 +80,9 @@ export class Project extends React.Component{
                     <td>{item.name}</td>
                     <td>{item.status}</td>
                     <td>
-                        <Link to={'/projectDetail'} onClick={this.handleProjectClick(item.id)}>
+                        <Link to={'/projectDetail'} onClick={() => {
+                            this.handleProjectClick(item.id, item.status);
+                        }}>
                             <Icon name={"arrow right"} style={{color: '#1BB394'}}/>
                         </Link>
                     </td>
@@ -104,6 +111,19 @@ export class Project extends React.Component{
             setUpButton = null;
         }
 
+        let searchFailMessage;
+        if(this.props.failed === 'search'){
+            searchFailMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            searchFailMessage = null;
+        }
+
         return (
 
             <div>
@@ -119,6 +139,7 @@ export class Project extends React.Component{
 
                             {setUpButton}
                         </Segment>
+                        {searchFailMessage}
                         <table className="ui single line table" style={{margin: '10px, 0px, 0px, 0px'}}>
                             <thead>
                             <tr>
@@ -145,7 +166,8 @@ const mapStateToProps = (state, ownProps) => ({
     keyword: state._projectHome.keyword,
     projects: state._projectHome.projects,
     currentPage: state._projectHome.currentPage,
-    more: state._projectHome.more
+    more: state._projectHome.more,
+    failed: state._userReducer.failed
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -171,6 +193,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     getProjectDetail: (projectId) => {
         dispatch(getProjectDetail(projectId));
+    },
+    setProjectState: (projectState) => {
+        dispatch(setProjectState(projectState))
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
     }
 });
 

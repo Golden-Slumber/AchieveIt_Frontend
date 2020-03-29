@@ -1,4 +1,4 @@
-import {CHANGE_FAILEDSTATE, SET_GLOBALROLE, SET_USERNAME} from "./actionTypes";
+import {CHANGE_FAILEDSTATE, CHNAGE_SUCCESSSTATE, SET_GLOBALROLE, SET_USERNAME} from "./actionTypes";
 import {BASE_URL} from "../../constants";
 import cookie from "react-cookies";
 
@@ -12,6 +12,20 @@ export function formFailed(form){
 export function closeFailed(){
     return {
         type: CHANGE_FAILEDSTATE,
+        payload: ''
+    }
+}
+
+export function formSuccess(form) {
+    return {
+        type: CHNAGE_SUCCESSSTATE,
+        payload: form
+    }
+}
+
+export function closeSuccess(){
+    return {
+        type: CHNAGE_SUCCESSSTATE,
         payload: ''
     }
 }

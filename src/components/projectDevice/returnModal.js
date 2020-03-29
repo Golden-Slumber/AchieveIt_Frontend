@@ -20,15 +20,10 @@ const globalStyles = {
     minHeight: '100em',
 };
 
-const options = [
-    {key: '1', value: '2', text: '3'},
-    {key: '4', value: '5', text: '6'},
-    {key: '7', value: '8', text: '9'}
-];
-
 export class ReturnModal extends React.Component {
 
     static propTypes = {
+        projectId: PropTypes.string,
         currentDeviceId: PropTypes.string,
         returnDevice: PropTypes.func
     };
@@ -38,7 +33,7 @@ export class ReturnModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.returnDevice(this.props.currentDeviceId);
+        this.props.returnDevice(this.props.projectId, this.props.currentDeviceId);
     }
 
     render() {
@@ -74,6 +69,7 @@ export class ReturnModal extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
+    projectId: state._projectDetail.projectId,
     currentDeviceId: state._projectDevice.currentDeviceId,
 });
 

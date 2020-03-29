@@ -5,8 +5,63 @@ import {
     CHANGE_RISKLEVEL,
     CHANGE_RISKMODAL, CHANGE_RISKPERSON, CHANGE_RISKSTATUS, CHANGE_RISKTRACK,
     CHANGE_RISKTYPE,
-    CREATE_RISK
+    CREATE_RISK, GET_PROJECTMEMBERSOPTIONS, GET_RISKS
 } from "./actionTypes";
+import {BASE_URL} from "../../constants";
+import {formFailed} from "./userActions";
+
+export function getRisks(projectId){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/risk/'+projectId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                console.log(data.result);
+                dispatch({
+                    type: GET_RISKS,
+                    payload: data.result
+                })
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+}
+
+export function getProjectMemberOptions(projectId){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/user/projectMember', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({project_id: projectId})
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                let options = data.result.map((item, index) => {
+                    return {key: item.user_id, value: item.user_id, text: item.user_id}
+                });
+                dispatch({
+                    type: GET_PROJECTMEMBERSOPTIONS,
+                    payload: options
+                })
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+}
 
 export function startCreatingRisk(){
     return {
@@ -22,29 +77,43 @@ export function cancelCreating(){
     }
 }
 
-export function createRisk(type, description, level, impact, counter, status, frequency, person){
+export function createRisk(projectId, type, description, level, impact, counter, status, frequency, person){
 
     let newRisk = {
-        riskId: '8',
-        riskType: type,
-        riskDescription: description,
-        riskLevel: level,
-        riskImpact: impact,
-        riskCountermeasure: counter,
-        riskStatus: status,
-        riskFrequency: frequency,
-        responsiblePerson: person
+        risk_type:type,
+        risk_description:description,
+        risk_level:level,
+        risk_impact:impact,
+        risk_countermeasure:counter,
+        risk_status:status,
+        risk_track_frequency:frequency,
+        risk_responsible_person:person
     }
 
     return async (dispatch) => {
-        dispatch({
-            type: CHANGE_RISKMODAL,
-            payload: false
+        await fetch(BASE_URL+'/project/risk/'+projectId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(newRisk)
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch(getRisks(projectId));
+                dispatch({
+                    type: CHANGE_RISKMODAL,
+                    payload: false
+                });
+            }else{
+                console.log(data.status);
+                dispatch(formFailed('createRisk'));
+            }
+        }).catch(error => {
+            console.log(error);
+            dispatch(formFailed('createRisk'));
         });
-        dispatch({
-            type: CREATE_RISK,
-            payload: newRisk
-        })
     }
 }
 

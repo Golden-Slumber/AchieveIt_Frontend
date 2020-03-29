@@ -1,8 +1,8 @@
 import {
-    CHANGE_CURRENTDEVICEPAGE,
+    CHANGE_CURRENTDEVICEPAGE, CHANGE_CURRENTTIME,
     CHANGE_DEVICEMANAGER,
     CHANGE_DEVICEMODAL,
-    CHANGE_DEVICEPAGE,
+    CHANGE_DEVICEPAGE, CHANGE_DEVICESTATE,
     CHANGE_MODIFYSTATE, CHANGE_MOREDEVICE, CHANGE_RETURNTIME, GET_DEVICE,
     MODIFY_BUNIESSFIELD,
     MODIFY_CUSTOMER,
@@ -10,7 +10,7 @@ import {
     MODIFY_MILESTONE,
     MODIFY_PROJECTNAME,
     MODIFY_STARTTIME,
-    PROJECTID_SET, RETURN_DEVICE, SET_DEVICEID, TENANCY_DEVICE, VERIFY_DEVICE
+    PROJECTID_SET, RETURN_DEVICE, SET_DEVICEID, SET_DEVICES, TENANCY_DEVICE, VERIFY_DEVICE
 } from "../actions";
 import currentPage from "./currentPageReducer";
 
@@ -59,6 +59,7 @@ const initialState = {
     devicePage: '',
     deviceModal: '',
     currentDeviceId: '',
+    currentTime: '',
     currentReturnTime: '',
     currentDeviceManager: '',
     verifyState: ''
@@ -68,7 +69,7 @@ export default function projectDevice(state = initialState, action) {
     switch (action.type) {
         case GET_DEVICE:
             let arr;
-            if(currentPage === 1){
+            if(state.currentPage === 1){
                 arr = action.payload
             }else{
                 arr = state.devices.concat(action.payload);
@@ -100,6 +101,10 @@ export default function projectDevice(state = initialState, action) {
             return {...state, currentReturnTime: action.payload};
         case CHANGE_DEVICEMANAGER:
             return {...state, currentDeviceManager: action.payload};
+        case CHANGE_CURRENTTIME:
+            return {...state, currentTime: action.payload}
+        case CHANGE_DEVICESTATE:
+            return {...state, verifyState: action.payload}
         default:
             return state;
     }

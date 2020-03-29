@@ -3,7 +3,7 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon, Dropdown} from "semantic-ui-react";
+import {Button, Container, Icon, Dropdown, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
     cancelManage,
@@ -13,6 +13,7 @@ import {
     changeUserId,
     modifyMember
 } from "../../redux/actions";
+import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -43,7 +44,11 @@ export class ModifyModal extends React.Component {
         currentPermissions: PropTypes.array,
         changePermissions: PropTypes.func,
         modifyMember: PropTypes.func,
-        cancelManage: PropTypes.func
+        cancelManage: PropTypes.func,
+        failed: PropTypes.string,
+        successful: PropTypes.string,
+        closeFailed: PropTypes.func,
+        closeSuccess: PropTypes.func
     };
 
     constructor(props) {
@@ -55,6 +60,19 @@ export class ModifyModal extends React.Component {
     }
 
     render() {
+
+        let modifyFailedMessage;
+        if(this.props.failed === 'updatePermission'){
+            modifyFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            modifyFailedMessage = null;
+        }
 
         return (
 
@@ -81,6 +99,7 @@ export class ModifyModal extends React.Component {
                                 />
                             </div>
                         </form>
+                        {modifyFailedMessage}
                     </div>
                 </div>
                 <div className="actions">
@@ -101,7 +120,9 @@ export class ModifyModal extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
     currentUserId: state._projectMember.currentUserId,
     currentPermissions: state._projectMember.currentPermissions,
-    projectId: state._projectDetail.projectId
+    projectId: state._projectDetail.projectId,
+    failed: state._userReducer.failed,
+    successful: state._userReducer.succesful,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -113,6 +134,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     cancelManage: () => {
         dispatch(cancelManage())
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
+    },
+    closeSuccess: () => {
+        dispatch(closeSuccess())
     }
 });
 

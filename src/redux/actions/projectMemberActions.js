@@ -13,6 +13,7 @@ import {
     UPDATE_MEMBER
 } from "./actionTypes";
 import {BASE_URL} from "../../constants";
+import {formFailed, formSuccess} from "./userActions";
 
 export function getProjectMembers(projectId) {
     return async (dispatch) => {
@@ -157,12 +158,15 @@ export function modifyMember(userId, projectId, permissions){
             if(data.status === 'SUCCESS'){
                 dispatch({
                     type: MODIFY_MEMBER
-                })
+                });
+                dispatch(formSuccess('updatePermission'))
             }else{
                 console.log(data);
+                dispatch(formFailed('updatePermission'));
             }
         }).catch(error => {
             console.log(error);
+            dispatch(formFailed('updatePermission'));
         })
     }
 }
@@ -201,13 +205,15 @@ export function updateMember(projectId, members){
                 dispatch({
                     type: CHANGE_MANAGEMEMBER,
                     payload: false
-                })
+                });
                 dispatch(getProjectMembers(projectId));
             }else{
                 console.log(data.status);
+                dispatch(formFailed('updateMember'));
             }
         }).catch(error => {
             console.log(error);
+            dispatch(formFailed('updateMember'));
         })
     }
 }

@@ -12,6 +12,7 @@ import {
 } from "./actionTypes";
 import {BASE_URL} from "../../constants";
 import {getProjectFunction} from "./projectFunctionActions";
+import {formFailed} from "./userActions";
 
 export function getWorkHours(projectId) {
     return async (dispatch) => {
@@ -30,9 +31,11 @@ export function getWorkHours(projectId) {
                 })
             }else{
                 console.log(data.status);
+                dispatch(formFailed('getHoursFailed'));
             }
         }).catch(error => {
             console.log(error);
+            dispatch(formFailed('getHoursFailed'));
         })
     }
 }
@@ -55,9 +58,11 @@ export function getVerifyHours(projectId) {
                 })
             }else{
                 console.log(data.status);
+                dispatch(formFailed('getHoursFailed'));
             }
         }).catch(error => {
             console.log(error);
+            dispatch(formFailed('getHoursFailed'));
         })
     }
 }
@@ -158,9 +163,11 @@ export function createWorkingHour(projectId, activityType, functionType, startTi
                dispatch(getWorkHours(projectId));
            }else{
                console.log(data.status);
+               dispatch(formFailed('createWorkHour'));
            }
         }).catch(error => {
             console.log(error);
+            dispatch(formFailed('createWorkHour'));
         });
 
     }
@@ -193,9 +200,11 @@ export function modifyWorkingHour(projectId, workingHourId, activityType, functi
                 dispatch(getWorkHours(projectId));
             }else{
                 console.log(data.status);
+                dispatch(formFailed('modifyWorkHour'));
             }
         }).catch(error => {
             console.log(error);
+            dispatch(formFailed('modifyWorkHour'));
         });
     }
 }
@@ -213,16 +222,18 @@ export function judgeWorkingHour(projectId, workingHourId, verifyState) {
         ).then(data => {
             if(data.status === 'SUCCESS'){
                 dispatch(getVerifyHours(projectId));
+                dispatch({
+                    type: CHANGE_HOURMODALSTATE,
+                    payload: ''
+                });
             }else{
                 console.log(data.status);
+                dispatch(formFailed('verifyWorkHour'));
             }
         }).catch(error => {
             console.log(error);
+            dispatch(formFailed('verifyWorkHour'));
         })
-        dispatch({
-            type: CHANGE_HOURMODALSTATE,
-            payload: ''
-        });
     }
 }
 

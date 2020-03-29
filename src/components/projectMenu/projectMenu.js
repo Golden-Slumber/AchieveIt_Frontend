@@ -16,6 +16,8 @@ import {
 import {getProjectDetail, getProjectMembers, getWorkHours} from "../../redux/actions";
 import {getDownloadData, getProjectFunction} from "../../redux/actions/projectFunctionActions";
 import {changeCurrentDevicePage, getDevices} from "../../redux/actions/projectDeviceActions";
+import {getRisks} from "../../redux/actions/projectRiskActions";
+import {getUrl} from "../../redux/actions/projectDefectActions";
 
 
 const globalStyles = {
@@ -49,7 +51,9 @@ export class ProjectMenu extends React.Component {
         getDownloadData: PropTypes.func,
         getWorkHours: PropTypes.func,
         changeCurrentDevicePage: PropTypes.func,
-        getDevices: PropTypes.func
+        getDevices: PropTypes.func,
+        getRisks: PropTypes.func,
+        getUrl: PropTypes.func
     };
 
     handleDetailClick = () => {
@@ -80,11 +84,13 @@ export class ProjectMenu extends React.Component {
     }
 
     handleRiskClick = () => {
-        this.props.switchRisk()
+        this.props.switchRisk();
+        this.props.getRisks(this.props.projectId);
     }
 
     handleDefectClick = () => {
-        this.props.switchDefect()
+        this.props.switchDefect();
+        this.props.getUrl(this.props.projectId);
     }
 
     render() {
@@ -171,6 +177,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     getDevices: (currentPage) => {
         dispatch(getDevices(currentPage));
+    },
+    getRisks: (projectId) => {
+        dispatch(getRisks(projectId));
+    },
+    getUrl: (projectId) => {
+        dispatch(getUrl(projectId));
     }
 });
 

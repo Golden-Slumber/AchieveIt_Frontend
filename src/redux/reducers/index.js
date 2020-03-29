@@ -11,6 +11,7 @@ import projectRisk from "./projectRiskReducer";
 import userReducer from "./userReducer";
 import projectDependency from "./dependencyReducer";
 import projectMenu from "./projectMenuReducer";
+import projectDefect from "./projectDefectReducer";
 
 let rootReducer = combineReducers({
    _currentPage: currentPage,
@@ -24,7 +25,8 @@ let rootReducer = combineReducers({
    _projectRisk: projectRisk,
    _userReducer: userReducer,
    _projectDependency: projectDependency,
-   _projectMenu: projectMenu
+   _projectMenu: projectMenu,
+   _projectDefect: projectDefect
 });
 
 export default rootReducer;

@@ -6,9 +6,10 @@ import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Icon} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import ProjectDetailChange from "./projectDetailChange";
-import {startModifying} from "../../redux/actions";
+import {startModifying, startPushing} from "../../redux/actions";
 import {getBusinessFields, getCustomers} from "../../redux/actions/dependencyActions";
 import ProjectMenu from "../projectMenu/projectMenu";
+import PushModal from "./pushModal";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -30,7 +31,9 @@ export class ProjectDetail extends React.Component {
         businessField: PropTypes.string,
         mainFunction: PropTypes.string,
         isModifying: PropTypes.bool,
-        startModifying: PropTypes.func
+        startModifying: PropTypes.func,
+        isPushing: PropTypes.bool,
+        startPushing: PropTypes.func
     };
 
     constructor(props) {
@@ -50,10 +53,19 @@ export class ProjectDetail extends React.Component {
         let pushButton;
         if(this.props.globalRole !== 'CommonUser' && !this.props.isModifying){
             pushButton = (
-                <Button  content={'推进项目状态'} style={{backgroundColor: '#1BB394', color: '#E5FFFB', float: 'right'}}/>
+                <Button  content={'推进项目状态'} style={{backgroundColor: '#1BB394', color: '#E5FFFB', float: 'right'}} onClick={this.props.startPushing}/>
             );
         }else{
             pushButton = null;
+        }
+
+        let pushModal;
+        if(this.props.isPushing){
+            pushModal = (
+                <PushModal />
+            );
+        }else{
+            pushModal = null;
         }
 
         let mainBody;
@@ -117,7 +129,7 @@ export class ProjectDetail extends React.Component {
 
                         <Segment style={{minHeight: '30em'}}>
                             <ProjectMenu />
-
+                            {pushModal}
                             {mainBody}
                         </Segment>
 
@@ -141,7 +153,8 @@ const mapStateToProps = (state, ownProps) => ({
     mainTech:state._projectDetail.mainTech,
     businessField: state._projectDetail.businessField,
     mainFunction: state._projectDetail.mainFunction,
-    isModifying: state._projectDetail.isModifying
+    isModifying: state._projectDetail.isModifying,
+    isPushing: state._projectDetail.isPushing
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -149,6 +162,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
         dispatch(startModifying());
         dispatch(getCustomers());
         dispatch(getBusinessFields());
+    },
+    startPushing: () => {
+        dispatch(startPushing())
     }
 });
 

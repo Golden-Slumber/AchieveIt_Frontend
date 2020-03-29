@@ -1,8 +1,5 @@
 import {
-    CHANGE_CREATEMEMBER,
-    CHANGE_DELETEMEMBER,
     CHANGE_MANAGEMEMBER,
-    CHANGE_MODIFYMEMBER,
     CHANGE_PERISSIONS, CHANGE_RISKCOUNTER,
     CHANGE_RISKDESCRIPTION,
     CHANGE_RISKIMPACT,
@@ -15,7 +12,7 @@ import {
     CHANGE_USER_ID,
     CREATE_MEMBER,
     CREATE_RISK,
-    DELETE_MEMBER,
+    DELETE_MEMBER, GET_PROJECTMEMBERSOPTIONS, GET_RISKS,
     MODIFY_MANAGESTATE,
     MODIFY_MEMBER,
     UPDATE_MEMBER
@@ -88,11 +85,14 @@ const initialState = {
     currentCountermeasure: '',
     currentStatus: '',
     currentFrequency: '',
-    currentResponsiblePerson: ''
+    currentResponsiblePerson: [],
+    membersOptions: []
 }
 
 export default function projectRisk(state=initialState, action){
     switch (action.type) {
+        case GET_RISKS:
+            return {...state, risks: action.payload};
         case CHANGE_RISKMODAL:
             return {...state, isCreating: action.payload};
         case CREATE_RISK:
@@ -113,6 +113,8 @@ export default function projectRisk(state=initialState, action){
             return {...state, currentFrequency: action.payload};
         case CHANGE_RISKPERSON:
             return {...state, currentResponsiblePerson: action.payload};
+        case GET_PROJECTMEMBERSOPTIONS:
+            return {...state, membersOptions: action.payload};
         default:
             return state;
     }

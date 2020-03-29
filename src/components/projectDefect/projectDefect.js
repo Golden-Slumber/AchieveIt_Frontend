@@ -16,7 +16,8 @@ const globalStyles = {
 export class ProjectDefect extends React.Component {
 
     static propTypes = {
-        projectId: PropTypes.string
+        projectId: PropTypes.string,
+        url: PropTypes.string
     };
 
     constructor(props) {
@@ -44,7 +45,7 @@ export class ProjectDefect extends React.Component {
                         <Segment style={{minHeight: '30em'}}>
                             <ProjectMenu />
 
-                            <h1>URL</h1>
+                            <h1>{this.props.url}</h1>
                         </Segment>
                     </Container>
 
@@ -55,7 +56,8 @@ export class ProjectDefect extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-    projectId: state._projectDetail.projectId
+    projectId: state._projectDetail.projectId,
+    url: state._projectDefect.url
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({});

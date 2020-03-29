@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Icon} from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import {startCreatingRisk} from "../../redux/actions/projectRiskActions";
+import {getProjectMemberOptions, startCreatingRisk} from "../../redux/actions/projectRiskActions";
 import CreateModal from "./createModal";
 import ProjectMenu from "../projectMenu/projectMenu";
 
@@ -21,23 +21,29 @@ export class ProjectRisk extends React.Component {
         projectId: PropTypes.string,
         risks: PropTypes.array,
         isCreating: PropTypes.bool,
-        startCreatingRisk: PropTypes.func
+        startCreatingRisk: PropTypes.func,
+        getProjectMembersOptions: PropTypes.func
     };
+
+    handleCreateClick = () => {
+        this.props.startCreatingRisk();
+        this.props.getProjectMembersOptions(this.props.projectId);
+    }
 
     render() {
 
         let showRisks = this.props.risks.map((item, index) => {
             return (
                 <tr>
-                    <td>{item.riskId}</td>
-                    <td>{item.riskType}</td>
-                    <td>{item.riskDescription}</td>
-                    <td>{item.riskLevel}</td>
-                    <td>{item.riskImpact}</td>
-                    <td>{item.riskCountermeasure}</td>
-                    <td>{item.riskStatus}</td>
-                    <td>{item.riskFrequency}</td>
-                    <td>{item.responsiblePerson}</td>
+                    <td>{item.risk_id}</td>
+                    <td>{item.risk_type}</td>
+                    <td>{item.risk_description}</td>
+                    <td>{item.risk_level}</td>
+                    <td>{item.risk_impact}</td>
+                    <td>{item.risk_countermeasure}</td>
+                    <td>{item.risk_status}</td>
+                    <td>{item.risk_track_frequency}</td>
+                    <td>{item.risk_responsible_person}</td>
                 </tr>
             );
         });
@@ -82,7 +88,7 @@ export class ProjectRisk extends React.Component {
                                 </tbody>
                             </table>
 
-                            <Button  content={'新增风险记录'} onClick={this.props.startCreatingRisk}/>
+                            <Button  content={'新增风险记录'} onClick={this.handleCreateClick}/>
                         </Segment>
                     </Container>
 
@@ -101,6 +107,9 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = (dispatch, ownProps) => ({
     startCreatingRisk: () => {
         dispatch(startCreatingRisk());
+    },
+    getProjectMembersOptions: (projectId) => {
+        dispatch(getProjectMemberOptions(projectId))
     }
 });
 
