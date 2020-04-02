@@ -1,5 +1,6 @@
 import {BASE_URL} from "../../constants";
 import {GET_URL} from "./actionTypes";
+import {formFailed} from "./userActions";
 
 export function getUrl(projectId){
     return async (dispatch) => {
@@ -18,9 +19,11 @@ export function getUrl(projectId){
                 })
             }else{
                 console.log(data.status);
+                dispatch(formFailed('defect'));
             }
         }).catch(error => {
             console.log(error)
+            dispatch(formFailed('defect'));
         })
     }
 }
