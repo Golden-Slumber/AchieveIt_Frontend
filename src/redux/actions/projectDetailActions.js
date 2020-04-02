@@ -11,7 +11,7 @@ import {
 } from "./actionTypes";
 import history from '../../history';
 import {BASE_URL} from "../../constants";
-import {formFailed} from "./userActions";
+import {formFailed, formSuccess} from "./userActions";
 
 export function setProjectId(projectId){
     return {
@@ -192,6 +192,7 @@ export function pushProject(projectId, projectStatus){
                     type: CHANGE_PUSHSTATE,
                     payload: false
                 });
+                dispatch(formSuccess('push'));
             }else{
                 console.log(data.status);
                 dispatch(formFailed('push'));

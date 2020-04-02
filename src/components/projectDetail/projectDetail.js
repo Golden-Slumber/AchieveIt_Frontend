@@ -3,13 +3,14 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon} from "semantic-ui-react";
+import {Button, Container, Icon, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import ProjectDetailChange from "./projectDetailChange";
 import {startModifying, startPushing} from "../../redux/actions";
 import {getBusinessFields, getCustomers} from "../../redux/actions/dependencyActions";
 import ProjectMenu from "../projectMenu/projectMenu";
 import PushModal from "./pushModal";
+import {closeSuccess} from "../../redux/actions/userActions";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -34,15 +35,13 @@ export class ProjectDetail extends React.Component {
         isModifying: PropTypes.bool,
         startModifying: PropTypes.func,
         isPushing: PropTypes.bool,
-        startPushing: PropTypes.func
+        startPushing: PropTypes.func,
+        successful: PropTypes.string,
+        closeSuccess: PropTypes.func
     };
 
     constructor(props) {
         super(props);
-    }
-
-    checkPushButton = () => {
-
     }
 
     render() {
@@ -56,10 +55,28 @@ export class ProjectDetail extends React.Component {
         }
 
         let pushButton;
-        if(this.props.globalRole !== 'CommonUser' && !this.props.isModifying){
-            pushButton = (
-                <Button  content={'推进项目状态'} style={{backgroundColor: '#1BB394', color: '#E5FFFB', float: 'right'}} onClick={this.props.startPushing}/>
-            );
+        if(!this.props.isModifying){
+            if(this.props.globalRole === 'ProjectManager'){
+                if(this.props.projectState !== 'Applied' && this.props.projectState !== 'ReadyArchive' && this.props.projectState !== 'Archived'){
+                    pushButton = (
+                        <Button  content={'推进项目状态'} style={{backgroundColor: '#1BB394', color: '#E5FFFB', float: 'right'}} onClick={this.props.startPushing}/>
+                    );
+                }
+            }else if(this.props.globalRole === 'ProjectSuperior'){
+                if(this.props.projectState === 'Applied'){
+                    pushButton = (
+                        <Button  content={'推进项目状态'} style={{backgroundColor: '#1BB394', color: '#E5FFFB', float: 'right'}} onClick={this.props.startPushing}/>
+                    );
+                }
+            }else if(this.props.globalRole === 'ConfigurationManager'){
+                if(this.props.projectState === 'ReadyArchive'){
+                    pushButton = (
+                        <Button  content={'推进项目状态'} style={{backgroundColor: '#1BB394', color: '#E5FFFB', float: 'right'}} onClick={this.props.startPushing}/>
+                    );
+                }
+            }else{
+                pushButton = null;
+            }
         }else{
             pushButton = null;
         }
@@ -71,6 +88,19 @@ export class ProjectDetail extends React.Component {
             );
         }else{
             pushModal = null;
+        }
+
+        let pushSuccessMessage;
+        if(this.props.successful === 'push'){
+            pushSuccessMessage = (
+                <Message positive={true}>
+                    <i className={'close icon'} onClick={this.props.closeSuccess}/>
+                    <div className={'header'}>推进成功</div>
+                    <p>项目状态已被成功更新。</p>
+                </Message>
+            );
+        }else{
+            pushSuccessMessage = null
         }
 
         let mainBody;
@@ -137,7 +167,7 @@ export class ProjectDetail extends React.Component {
                             {pushModal}
                             {mainBody}
                         </Segment>
-
+                        {pushSuccessMessage}
                         {pushButton}
                     </Container>
 
@@ -160,7 +190,8 @@ const mapStateToProps = (state, ownProps) => ({
     businessField: state._projectDetail.businessField,
     mainFunction: state._projectDetail.mainFunction,
     isModifying: state._projectDetail.isModifying,
-    isPushing: state._projectDetail.isPushing
+    isPushing: state._projectDetail.isPushing,
+    successful: state._userReducer.successful
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -171,6 +202,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     startPushing: () => {
         dispatch(startPushing())
+    },
+    closeSuccess: () => {
+        dispatch(closeSuccess())
     }
 });
 

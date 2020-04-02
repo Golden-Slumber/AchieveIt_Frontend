@@ -16,6 +16,14 @@ import {
 } from "../../redux/actions";
 import {closeFailed} from "../../redux/actions/userActions";
 
+function wait(ms){
+    const start = new Date().getTime();
+    let end = start;
+    while(end < start + ms) {
+        end = new Date().getTime();
+    }
+}
+
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -55,8 +63,11 @@ export class SetUp extends React.Component {
         getRelativeProjects: PropTypes.func
     };
 
+
+
     handleSetupClick = () => {
         this.props.projectSetup(this.props.user_id, this.props.projectId, this.props.projectName, this.props.customer, this.props.startTime, this.props.endTime, this.props.milestone, this.props.mainTech, this.props.businessField, this.props.mainFunction);
+        wait(1000);
         this.props.changeProjectPage(1);
         this.props.getRelativeProjects(1);
     }
