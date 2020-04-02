@@ -188,7 +188,10 @@ export function pushProject(projectId, projectStatus){
         }).then(res => res.json()
         ).then(data => {
             if(data.status === 'SUCCESS'){
-                dispatch(cancelPushing());
+                dispatch({
+                    type: CHANGE_PUSHSTATE,
+                    payload: false
+                });
             }else{
                 console.log(data.status);
                 dispatch(formFailed('push'));

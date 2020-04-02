@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Icon, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import {cancelHourModal, changeVerifyState, judgeWorkingHour} from "../../redux/actions";
+import {cancelHourModal, changeVerifyState, judgeWorkingHour} from "../../redux/actions/projectHourActions";
 import Radio from "semantic-ui-react/dist/commonjs/addons/Radio";
 import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
 

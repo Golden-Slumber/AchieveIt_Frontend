@@ -44,14 +44,14 @@ export class PushModal extends React.Component {
     handleFinishClick = () => {
         let result;
         if(this.props.projectState === 'Rejected'){
-            result = 'Initiated';
-        }else if(this.props.projectState === 'Initiated'){
+            result = 'Applied';
+        }else if(this.props.projectState === 'Applied'){
             if(this.props.choice === 'true'){
-                result = 'Applied';
+                result = 'Initiated';
             }else{
                 result = 'Rejected';
             }
-        }else if(this.props.projectState === 'Applied'){
+        }else if(this.props.projectState === 'Initiated'){
             result = 'Developing';
         }else if(this.props.projectState === 'Developing'){
             result = 'Delivered';
@@ -119,7 +119,7 @@ export class PushModal extends React.Component {
         return (
             <div className="ui active modal">
                 <div className="header">
-                    审核工时记录
+                    推进项目状态
                 </div>
                 <div className="content">
                     {choicePart}

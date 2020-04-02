@@ -12,7 +12,7 @@ import {
     changeSuperiorId,
     changeUserId,
     modifyMember
-} from "../../redux/actions";
+} from "../../redux/actions/projectMemberActions";
 import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
 
 

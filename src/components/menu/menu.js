@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import 'semantic-ui-css/semantic.min.css';
 import {
     changeKeyword, changeProjectPage,
-    getRelativeProjects,
+    getRelativeProjects, getRelativeProjectsbyStatus,
     logOut
 } from "../../redux/actions";
 import {connect} from "react-redux";
@@ -47,7 +47,8 @@ export class StickyMenu extends React.Component {
         changeProjectPage: PropTypes.func,
         onLogOut: PropTypes.func,
         changeKeyword: PropTypes.func,
-        getRelativeProjects: PropTypes.func
+        getRelativeProjects: PropTypes.func,
+        getRelativeProjectsbyStatus: PropTypes.func
     };
 
     state = {
@@ -58,10 +59,18 @@ export class StickyMenu extends React.Component {
     unStickTopMenu = () => this.setState({menuFixed: false});
 
     handleProjectClick = () => {
-        this.props.changeProjectPage(1);
-        console.log(this.props.currentPage);
-        this.props.getRelativeProjects(this.props.currentPage);
-        this.props.changeKeyword('');
+        if(this.props.globalRole === 'ProjectSuperior'){
+            this.props.getRelativeProjectsbyStatus('Applied');
+        }else if(this.props.globalRole === 'ConfigurationManager'){
+            this.props.getRelativeProjectsbyStatus('ReadyArchive');
+        }else if(this.props.globalRole === 'QaManager' || this.props.globalRole === 'EpgManager'){
+            this.props.getRelativeProjectsbyStatus('Initiated');
+        }else{
+            this.props.changeProjectPage(1);
+            console.log(this.props.currentPage);
+            this.props.getRelativeProjects(this.props.currentPage);
+            this.props.changeKeyword('');
+        }
     }
 
     render() {
@@ -126,6 +135,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     changeProjectPage: (currentPage) => {
         dispatch(changeProjectPage(currentPage));
+    },
+    getRelativeProjectsbyStatus: (status) => {
+        dispatch(getRelativeProjectsbyStatus(status))
     }
 });
 

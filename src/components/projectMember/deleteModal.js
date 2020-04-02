@@ -7,7 +7,7 @@ import {Button, Container, Icon, Dropdown} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
     cancelManage, deleteMember,
-} from "../../redux/actions";
+} from "../../redux/actions/projectMemberActions";
 
 
 export class DeleteModal extends React.Component {

@@ -21,6 +21,7 @@ export class ProjectDetail extends React.Component {
 
     static propTypes = {
         globalRole: PropTypes.string,
+        projectState: PropTypes.string,
         projectId: PropTypes.string,
         projectName: PropTypes.string,
         customer: PropTypes.string,
@@ -38,6 +39,10 @@ export class ProjectDetail extends React.Component {
 
     constructor(props) {
         super(props);
+    }
+
+    checkPushButton = () => {
+
     }
 
     render() {
@@ -144,6 +149,7 @@ export class ProjectDetail extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
     globalRole: state._userReducer.globalRole,
+    projectState: state._projectDetail.projectState,
     projectId: state._projectDetail.projectId,
     projectName: state._projectDetail.projectName,
     customer: state._projectDetail.customer,

@@ -9,7 +9,7 @@ import {
     changeUserId, checkGlobalRole, checkProjectRole,
     startDeleting,
     updateMember
-} from "../../redux/actions";
+} from "../../redux/actions/projectMemberActions";
 import {startCreating, startModifying} from "../../redux/actions/projectMemberActions";
 import CreateModal from "./createModal";
 import ModifyModal from "./modifyModal";

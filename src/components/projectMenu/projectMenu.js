@@ -13,7 +13,9 @@ import {
     switchHour,
     switchMember, switchRisk
 } from "../../redux/actions/projectMenuActions";
-import {getProjectDetail, getProjectMembers, getWorkHours} from "../../redux/actions";
+import {getProjectDetail, } from "../../redux/actions";
+import {getProjectMembers} from "../../redux/actions/projectMemberActions";
+import {getWorkHours} from "../../redux/actions/projectHourActions";
 import {getDownloadData, getProjectFunction} from "../../redux/actions/projectFunctionActions";
 import {changeCurrentDevicePage, getDevices} from "../../redux/actions/projectDeviceActions";
 import {getRisks} from "../../redux/actions/projectRiskActions";

@@ -69,15 +69,6 @@ export class UploadForm extends React.Component {
                             <div className="field">
                                 <label>注意格式为功能id，功能描述，父功能id。标题为function_id,superior_function_id,function_description</label>
                             </div>
-                            {/*<CSVReader*/}
-                            {/*    cssClass="csv-reader-input"*/}
-                            {/*    onFileLoaded={this.handleFileloaded}*/}
-                            {/*    onError={console.log('error')}*/}
-                            {/*    parserOptions={parseOptions}*/}
-                            {/*    fileEncoding='GB18030'*/}
-                            {/*    inputId="ObiWan"*/}
-                            {/*    inputStyle={{color: 'red'}}*/}
-                            {/*/>*/}
                             <Dropzone
                                 onDropAccepted={this.onFileDrop.bind(this)}
                                 multiple={false}
@@ -96,8 +87,8 @@ export class UploadForm extends React.Component {
                                             <input {...getInputProps()} />
                                             {
                                                 this.state.uploadedFile === null ?
-                                                    <p>Try dropping some files here, or click to select files to upload(less than 1 MB).</p> :
-                                                    <p>upload.</p>
+                                                    <p>拖拽或点击此处选择文件上传</p> :
+                                                    <p>点击确认按钮导入功能数据</p>
                                             }
                                         </Segment>
                                     )

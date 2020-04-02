@@ -10,8 +10,8 @@ import {
     changeCustomer,
     changeEndTime, changeMainFunction, changeMainTech, changeMilestone,
     changeProjectId,
-    changeProjectName,
-    changeStartTime,
+    changeProjectName, changeProjectPage,
+    changeStartTime, getRelativeProjects,
     projectSetup
 } from "../../redux/actions";
 import {closeFailed} from "../../redux/actions/userActions";
@@ -50,11 +50,15 @@ export class SetUp extends React.Component {
         changeMainTech: PropTypes.func,
         changeBusinessField: PropTypes.func,
         changeMainFunction: PropTypes.func,
-        closeFailed: PropTypes.func
+        closeFailed: PropTypes.func,
+        changeProjectPage: PropTypes.func,
+        getRelativeProjects: PropTypes.func
     };
 
     handleSetupClick = () => {
         this.props.projectSetup(this.props.user_id, this.props.projectId, this.props.projectName, this.props.customer, this.props.startTime, this.props.endTime, this.props.milestone, this.props.mainTech, this.props.businessField, this.props.mainFunction);
+        this.props.changeProjectPage(1);
+        this.props.getRelativeProjects(1);
     }
 
     render() {
@@ -120,7 +124,7 @@ export class SetUp extends React.Component {
                                 </div>
                                 <div className="field">
                                     <label>主要技术</label>
-                                    <input type="text" placeholder="主要技术" onChange={this.props.changeMainFunction}/>
+                                    <input type="text" placeholder="主要技术" onChange={this.props.changeMainTech}/>
                                 </div>
                                 <div className="field">
                                     <label>业务领域</label>
@@ -199,6 +203,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     closeFailed: () => {
         dispatch(closeFailed())
+    },
+    changeProjectPage: (currentPage) => {
+        dispatch(changeProjectPage(currentPage));
+    },
+    getRelativeProjects: (currentPage) => {
+        dispatch(getRelativeProjects(currentPage));
     }
 });
 

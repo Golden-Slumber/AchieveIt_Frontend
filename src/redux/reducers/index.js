@@ -26,7 +26,7 @@ let rootReducer = combineReducers({
    _userReducer: userReducer,
    _projectDependency: projectDependency,
    _projectMenu: projectMenu,
-   _projectDefect: projectDefect
+   _projectDefect: projectDefect,
 });
 
 export default rootReducer;

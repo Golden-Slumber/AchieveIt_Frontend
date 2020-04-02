@@ -7,7 +7,7 @@ import {
     CHANGE_MAINTECH,
     CHANGE_MILESTONE, CHANGE_MOREPROJECT, CHANGE_PROJECTID,
     CHANGE_PROJECTNAME, CHANGE_PROJECTPAGE,
-    CHANGE_STARTTIME, GET_RELATIVE_PROJECTS,
+    CHANGE_STARTTIME, CHNAGE_SUCCESSSTATE, GET_RELATIVE_PROJECTS,
     PROJECT_SETUP,
     SEARCH_PROJECT
 } from "./actionTypes";
@@ -27,6 +27,39 @@ export function changeProjectPage(currentPage){
     return {
         type: CHANGE_PROJECTPAGE,
         payload: currentPage
+    }
+}
+
+export function getRelativeProjectsbyStatus(status){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/getByStatus', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({status: status})
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                let arr = [];
+                if(data.result !== null){
+                    arr = data.result.map((item, index) => {
+                        return {id: item.project_id, name: item.project_name, status: item.status}
+                    });
+                }
+                dispatch({
+                    type: GET_RELATIVE_PROJECTS,
+                    payload: arr
+                });
+                dispatch({
+                    type: CHANGE_MOREPROJECT,
+                    payload:false
+                });
+            }
+        }).catch(error => {
+           console.log(error);
+        });
     }
 }
 
@@ -90,6 +123,10 @@ export function searchProject(keyword, currentPage){
                     type: SEARCH_PROJECT,
                     payload: data.result
                 });
+                dispatch({
+                    type: CHANGE_MOREPROJECT,
+                    payload:data.result.length>=PAGE_SIZE
+                });
             }else{
                 dispatch(formFailed('search'));
             }
@@ -97,7 +134,6 @@ export function searchProject(keyword, currentPage){
             console.log(error);
             dispatch(formFailed('search'));
         });
-        dispatch(changeKeyword(''));
     }
 }
 
@@ -126,11 +162,12 @@ export function projectSetup(userId, projectId, projectName, customer, startTime
         }).then(res => res.json()
         ).then(data => {
             if(data.status === 'SUCCESS'){
-                history.push('/project');
-                dispatch(formSuccess('setup'));
+                dispatch({
+                    type: CHNAGE_SUCCESSSTATE,
+                    payload: 'setup'
+                })
                 dispatch(updateMember(projectId, [{user_id: userId, project_role_id: '294226508209937573', superior_id: userId}]));
-                dispatch(changeProjectPage(1));
-                dispatch(getRelativeProjects(1));
+                history.push('/project');
             }else{
                 dispatch(formFailed('setup'));
             }

@@ -11,13 +11,6 @@ import {
 import {BASE_URL, PAGE_SIZE} from "../../constants";
 import {formFailed} from "./userActions";
 
-export function changeMoreDevice(more) {
-    return {
-        type: CHANGE_MOREDEVICE,
-        payload: more
-    }
-}
-
 export function changeCurrentDevicePage(currentPage){
     return {
         type: CHANGE_CURRENTDEVICEPAGE,

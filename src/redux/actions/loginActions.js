@@ -16,40 +16,9 @@ import {getRelativeProjects} from "./projectHomeActions";
 import MD5 from 'crypto-js/md5';
 import {formFailed, setGlobalRole, setUserName} from "./userActions";
 import cookie from "react-cookies";
+import { sessionService } from 'redux-react-session';
 
 export function login(password, username) {
-    // return async (dispatch) => {
-    //     let content = {password: password, username: username};
-    //     await fetch(BASE_URL+'/login', {
-    //         method: 'POST',
-    //         body: JSON.stringify(content),
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //     }).then(res => res.json()
-    //     ).then(data=>{
-    //         console.log(data);
-    //         if(data.status === '200'){
-    //             dispatch({type: LOGIN_SUCCESS, payload: data.jwtToken});
-    //             dispatch({type: USERID_SET, payload: data.result});
-    //             let end = new Date();
-    //             dispatch({type: TIMELINE_INIT, payload: end});
-    //             let start = new Date(end);
-    //             let year = start.getFullYear();
-    //             start.setFullYear(year-1);
-    //             dispatch(getTimeline(data.jwtToken, start, end));
-    //             dispatch({type: CLOSE_ILLEGAL_ACCESS});
-    //             history.push('/');
-    //             dispatch(switchHome());
-    //         }else{
-    //             dispatch({type: LOGIN_FAIL})
-    //         }
-    //     }).catch(error=>{
-    //         console.log(error);
-    //         dispatch({type: LOGIN_FAIL})
-    //     });
-    // }
-
     return async (dispatch) => {
         let cryptoPassword = MD5(password).toString();
         console.log(cryptoPassword);
@@ -66,6 +35,7 @@ export function login(password, username) {
             console.log(data);
             if (data.status === 'SUCCESS') {
                 console.log(data.result.JWT);
+                // sessionService.saveSession(data.result.JWT);
                 history.push('/project');
                 dispatch({
                     type: LOGIN_SUCCESS
@@ -102,6 +72,7 @@ export function changeUsername(username) {
 }
 
 export function logOut() {
+    // sessionService.deleteSession();
     return {
         type: LOG_OUT
     }

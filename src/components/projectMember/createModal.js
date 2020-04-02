@@ -12,7 +12,7 @@ import {
     changeSuperiorId,
     changeUserId,
     createMember, setRoleOptions, setSuperiorOptions
-} from "../../redux/actions";
+} from "../../redux/actions/projectMemberActions";
 
 
 const globalStyles = {

@@ -5,8 +5,7 @@ import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Icon, Dropdown, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import {cancelHourModal, createWorkingHour, changeActivity, changeFunctionType, changeWorkEndTime, changeWorkStartTime} from "../../redux/actions/projectHourActions";
-import {modifyWorkingHour} from "../../redux/actions";
+import {cancelHourModal, createWorkingHour, changeActivity, changeFunctionType, changeWorkEndTime, changeWorkStartTime, modifyWorkingHour} from "../../redux/actions/projectHourActions";
 import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
 
 
