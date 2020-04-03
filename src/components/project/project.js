@@ -15,7 +15,7 @@ import {
 import {setProjectId} from "../../redux/actions";
 import currentPage from "../../redux/reducers/currentPageReducer";
 import {getBusinessFields, getCustomers, getProjectIds} from "../../redux/actions/dependencyActions";
-import {closeFailed} from "../../redux/actions/userActions";
+import {closeFailed, formFailed} from "../../redux/actions/userActions";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -204,6 +204,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     closeFailed: () => {
         dispatch(closeFailed());
+    },
+    formFailed: (form) => {
+        dispatch(formFailed(form));
     }
 });
 
