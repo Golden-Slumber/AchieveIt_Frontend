@@ -40,7 +40,8 @@ export class Project extends React.Component{
         getProjectDetail: PropTypes.func,
         setProjectState: PropTypes.func,
         failed: PropTypes.string,
-        closeFailed: PropTypes.func
+        closeFailed: PropTypes.func,
+        formFailed: PropTypes.func
     };
 
     constructor(props) {
@@ -51,9 +52,13 @@ export class Project extends React.Component{
     }
 
     handleSearchClick = () => {
-        this.props.changeProjectPage(1);
-        this.props.searchProject(this.props.keyword, this.props.currentPage);
-        this.setState({currentKeyWord: this.props.keyword});
+        if(this.props.keyword.length<=0 || this.props.keyword.length>=30){
+            this.props.formFailed('search');
+        }else{
+            this.props.changeProjectPage(1);
+            this.props.searchProject(this.props.keyword, this.props.currentPage);
+            this.setState({currentKeyWord: this.props.keyword});
+        }
     };
 
     handleProjectClick = (projectId, projectState) => {
