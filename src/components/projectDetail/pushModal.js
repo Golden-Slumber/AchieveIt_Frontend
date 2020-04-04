@@ -70,6 +70,7 @@ export class PushModal extends React.Component {
     }
 
     handleChange = (e, {value}) => {
+        console.log(value);
         this.props.changeChoice(value);
     }
 
@@ -96,14 +97,14 @@ export class PushModal extends React.Component {
                         label='不通过'
                         name='radioGroup'
                         value='false'
-                        checked={this.props.verifyState === 'false'}
+                        checked={this.props.choice === 'false'}
                         onChange={this.handleChange}
                     />
                     <Radio
                         label='通过'
                         name='radioGroup'
                         value='true'
-                        checked={this.props.verifyState === 'true'}
+                        checked={this.props.choice === 'true'}
                         onChange={this.handleChange}
                     />
                 </div>
