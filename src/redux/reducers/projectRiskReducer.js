@@ -19,63 +19,7 @@ import {
 } from "../actions";
 
 const initialState = {
-    risks: [
-        {
-            riskId: '1',
-            riskType: '2',
-            riskDescription: '3',
-            riskLevel: '4',
-            riskImpact: '5',
-            riskCountermeasure: '6',
-            riskStatus: '7',
-            riskFrequency: '8',
-            responsiblePerson: '9'
-        },
-        {
-            riskId: '2',
-            riskType: '2',
-            riskDescription: '3',
-            riskLevel: '4',
-            riskImpact: '5',
-            riskCountermeasure: '6',
-            riskStatus: '7',
-            riskFrequency: '8',
-            responsiblePerson: '9'
-        },
-        {
-            riskId: '3',
-            riskType: '2',
-            riskDescription: '3',
-            riskLevel: '4',
-            riskImpact: '5',
-            riskCountermeasure: '6',
-            riskStatus: '7',
-            riskFrequency: '8',
-            responsiblePerson: '9'
-        },
-        {
-            riskId: '4',
-            riskType: '2',
-            riskDescription: '3',
-            riskLevel: '4',
-            riskImpact: '5',
-            riskCountermeasure: '6',
-            riskStatus: '7',
-            riskFrequency: '8',
-            responsiblePerson: '9'
-        },
-        {
-            riskId: '5',
-            riskType: '2',
-            riskDescription: '3',
-            riskLevel: '4',
-            riskImpact: '5',
-            riskCountermeasure: '6',
-            riskStatus: '7',
-            riskFrequency: '8',
-            responsiblePerson: '9'
-        },
-    ],
+    risks: [],
     isCreating: false,
     currentId: '',
     currentType: '',

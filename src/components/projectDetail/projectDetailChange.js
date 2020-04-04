@@ -15,7 +15,7 @@ import {
     modifyStartTime
 } from "../../redux/actions";
 import {startCreating} from "../../redux/actions/projectMemberActions";
-import {closeFailed} from "../../redux/actions/userActions";
+import {closeFailed, formFailed} from "../../redux/actions/userActions";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -50,7 +50,8 @@ export class ProjectDetailChange extends React.Component {
         modifyBusinessField: PropTypes.func,
         modifyMainFunction: PropTypes.func,
         closeFailed: PropTypes.func,
-        cancelModify: PropTypes.func
+        cancelModify: PropTypes.func,
+        formFailed: PropTypes.func
     };
 
     constructor(props) {
@@ -58,8 +59,16 @@ export class ProjectDetailChange extends React.Component {
     }
 
     handleModifyClick = () => {
-        this.props.modifyProjectInfo(this.props.projectId, this.props.projectName, this.props.customer, this.props.startTime,
-                                    this.props.endTime, this.props.milestone, this.props.mainTech, this.props.businessField, this.props.mainFunction);
+        let time1 = new Date(this.props.startTime.replace('-', '/'));
+        let time2 = new Date(this.props.endTime.replace('-', '/'));
+        if(this.props.projectName === '' || this.props.customer === '' || this.props.startTime === '' || this.props.endTime === '' ||
+            this.props.milestone === '' || this.props.mainTech === '' || this.props.businessField === '' || this.props.mainFunction === ''
+          || time1 >= time2){
+            this.props.formFailed('modifyProjectDetail');
+        }else{
+            this.props.modifyProjectInfo(this.props.projectId, this.props.projectName, this.props.customer, this.props.startTime,
+                this.props.endTime, this.props.milestone, this.props.mainTech, this.props.businessField, this.props.mainFunction);
+        }
     }
 
     handleCancelClick = () => {
@@ -196,6 +205,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     cancelModify: (projectId) => {
         dispatch(cancelModify(projectId));
+    },
+    formFailed: (form) => {
+        dispatch(formFailed(form));
     }
 });
 

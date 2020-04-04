@@ -7,7 +7,7 @@ import {
     CHANGE_MAINTECH,
     CHANGE_MILESTONE, CHANGE_MOREPROJECT, CHANGE_PROJECTID,
     CHANGE_PROJECTNAME, CHANGE_PROJECTPAGE,
-    CHANGE_STARTTIME, CHNAGE_SUCCESSSTATE, GET_RELATIVE_PROJECTS,
+    CHANGE_STARTTIME, CHNAGE_SUCCESSSTATE, GET_RELATIVE_PROJECTS, GET_RELATIVE_PROJECTSBYSTATUS,
     PROJECT_SETUP,
     SEARCH_PROJECT
 } from "./actionTypes";
@@ -49,8 +49,11 @@ export function getRelativeProjectsbyStatus(status){
                     });
                 }
                 dispatch({
-                    type: GET_RELATIVE_PROJECTS,
-                    payload: arr
+                    type: GET_RELATIVE_PROJECTSBYSTATUS,
+                    payload: {
+                        type: status,
+                        relativeProjects: arr
+                    }
                 });
                 dispatch({
                     type: CHANGE_MOREPROJECT,

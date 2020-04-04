@@ -59,14 +59,15 @@ export class StickyMenu extends React.Component {
     unStickTopMenu = () => this.setState({menuFixed: false});
 
     handleProjectClick = () => {
+        this.props.changeProjectPage(1);
         if(this.props.globalRole === 'ProjectSuperior'){
             this.props.getRelativeProjectsbyStatus('Applied');
         }else if(this.props.globalRole === 'ConfigurationManager'){
+            this.props.getRelativeProjectsbyStatus('Initiated');
             this.props.getRelativeProjectsbyStatus('ReadyArchive');
         }else if(this.props.globalRole === 'QaManager' || this.props.globalRole === 'EpgManager'){
             this.props.getRelativeProjectsbyStatus('Initiated');
         }else{
-            this.props.changeProjectPage(1);
             console.log(this.props.currentPage);
             this.props.getRelativeProjects(this.props.currentPage);
             this.props.changeKeyword('');

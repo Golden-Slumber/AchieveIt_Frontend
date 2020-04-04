@@ -182,6 +182,48 @@ describe('projectHomeReducer test', () => {
         });
     });
 
+    it('should handle GET_RELATIVE_PROJECTSBYSTATUS', function () {
+        expect(reducer({
+            keyword: '',
+            currentPage: 1,
+            more: true,
+            projects: [],
+            projectSetupInfo: {
+                projectId: '',
+                projectName: '',
+                customer: '',
+                startTime: '',
+                endTime: '',
+                milestone: '',
+                mainTech: '',
+                businessField: '',
+                mainFunction: ''
+            }
+        }, {
+            type: types.GET_RELATIVE_PROJECTSBYSTATUS,
+            payload: {
+                type: 'Initiated',
+                projects: []
+            }
+        })).toEqual({
+            keyword: '',
+            currentPage: 1,
+            more: true,
+            projects: [],
+            projectSetupInfo: {
+                projectId: '',
+                projectName: '',
+                customer: '',
+                startTime: '',
+                endTime: '',
+                milestone: '',
+                mainTech: '',
+                businessField: '',
+                mainFunction: ''
+            }
+        });
+    });
+
     it('should handle SEARCH_PROJECT', function () {
         expect(reducer({
             keyword: '',

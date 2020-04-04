@@ -91,7 +91,7 @@ export class SetUp extends React.Component {
 
             <div>
                 <Segment style={globalStyles}>
-                    <Container clssName='main ui' style={{margin: '100px, 100px, 0px, 100px'}}>
+                    <Container className='main ui' style={{margin: '100px, 100px, 0px, 100px'}}>
                         <Segment>
                             <form className="ui form">
                                 <h4 className="ui dividing header">立项相关信息</h4>

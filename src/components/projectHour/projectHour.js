@@ -117,7 +117,7 @@ export class ProjectHour extends React.Component {
 
             <div>
                 <Segment style={globalStyles}>
-                    <Container clssName='main ui' style={{margin: '100px, 100px, 0px, 100px'}}>
+                    <Container className='main ui' style={{margin: '100px, 100px, 0px, 100px'}}>
 
                         <h1 className="ui header">{this.props.projectId}</h1>
 

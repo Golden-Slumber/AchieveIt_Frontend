@@ -19,6 +19,7 @@ export class ProjectRisk extends React.Component {
 
     static propTypes = {
         projectId: PropTypes.string,
+        globalRole: PropTypes.string,
         risks: PropTypes.array,
         isCreating: PropTypes.bool,
         startCreatingRisk: PropTypes.func,
@@ -31,6 +32,15 @@ export class ProjectRisk extends React.Component {
     }
 
     render() {
+
+        let createButton;
+        if(this.props.globalRole === 'ProjectManager'){
+            createButton = (
+                <Button  content={'新增风险记录'} onClick={this.handleCreateClick}/>
+            );
+        }else{
+            createButton = null;
+        }
 
         let showRisks = this.props.risks.map((item, index) => {
             return (
@@ -61,7 +71,7 @@ export class ProjectRisk extends React.Component {
 
             <div>
                 <Segment style={globalStyles}>
-                    <Container clssName='main ui' style={{margin: '100px, 100px, 0px, 100px'}}>
+                    <Container className='main ui' style={{margin: '100px, 100px, 0px, 100px'}}>
 
                         <h1 className="ui header">{this.props.projectId}</h1>
 
@@ -88,7 +98,7 @@ export class ProjectRisk extends React.Component {
                                 </tbody>
                             </table>
 
-                            <Button  content={'新增风险记录'} onClick={this.handleCreateClick}/>
+                            {createButton}
                         </Segment>
                     </Container>
 
@@ -100,6 +110,7 @@ export class ProjectRisk extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
     projectId: state._projectDetail.projectId,
+    globalRole: state._userReducer.globalRole,
     risks: state._projectRisk.risks,
     isCreating: state._projectRisk.isCreating,
 });

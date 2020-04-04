@@ -1,6 +1,6 @@
 import {
     CHANGE_CHOICE,
-    CHANGE_MODIFYSTATE, CHANGE_PROJECTSTATE, CHANGE_PUSHSTATE,
+    CHANGE_MODIFYSTATE, CHANGE_PROJECTSTATE, CHANGE_PUSHSTATE, CHNAGE_SUCCESSSTATE,
     MODIFY_BUNIESSFIELD,
     MODIFY_CUSTOMER,
     MODIFY_ENDTIME, MODIFY_MAINFUNCTION,
@@ -192,6 +192,10 @@ export function pushProject(projectId, projectStatus){
                     type: CHANGE_PUSHSTATE,
                     payload: false
                 });
+                dispatch({
+                    type: CHANGE_PROJECTSTATE,
+                    payload: projectStatus
+                });
                 dispatch(formSuccess('push'));
             }else{
                 console.log(data.status);
@@ -200,6 +204,32 @@ export function pushProject(projectId, projectStatus){
         }).catch(error => {
             console.log(error);
             dispatch(formFailed('push'));
+        })
+    }
+}
+
+export function confirmConfiguration(projectId){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/confirmConfigEstablished', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({project_id: projectId})
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch({
+                    type: CHNAGE_SUCCESSSTATE,
+                    payload: 'confirm'
+                });
+            }else{
+                dispatch(formFailed('confirm'));
+            }
+        }).catch(error => {
+            console.log(error);
+            dispatch(formFailed('confirm'));
         })
     }
 }

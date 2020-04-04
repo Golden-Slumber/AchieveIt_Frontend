@@ -142,6 +142,25 @@ describe('projectHomeActions Test', () => {
         })
     });
 
+    it('should create an action to get relative projects by status', function () {
+        nock(BASE_URL)
+            .post('/project/getByStatus', {'status': 'status'})
+            .reply(200, {'status': 'SUCCESS', 'result': [{'id': 'id', 'name': 'name', 'status': 'status'}]});
+
+        const expectedActions = [
+                {type: types.GET_RELATIVE_PROJECTSBYSTATUS, payload: {
+                        type: 'status',
+                        projects: [{'id': 'id', 'name': 'name', 'status': 'status'}]
+                    }},
+                {type: types.CHANGE_MOREPROJECT, payload: false}
+            ],
+            store = mockStore();
+
+        return store.dispatch(projectHomeActions.getRelativeProjectsbyStatus('status')).then(() => {
+            expect(store.getActions()).toEqual(expectedActions);
+        })
+    });
+
     it('should create an action to search projects', function () {
         nock(BASE_URL)
             .post('/project/listRelative', {'key_word': 'keyword', 'page_size': '10', 'current_page': 'currentPage'})

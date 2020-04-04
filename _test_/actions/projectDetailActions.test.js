@@ -185,12 +185,27 @@ describe('projectDetailActions Test', () => {
 
         const expectedActions = [
                 {type: types.CHANGE_PUSHSTATE, payload: false},
+                {type: types.CHANGE_PROJECTSTATE, payload: 'projectStatus'}
             ],
             store = mockStore();
 
-        return store.dispatch(projectDetailActions.pushProject('projectId, projectStatus')).then(() => {
+        return store.dispatch(projectDetailActions.pushProject('projectId', 'projectStatus')).then(() => {
             expect(store.getActions()).toEqual(expectedActions);
         });
     });
 
+    it('should create an action to confirm configuration', function () {
+        nock(BASE_URL)
+            .put('/project/confirmConfigEstablished', {'project_id': 'projectId'})
+            .reply(200, {'status': 'SUCCESS'});
+
+        const expectedActions = [
+                {type: types.CHNAGE_SUCCESSSTATE, payload: 'confirm'},
+            ],
+            store = mockStore();
+
+        return store.dispatch(projectDetailActions.confirmConfiguration('projectId')).then(() => {
+            expect(store.getActions()).toEqual(expectedActions);
+        });
+    });
 });

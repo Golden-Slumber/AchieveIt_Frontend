@@ -6,11 +6,11 @@ import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Icon, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import ProjectDetailChange from "./projectDetailChange";
-import {startModifying, startPushing} from "../../redux/actions";
+import {confirmConfiguration, startModifying, startPushing} from "../../redux/actions";
 import {getBusinessFields, getCustomers} from "../../redux/actions/dependencyActions";
 import ProjectMenu from "../projectMenu/projectMenu";
 import PushModal from "./pushModal";
-import {closeSuccess} from "../../redux/actions/userActions";
+import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -37,11 +37,18 @@ export class ProjectDetail extends React.Component {
         isPushing: PropTypes.bool,
         startPushing: PropTypes.func,
         successful: PropTypes.string,
-        closeSuccess: PropTypes.func
+        closeSuccess: PropTypes.func,
+        confirmConfiguration: PropTypes.func,
+        failed: PropTypes.string,
+        closeFailed: PropTypes.func
     };
 
     constructor(props) {
         super(props);
+    }
+
+    handleConfirmClick = () => {
+        this.props.confirmConfiguration(this.props.projectId);
     }
 
     render() {
@@ -52,6 +59,15 @@ export class ProjectDetail extends React.Component {
             );
         }else{
             modifybutton = null;
+        }
+
+        let confirmButton;
+        if(this.props.globalRole === 'ConfigurationManager' && this.props.projectState === 'Initiated'){
+            confirmButton = (
+              <Button content={'确认项目配置库'} style={{backgroundColor: '#1BB394', color: '#E5FFFB'}} onClick={this.handleConfirmClick}/>
+            );
+        }else{
+            confirmButton = null;
         }
 
         let pushButton;
@@ -100,7 +116,33 @@ export class ProjectDetail extends React.Component {
                 </Message>
             );
         }else{
-            pushSuccessMessage = null
+            pushSuccessMessage = null;
+        }
+
+        let confirmSuccessMessage;
+        if(this.props.successful === 'confirm'){
+            confirmSuccessMessage = (
+                <Message positive={true}>
+                    <i className={'close icon'} onClick={this.props.closeSuccess}/>
+                    <div className={'header'}>确认成功</div>
+                    <p>项目配置库已完成配置。</p>
+                </Message>
+            );
+        }else{
+            confirmSuccessMessage = null;
+        }
+
+        let confirmFailedMessage;
+        if(this.props.successful === 'push'){
+            confirmFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>项目配置库未能完成确认。</p>
+                </Message>
+            );
+        }else{
+            confirmFailedMessage = null;
         }
 
         let mainBody;
@@ -158,7 +200,7 @@ export class ProjectDetail extends React.Component {
 
             <div>
                 <Segment style={globalStyles}>
-                    <Container clssName='main ui' style={{margin: '100px, 100px, 0px, 100px'}}>
+                    <Container className='main ui' style={{margin: '100px, 100px, 0px, 100px'}}>
 
                         <h1 className="ui header">{this.props.projectId}</h1>
 
@@ -168,6 +210,9 @@ export class ProjectDetail extends React.Component {
                             {mainBody}
                         </Segment>
                         {pushSuccessMessage}
+                        {confirmSuccessMessage}
+                        {confirmFailedMessage}
+                        {confirmButton}
                         {pushButton}
                     </Container>
 
@@ -191,7 +236,8 @@ const mapStateToProps = (state, ownProps) => ({
     mainFunction: state._projectDetail.mainFunction,
     isModifying: state._projectDetail.isModifying,
     isPushing: state._projectDetail.isPushing,
-    successful: state._userReducer.successful
+    successful: state._userReducer.successful,
+    failed: state._userReducer.failed
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -205,6 +251,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     closeSuccess: () => {
         dispatch(closeSuccess())
+    },
+    closeFailed: () => {
+        dispatch(closeFailed())
+    },
+    confirmConfiguration: (projectId) => {
+        dispatch(confirmConfiguration(projectId))
     }
 });
 
