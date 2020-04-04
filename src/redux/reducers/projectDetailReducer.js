@@ -11,7 +11,7 @@ import {
 } from "../actions";
 
 const initialState = {
-    projectId: 'PeojectID',
+    projectId: 'ProjectID',
     projectName: '',
     customer: '',
     startTime: '',

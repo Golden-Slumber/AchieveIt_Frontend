@@ -77,9 +77,6 @@ export default function projectHome(state = initialState, action) {
             return {...state, projectSetupInfo: {...state.projectSetupInfo, businessField: action.payload}}
         case CHANGE_MAINFUNCTION:
             return {...state, projectSetupInfo: {...state.projectSetupInfo, mainFunction: action.payload}}
-        case PROJECT_SETUP:
-            let project = { id: action.payload.projectId, name: action.payload.projectName, status: '待审核'};
-            return {...state, projects: [...state.projects, project]}
         default:
             return state;
     }

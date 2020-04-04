@@ -89,7 +89,7 @@ export class PushModal extends React.Component {
         }
 
         let choicePart;
-        if(this.props.projectState === 'Initiated' || this.props.projectState === 'ReadyArchive'){
+        if(this.props.projectState === 'Applied' || this.props.projectState === 'ReadyArchive'){
             choicePart = (
                 <div className="description">
                     <Radio

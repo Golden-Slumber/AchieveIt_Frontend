@@ -12,80 +12,8 @@ import {
 
 
 const initialState = {
-    workingHours: [
-        {
-            workingHourId: '1',
-            activityType: 'X',
-            functionType: 'x',
-            startTime: 'X',
-            endTime: 'x'
-        },
-        {
-            workingHourId: '2',
-            activityType: 'X',
-            functionType: 'x',
-            startTime: 'X',
-            endTime: 'x'
-        },
-        {
-            workingHourId: '3',
-            activityType: 'X',
-            functionType: 'x',
-            startTime: 'X',
-            endTime: 'x'
-        },
-        {
-            workingHourId: '4',
-            activityType: 'X',
-            functionType: 'x',
-            startTime: 'X',
-            endTime: 'x'
-        },
-        {
-            workingHourId: '5',
-            activityType: 'X',
-            functionType: 'x',
-            startTime: 'X',
-            endTime: 'x'
-        }
-    ],
-    verifyList: [
-        {
-            workingHourId: '1',
-            activityType: 'X',
-            functionType: 'x',
-            startTime: 'X',
-            endTime: 'x'
-        },
-        {
-            workingHourId: '2',
-            activityType: 'X',
-            functionType: 'x',
-            startTime: 'X',
-            endTime: 'x'
-        },
-        {
-            workingHourId: '3',
-            activityType: 'X',
-            functionType: 'x',
-            startTime: 'X',
-            endTime: 'x'
-        },
-        {
-            workingHourId: '4',
-            activityType: 'X',
-            functionType: 'x',
-            startTime: 'X',
-            endTime: 'x'
-        },
-        {
-            workingHourId: '5',
-            activityType: 'X',
-            functionType: 'x',
-            startTime: 'X',
-            endTime: 'x'
-        }
-    ],
+    workingHours: [],
+    verifyList: [],
     hourPageState: '',
     hourModalState: '',
     currentWorkingHourId: '',
@@ -108,19 +36,6 @@ export default function projectHour(state = initialState, action){
             return {...state, hourPageState: action.payload};
         case CHANGE_HOURMODALSTATE:
             return {...state, hourModalState: action.payload};
-        case CREATE_WORKINGHOUR:
-            return {...state, workingHours: [...state.workingHours, action.payload]};
-        case MODIFY_WORKINGHOUR:
-            let arr1 = state.workingHours.filter((item) => {
-                return item.workingHourId !== action.payload.workingHourId
-            });
-            arr1.push(action.payload);
-            return {...state, workingHours: arr1};
-        case VERIFY_WORKINGHOUR:
-            let arr2 = state.verifyList.filter((item) => {
-                return item.workingHourId !== action.payload
-            });
-            return {...state, verifyList: arr2};
         case SET_WORKINGHOURID:
             return {...state, currentWorkingHourId: action.payload};
         case CHANGE_FUNCTIONID:

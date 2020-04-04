@@ -15,45 +15,8 @@ import {
 import currentPage from "./currentPageReducer";
 
 const initialState = {
-    devices: [
-        {
-            deviceId: '1',
-            deviceStatus: '2'
-        },
-        {
-            deviceId: '1',
-            deviceStatus: '2'
-        },
-        {
-            deviceId: '1',
-            deviceStatus: '2'
-        },
-        {
-            deviceId: '1',
-            deviceStatus: '2'
-        },
-        {
-            deviceId: '1',
-            deviceStatus: '2'
-        }
-    ],
-    verifyDevices: [
-        {
-            deviceId: '1',
-        },
-        {
-            deviceId: '2',
-        },
-        {
-            deviceId: '3',
-        },
-        {
-            deviceId: '4',
-        },
-        {
-            deviceId: '5',
-        }
-    ],
+    devices: [],
+    verifyDevices: [],
     currentPage: 1,
     more: true,
     devicePage: '',
@@ -83,18 +46,6 @@ export default function projectDevice(state = initialState, action) {
             return {...state, devicePage: action.payload};
         case CHANGE_DEVICEMODAL:
             return {...state, deviceModal: action.payload};
-        case TENANCY_DEVICE:
-            return {...state, devices: [...state.devices, action.payload]};
-        case VERIFY_DEVICE:
-            let arr1 = state.verifyDevices.filter((item) => {
-                return item.deviceId !== action.payload
-            });
-            return {...state, verifyDevices: arr1}
-        case RETURN_DEVICE:
-            let arr2 = state.devices.filter((item) => {
-                return item.deviceId !== action.payload
-            });
-            return {...state, devices: arr2}
         case SET_DEVICEID:
             return {...state, currentDeviceId: action.payload};
         case CHANGE_RETURNTIME:
