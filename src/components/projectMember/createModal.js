@@ -3,7 +3,7 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon, Dropdown} from "semantic-ui-react";
+import {Button, Container, Icon, Dropdown, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
     cancelManage,
@@ -13,6 +13,7 @@ import {
     changeUserId,
     createMember, setRoleOptions, setSuperiorOptions
 } from "../../redux/actions/projectMemberActions";
+import {closeFailed, formFailed} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -41,7 +42,10 @@ export class CreateModal extends React.Component {
         createMember: PropTypes.func,
         cancelManage: PropTypes.func,
         setRoleOptions: PropTypes.func,
-        setSuperiorOptions: PropTypes.func
+        setSuperiorOptions: PropTypes.func,
+        failed: PropTypes.string,
+        formFailed: PropTypes.func,
+        closeFailed: PropTypes.func
     };
 
     constructor(props) {
@@ -49,7 +53,11 @@ export class CreateModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.createMember(this.props.currentUserId, this.props.currentSuperiorId, this.props.currentRoleId, this.props.currentRoleName);
+        if(this.props.currentUserId === '' || this.props.currentSuperiorId === '' || this.props.currentRoleId === '' || this.props.currentRoleName === ''){
+            this.props.formFailed('createMember');
+        }else{
+            this.props.createMember(this.props.currentUserId, this.props.currentSuperiorId, this.props.currentRoleId, this.props.currentRoleName);
+        }
     }
 
     handleChangeMember = (e, data) => {
@@ -64,6 +72,19 @@ export class CreateModal extends React.Component {
     }
 
     render() {
+
+        let updateFailedMessage;
+        if(this.props.failed === 'createMember'){
+            updateFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            updateFailedMessage = null;
+        }
 
         return (
 
@@ -114,6 +135,7 @@ export class CreateModal extends React.Component {
                         </form>
                     </div>
                 </div>
+                {updateFailedMessage}
                 <div className="actions">
                     <div className="ui black deny button" onClick={this.props.cancelManage}>
                         取消
@@ -140,6 +162,7 @@ const mapStateToProps = (state, ownProps) => ({
     members: state._projectMember.members,
     roleOptions: state._projectMember.roleOptions,
     superiorOptions: state._projectMember.superiorOptions,
+    failed: state._userReducer.failed,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -167,6 +190,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     setSuperiorOptions: (role, members, user_id) => {
         dispatch(setSuperiorOptions(role, members, user_id));
+    },
+    formFailed: (form) => {
+        dispatch(formFailed(form));
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
     }
 });
 

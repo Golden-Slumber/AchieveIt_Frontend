@@ -34,16 +34,24 @@ export class ProjectHourManage extends React.Component {
     }
 
     render() {
+
         let showWorkingHours = this.props.workingHours.map((item, index) => {
+            let time1 = new Date(item.end_time.replace('-', '/'));
+            let time2 = new Date();
+            let aDay = 24 * 60 * 60 * 1000;
+            let diff = (time2 - time1) / aDay;
             return (
                 <tr>
                     <td>{item.referred_activity_type_id}</td>
                     <td>{item.function_description_snapshot}</td>
                     <td>{item.start_time}</td>
                     <td>{item.end_time}</td>
-                    <td><Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
-                        this.handleModifyClick(item.working_hour_id);
-                    }}/></td>
+                    <td>{
+                        diff <= 3 ?
+                            <Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
+                                this.handleModifyClick(item.working_hour_id);
+                            }}/> : null
+                    }</td>
                 </tr>
             );
         });

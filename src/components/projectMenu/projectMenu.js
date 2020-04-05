@@ -20,6 +20,7 @@ import {getDownloadData, getProjectFunction} from "../../redux/actions/projectFu
 import {changeCurrentDevicePage, getDevices} from "../../redux/actions/projectDeviceActions";
 import {getRisks} from "../../redux/actions/projectRiskActions";
 import {getUrl} from "../../redux/actions/projectDefectActions";
+import {checkPropertyAdmin} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -55,7 +56,9 @@ export class ProjectMenu extends React.Component {
         changeCurrentDevicePage: PropTypes.func,
         getDevices: PropTypes.func,
         getRisks: PropTypes.func,
-        getUrl: PropTypes.func
+        getUrl: PropTypes.func,
+        projectRoles: PropTypes.array,
+        checkPropertyAdmin: PropTypes.func
     };
 
     handleDetailClick = () => {
@@ -83,6 +86,7 @@ export class ProjectMenu extends React.Component {
         this.props.switchDevice();
         this.props.changeCurrentDevicePage(1);
         this.props.getDevices(1);
+        this.props.checkPropertyAdmin(this.props.projectRoles);
     }
 
     handleRiskClick = () => {
@@ -135,6 +139,7 @@ const mapStateToProps = (state, ownProps) => ({
     device: state._projectMenu.device,
     risk: state._projectMenu.risk,
     defect: state._projectMenu.defect,
+    projectRoles: state._userReducer.projectRoles
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -185,6 +190,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     getUrl: (projectId) => {
         dispatch(getUrl(projectId));
+    },
+    checkPropertyAdmin: (projectRoles) => {
+        dispatch(checkPropertyAdmin(projectRoles));
     }
 });
 

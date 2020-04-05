@@ -1,4 +1,5 @@
 import {
+    CHANGE_ADMIN,
     CHANGE_FAILEDSTATE,
     CHANGE_MANAGEMEMBER,
     CHANGE_PERISSIONS, CHANGE_RISKCOUNTER,
@@ -15,7 +16,7 @@ import {
     CREATE_RISK,
     DELETE_MEMBER,
     MODIFY_MANAGESTATE,
-    MODIFY_MEMBER, SET_GLOBALROLE, SET_USERID, SET_USERNAME,
+    MODIFY_MEMBER, SET_GLOBALROLE, SET_PROJECTROLES, SET_USERID, SET_USERNAME,
     UPDATE_MEMBER
 } from "../actions";
 
@@ -24,7 +25,9 @@ const initialState = {
     successful: '',
     username: '',
     globalRole: '',
-    user_id: ''
+    user_id: '',
+    projectRoles: [],
+    isPropertyAdmin: false
 }
 
 export default function userReducer(state=initialState, action){
@@ -39,6 +42,10 @@ export default function userReducer(state=initialState, action){
             return {...state, globalRole: action.payload}
         case SET_USERID:
             return {...state, user_id: action.payload}
+        case SET_PROJECTROLES:
+            return {...state, projectRoles: action.payload}
+        case CHANGE_ADMIN:
+            return {...state, isPropertyAdmin: action.payload}
         default:
             return state;
     }

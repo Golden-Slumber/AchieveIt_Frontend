@@ -15,7 +15,7 @@ import {
 import {setProjectId} from "../../redux/actions";
 import currentPage from "../../redux/reducers/currentPageReducer";
 import {getBusinessFields, getCustomers, getProjectIds} from "../../redux/actions/dependencyActions";
-import {closeFailed, formFailed} from "../../redux/actions/userActions";
+import {closeFailed, formFailed, setProjectRoles} from "../../redux/actions/userActions";
 import {switchDetail} from "../../redux/actions/projectMenuActions";
 
 const globalStyles = {
@@ -28,6 +28,7 @@ export class Project extends React.Component{
 
     static propTypes = {
         globalRole: PropTypes.string,
+        user_id: PropTypes.string,
         keyword: PropTypes.string,
         projects: PropTypes.array,
         currentPage: PropTypes.number,
@@ -43,7 +44,8 @@ export class Project extends React.Component{
         failed: PropTypes.string,
         closeFailed: PropTypes.func,
         formFailed: PropTypes.func,
-        switchDetail: PropTypes.func
+        switchDetail: PropTypes.func,
+        setProjectRoles: PropTypes.func
     };
 
     constructor(props) {
@@ -67,6 +69,7 @@ export class Project extends React.Component{
         this.props.setProjectId(projectId);
         this.props.getProjectDetail(projectId);
         this.props.setProjectState(projectState);
+        this.props.setProjectRoles(projectId, this.props.user_id);
         this.props.switchDetail();
     }
 
@@ -175,7 +178,8 @@ const mapStateToProps = (state, ownProps) => ({
     projects: state._projectHome.projects,
     currentPage: state._projectHome.currentPage,
     more: state._projectHome.more,
-    failed: state._userReducer.failed
+    failed: state._userReducer.failed,
+    user_id: state._userReducer.user_id
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -213,6 +217,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     switchDetail: () => {
         dispatch(switchDetail());
+    },
+    setProjectRoles: (projectId, user_id) => {
+        dispatch(setProjectRoles(projectId, user_id));
     }
 });
 

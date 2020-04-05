@@ -3,13 +3,14 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon, Dropdown} from "semantic-ui-react";
+import {Button, Container, Icon, Dropdown, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
     cancelFunctionManage,
     changeFunctionDescription, createFunction,
     setFunctionId, setSuperiorId
 } from "../../redux/actions/projectFunctionActions";
+import {closeFailed, formFailed} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -35,7 +36,10 @@ export class CreateModal extends React.Component {
         changeFunctionDescription: PropTypes.func,
         createFunction: PropTypes.func,
         cancelFunctionManage: PropTypes.func,
-        superiorFunctions: PropTypes.array
+        superiorFunctions: PropTypes.array,
+        failed: PropTypes.string,
+        formFailed: PropTypes.func,
+        closeFailed: PropTypes.func
     };
 
     constructor(props) {
@@ -44,10 +48,27 @@ export class CreateModal extends React.Component {
 
     handleFinishClick = () => {
         console.log(this.props.currentDescription);
-        this.props.createFunction(this.props.currentFunctionId, this.props.currentSuperiorId, this.props.currentDescription);
+        if(this.props.currentDescription === ''){
+            this.props.formFailed('createFunction');
+        }else{
+            this.props.createFunction(this.props.currentFunctionId, this.props.currentSuperiorId, this.props.currentDescription);
+        }
     }
 
     render() {
+
+        let updateFailedMessage;
+        if(this.props.failed === 'createFunction'){
+            updateFailedMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            updateFailedMessage = null;
+        }
 
         return (
 
@@ -77,6 +98,7 @@ export class CreateModal extends React.Component {
                         </form>
                     </div>
                 </div>
+                {updateFailedMessage}
                 <div className="actions">
                     <div className="ui black deny button" onClick={this.props.cancelFunctionManage}>
                         取消
@@ -96,7 +118,8 @@ const mapStateToProps = (state, ownProps) => ({
     currentFunctionId: state._projectFunction.currentFunctionId,
     currentSuperiorId: state._projectFunction.currentSuperiorId,
     currentDescription: state._projectFunction.currentDescription,
-    superiorFunctions: state._projectFunction.superiorFunctions
+    superiorFunctions: state._projectFunction.superiorFunctions,
+    failed: state._userReducer.failed
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -114,6 +137,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     cancelFunctionManage: () => {
         dispatch(cancelFunctionManage())
+    },
+    formFailed: (form) => {
+        dispatch(formFailed(form));
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
     }
 });
 

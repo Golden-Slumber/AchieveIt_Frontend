@@ -38,7 +38,8 @@ export class ProjectDevice extends React.Component {
         startReturning: PropTypes.func,
         startVerifying: PropTypes.func,
         changeCurrentDevicePage: PropTypes.func,
-        getDevices: PropTypes.func
+        getDevices: PropTypes.func,
+        isPropertyAdmin: PropTypes.bool
     };
 
     handleMoreclick = () => {
@@ -64,9 +65,13 @@ export class ProjectDevice extends React.Component {
                     <td>{item.deviceId}</td>
                     <td>{item.deviceName}</td>
                     <td>{item.deviceStatus}</td>
-                    <td><Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
-                        this.handleOperationClick(item.deviceId, item.deviceStatus);
-                    }}/></td>
+                    <td>{
+                        ((this.props.isPropertyAdmin && item.deviceStatus === 'ToBeChecked') || (!this.props.isPropertyAdmin&&(item.deviceStatus==='Available' ||
+                            item.deviceStatus === 'Maintaining'))) ?
+                            <Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
+                                this.handleOperationClick(item.deviceId, item.deviceStatus);
+                            }}/> : null
+                    }</td>
                 </tr>
             );
         })
@@ -150,7 +155,8 @@ const mapStateToProps = (state, ownProps) => ({
     devicePage: state._projectDevice.devicePage,
     deviceModal: state._projectDevice.deviceModal,
     currentPage: state._projectDevice.currentPage,
-    more: state._projectDevice.more
+    more: state._projectDevice.more,
+    isPropertyAdmin: state._userReducer.isPropertyAdmin
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

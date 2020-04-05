@@ -13,7 +13,7 @@ import {
     tenancyDevice,
     changeCurrentTime
 } from "../../redux/actions/projectDeviceActions"
-import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
+import {closeFailed, closeSuccess, formFailed} from "../../redux/actions/userActions";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -38,7 +38,8 @@ export class TenancyModal extends React.Component {
         failed: PropTypes.string,
         successful: PropTypes.string,
         closeFailed: PropTypes.func,
-        closeSuccess: PropTypes.func
+        closeSuccess: PropTypes.func,
+        formFailed: PropTypes.func
     };
 
     constructor(props) {
@@ -46,7 +47,14 @@ export class TenancyModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.tenancyDevice(this.props.currentDeviceId, this.props.projectId, this.props.currentTime, this.props.currentReturnTime, this.props.currentDeviceManager);
+        let time1 = new Date(this.props.currentTime.replace('-', '/'));
+        let time2 = new Date(this.props.currentReturnTime.replace('-', '/'));
+        if(this.props.currentTime === '' || this.props.currentReturnTime === '' || this.props.currentDeviceManager === '' ||
+            time1 >= time2){
+            this.props.formFailed('tenancyDevice');
+        }else{
+            this.props.tenancyDevice(this.props.currentDeviceId, this.props.projectId, this.props.currentTime, this.props.currentReturnTime, this.props.currentDeviceManager);
+        }
     }
 
     render() {
@@ -140,7 +148,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
         dispatch(closeFailed());
     },
     closeSuccess: () => {
-        dispatch(closeSuccess())
+        dispatch(closeSuccess());
+    },
+    formFailed: (form) => {
+        dispatch(formFailed(form));
     }
 });
 

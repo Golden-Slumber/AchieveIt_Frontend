@@ -6,7 +6,7 @@ import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Icon, Dropdown, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {cancelHourModal, createWorkingHour, changeActivity, changeFunctionType, changeWorkEndTime, changeWorkStartTime} from "../../redux/actions/projectHourActions";
-import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
+import {closeFailed, closeSuccess, formFailed} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -35,7 +35,8 @@ export class CreateModal extends React.Component {
         failed: PropTypes.string,
         successful: PropTypes.string,
         closeFailed: PropTypes.func,
-        closeSuccess: PropTypes.func
+        closeSuccess: PropTypes.func,
+        formFailed: PropTypes.func
     };
 
     constructor(props) {
@@ -43,7 +44,14 @@ export class CreateModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.createWorkingHour(this.props.projectId, this.props.currentActivityType, this.props.currentFunctionType, this.props.currentStartTime, this.props.currentEndTime);
+        let time1 = new Date(this.props.currentStartTime.replace('-', '/'));
+        let time2 = new Date(this.props.currentEndTime.replace('-', '/'));
+        if(this.props.currentActivityType === '' || this.props.currentFunctionType === '' || this.props.currentStartTime === '' || this.props.currentEndTime === ''
+            || time1 >= time2){
+            this.props.formFailed('createWorkHour');
+        }else{
+            this.props.createWorkingHour(this.props.projectId, this.props.currentActivityType, this.props.currentFunctionType, this.props.currentStartTime, this.props.currentEndTime);
+        }
     }
 
     render() {
@@ -157,7 +165,10 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
         dispatch(closeFailed());
     },
     closeSuccess: () => {
-        dispatch(closeSuccess())
+        dispatch(closeSuccess());
+    },
+    formFailed: (form) => {
+        dispatch(formFailed(form));
     }
 });
 

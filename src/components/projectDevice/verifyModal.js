@@ -15,7 +15,7 @@ import {
 } from "../../redux/actions/projectDeviceActions"
 import Radio from "semantic-ui-react/dist/commonjs/addons/Radio";
 import {propTypes} from "react-csv/src/metaProps";
-import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
+import {closeFailed, closeSuccess, formFailed} from "../../redux/actions/userActions";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -38,7 +38,8 @@ export class ReturnModal extends React.Component {
         failed: PropTypes.string,
         successful: PropTypes.string,
         closeFailed: PropTypes.func,
-        closeSuccess: PropTypes.func
+        closeSuccess: PropTypes.func,
+        formFailed: PropTypes.func
     };
 
     constructor(props) {
@@ -46,7 +47,11 @@ export class ReturnModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.verifyDevice(this.props.currentDeviceId, this.props.currentTime, this.props.currentDeviceManager, this.props.verifyState);
+        if(this.props.currentTime === '' || this.props.currentDeviceManager === '' || this.props.verifyState === ''){
+            this.props.formFailed('verifyDevice');
+        }else{
+            this.props.verifyDevice(this.props.currentDeviceId, this.props.currentTime, this.props.currentDeviceManager, this.props.verifyState);
+        }
     }
 
     handleChange = (e, {value}) => {
@@ -150,6 +155,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     closeSuccess: () => {
         dispatch(closeSuccess())
+    },
+    formFailed: (form) => {
+        dispatch(formFailed(form));
     }
 });
 

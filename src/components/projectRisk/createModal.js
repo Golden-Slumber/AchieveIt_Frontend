@@ -241,20 +241,20 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     changeRiskDescription: (e) => {
         dispatch(changeRiskDescription(e.target.value))
     },
-    changeRiskLevel: (e) => {
-        dispatch(changeRiskLevel(e.target.value))
+    changeRiskLevel: (e, data) => {
+        dispatch(changeRiskLevel(data.value))
     },
-    changeRiskImpact: (e) => {
-        dispatch(changeRiskImpact(e.target.value))
+    changeRiskImpact: (e, data) => {
+        dispatch(changeRiskImpact(data.value))
     },
     changeRiskCounter: (e) => {
         dispatch(changeRiskCounter(e.target.value))
     },
-    changeRiskStatus: (e) => {
-        dispatch(changeRiskStatus(e.target.value))
+    changeRiskStatus: (e, data) => {
+        dispatch(changeRiskStatus(data.value))
     },
-    changeRiskFrequency: (e) => {
-        dispatch(changeRiskFrequency(e.target.value))
+    changeRiskFrequency: (e, data) => {
+        dispatch(changeRiskFrequency(data.value))
     },
     changeRiskPerson: (e, {value}) => {
         dispatch(changeRiskPerson(value))
