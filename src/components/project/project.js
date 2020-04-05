@@ -16,6 +16,7 @@ import {setProjectId} from "../../redux/actions";
 import currentPage from "../../redux/reducers/currentPageReducer";
 import {getBusinessFields, getCustomers, getProjectIds} from "../../redux/actions/dependencyActions";
 import {closeFailed, formFailed} from "../../redux/actions/userActions";
+import {switchDetail} from "../../redux/actions/projectMenuActions";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -41,7 +42,8 @@ export class Project extends React.Component{
         setProjectState: PropTypes.func,
         failed: PropTypes.string,
         closeFailed: PropTypes.func,
-        formFailed: PropTypes.func
+        formFailed: PropTypes.func,
+        switchDetail: PropTypes.func
     };
 
     constructor(props) {
@@ -65,6 +67,7 @@ export class Project extends React.Component{
         this.props.setProjectId(projectId);
         this.props.getProjectDetail(projectId);
         this.props.setProjectState(projectState);
+        this.props.switchDetail();
     }
 
     handleMoreClick = () => {
@@ -207,6 +210,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     formFailed: (form) => {
         dispatch(formFailed(form));
+    },
+    switchDetail: () => {
+        dispatch(switchDetail());
     }
 });
 

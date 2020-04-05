@@ -147,7 +147,7 @@ export class ProjectMemberManage extends React.Component {
                 {deleteModal}
                 {updateSuccessMessage}
                 {updateFailedMessage}
-                <table className="ui fixed single line celled table">
+                <table className="ui celled padded table">
                     <thead>
                     <tr>
                         <th>角色</th>

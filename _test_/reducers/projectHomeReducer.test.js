@@ -203,7 +203,7 @@ describe('projectHomeReducer test', () => {
             type: types.GET_RELATIVE_PROJECTSBYSTATUS,
             payload: {
                 type: 'Initiated',
-                projects: []
+                relativeProjects: []
             }
         })).toEqual({
             keyword: '',

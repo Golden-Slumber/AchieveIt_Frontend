@@ -140,12 +140,12 @@ describe('projectMenuReducer test', () => {
         }, {
             type: types.SWITCH_RISK
         })).toEqual({
-            detail: 'item active',
+            detail: 'item',
             member: 'item',
             function: 'item',
             hour: 'item',
             device: 'item',
-            risk: 'item',
+            risk: 'item active',
             defect: 'item'
         });
     });

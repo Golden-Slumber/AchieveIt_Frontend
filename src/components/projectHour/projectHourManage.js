@@ -61,7 +61,7 @@ export class ProjectHourManage extends React.Component {
             <div>
                 {createModal}
                 {modifyModal}
-                <table className="ui fixed single line celled table">
+                <table className="ui celled padded table">
                     <thead>
                     <tr>
                         <th>活动类型</th>

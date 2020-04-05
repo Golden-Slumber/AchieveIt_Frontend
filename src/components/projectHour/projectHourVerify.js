@@ -61,7 +61,7 @@ export class ProjectHourVerify extends React.Component {
 
             <div>
                 {modal}
-                <table className="ui fixed single line celled table">
+                <table className="ui celled padded table">
                     <thead>
                     <tr>
                         <th>工时ID</th>

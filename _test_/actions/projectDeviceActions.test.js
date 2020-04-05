@@ -167,7 +167,8 @@ describe('projectDeviceActions Test', () => {
             .reply(200, {'status': 'SUCCESS'});
 
         const expectedActions = [
-                {type: types.CHANGE_DEVICEMODAL, payload: ''}
+                {type: types.CHANGE_DEVICEMODAL, payload: ''},
+                {type: types.CHANGE_CURRENTDEVICEPAGE, payload: 1}
             ],
             store = mockStore();
 
@@ -188,7 +189,8 @@ describe('projectDeviceActions Test', () => {
             .reply(200, {'status': 'SUCCESS'});
 
         const expectedActions = [
-                {type: types.CHANGE_DEVICEMODAL, payload: ''}
+                {type: types.CHANGE_DEVICEMODAL, payload: ''},
+                {type: types.CHANGE_CURRENTDEVICEPAGE, payload: 1}
             ],
             store = mockStore();
 
@@ -211,7 +213,8 @@ describe('projectDeviceActions Test', () => {
             .reply(200, {'status': 'SUCCESS'});
 
         const expectedActions = [
-                {type: types.CHANGE_DEVICEMODAL, payload: ''}
+                {type: types.CHANGE_DEVICEMODAL, payload: ''},
+                {type: types.CHANGE_CURRENTDEVICEPAGE, payload: 1}
             ],
             store = mockStore();
 

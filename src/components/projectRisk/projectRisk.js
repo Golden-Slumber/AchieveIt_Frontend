@@ -71,7 +71,7 @@ export class ProjectRisk extends React.Component {
 
             <div>
                 <Segment style={globalStyles}>
-                    <Container className='main ui' style={{margin: '100px, 100px, 0px, 100px'}}>
+                    <Container className='main ui' style={{margin: '100px, 0px, 0px, 0px'}}>
 
                         <h1 className="ui header">{this.props.projectId}</h1>
 
@@ -79,7 +79,7 @@ export class ProjectRisk extends React.Component {
                             <ProjectMenu />
 
                             {createModal}
-                            <table className="ui fixed single line celled table">
+                            <table className="ui celled padded table" >
                                 <thead>
                                 <tr>
                                     <th>风险ID</th>

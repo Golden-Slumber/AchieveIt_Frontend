@@ -58,7 +58,7 @@ export class ProjectMember extends React.Component {
         if(!this.props.isManaging){
             mainBody = (
                 <div>
-                    <table className="ui fixed single line celled table">
+                    <table className="ui celled padded table">
                         <thead>
                         <tr>
                             <th>角色</th>

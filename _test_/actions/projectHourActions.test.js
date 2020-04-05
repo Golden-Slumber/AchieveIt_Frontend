@@ -49,7 +49,7 @@ describe('projectHourActions Test', () => {
 
     it('should create an action to start verifying', function () {
         const expectedAction = {
-            type: types.CHANGE_HOURMODALSTATE,
+            type: types.CHANGE_HOURPAGESTATE,
             payload: 'verify'
         };
 
@@ -58,7 +58,7 @@ describe('projectHourActions Test', () => {
 
     it('should create an action to finish verifying', function () {
         const expectedAction = {
-            type: types.CHANGE_HOURMODALSTATE,
+            type: types.CHANGE_HOURPAGESTATE,
             payload: ''
         };
 
@@ -254,9 +254,7 @@ describe('projectHourActions Test', () => {
             .get('/project/workingHour/activityType')
             .reply(200, {'status': 'SUCCESS', 'result': []});
 
-        const expectedActions = [
-                {type: types.SET_ACTIVITYOPTIONS, payload: []},
-            ],
+        const expectedActions = [],
             store = mockStore();
 
         return store.dispatch(projectHourActions.setActivityOptions()).then(() => {

@@ -1,4 +1,4 @@
-import reducer from '../../src/redux/reducers/projectDefectReducer';
+import reducer from '../../src/redux/reducers/projectRiskReducer';
 import * as types from '../../src/redux/actions/actionTypes';
 import {GET_RISKS, GET_URL} from "../../src/redux/actions/actionTypes";
 
@@ -17,7 +17,7 @@ const initialState = {
     membersOptions: []
 };
 
-describe('projectDefectReducer test', () => {
+describe('projectRiskReducer test', () => {
 
     it('should return the initial state', function () {
         expect(reducer(undefined, {})).toEqual(initialState);

@@ -72,7 +72,7 @@ describe('projectMemberActions Test', () => {
             ],
             store = mockStore();
 
-        return store.dispatch(projectMemberActions.startModifying('userId')).then(() => {
+        return store.dispatch(projectMemberActions.startDeleting('userId')).then(() => {
             expect(store.getActions()).toEqual(expectedActions);
         })
     });
@@ -144,7 +144,28 @@ describe('projectMemberActions Test', () => {
     it('should create an action to set role options', function () {
         const expectedAction = {
             type: types.SET_ROLEOPTIONS,
-            payload: []
+            payload: [
+                {
+                    "key": "290089467161608193",
+                    "text": "DevelopmentLeader",
+                    "value": "290089467161608193 DevelopmentLeader"
+                },
+                {
+                    "key": "294226508208144384",
+                    "text": "TestLeader",
+                    "value": "294226508208144384 TestLeader"
+                },
+                {
+                    "key": "294226509294469120",
+                    "text": "DevelopmentStaff",
+                    "value": "294226509294469120 DevelopmentStaff",
+                },
+                {
+                    "key": "294226508208155935",
+                    "text": "TestStaff",
+                    "value": "294226508208155935 TestStaff",
+                }
+            ]
         };
 
         expect(projectMemberActions.setRoleOptions('globalRole', [], 'userId')).toEqual(expectedAction);
@@ -190,7 +211,8 @@ describe('projectMemberActions Test', () => {
             .reply(200, {'status': 'SUCCESS', 'result': 'result'});
 
         const expectedActions = [
-                {type: types.MODIFY_MEMBER}
+                {type: types.MODIFY_MEMBER},
+                {type: types.CHNAGE_SUCCESSSTATE, payload: 'updatePermission'}
             ],
             store = mockStore();
 
@@ -205,7 +227,7 @@ describe('projectMemberActions Test', () => {
             .reply(200, {'status': 'SUCCESS', 'result': 'result'});
 
         const expectedActions = [
-                {type: types.CHANGE_MANAGEMEMBER, payload: false}
+                {type: types.CHANGE_FAILEDSTATE, payload: 'updateMember'}
             ],
             store = mockStore();
 

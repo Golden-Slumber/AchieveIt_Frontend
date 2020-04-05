@@ -92,7 +92,7 @@ export class ProjectHour extends React.Component {
         }else{
             mainBody = (
                 <div>
-                    <table className="ui fixed single line celled table">
+                    <table className="ui celled padded table">
                         <thead>
                         <tr>
                             <th>活动类型</th>

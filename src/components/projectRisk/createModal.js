@@ -13,7 +13,7 @@ import {
     changeRiskLevel, changeRiskPerson, changeRiskStatus,
     changeRiskType, createRisk
 } from "../../redux/actions/projectRiskActions";
-import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
+import {closeFailed, closeSuccess, formFailed} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -22,7 +22,7 @@ const globalStyles = {
     minHeight: '100em',
 };
 
-const options = [
+const typeOptions = [
     {key: 'PS', value: 'PS', text: 'PS'},
     {key: 'PD', value: 'PD', text: 'PD'},
     {key: 'ST', value: 'ST', text: 'ST'},
@@ -31,6 +31,26 @@ const options = [
     {key: 'TE', value: 'TE', text: 'TE'},
     {key: 'BU', value: 'BU', text: 'BU'}
 ];
+
+const levelOptions = [
+    {key: 'L', value: 'L', text: 'L'},
+    {key: 'M', value: 'M', text: 'M'},
+    {key: 'H', value: 'H', text: 'H'},
+]
+
+const stateOptions = [
+    {key: '已识别', value: '已识别', text: '已识别'},
+    {key: '解决中', value: '解决中', text: '解决中'},
+    {key: '已解决', value: '已解决', text: '已解决'},
+]
+
+const frequencyOptions = [
+    {key: '每周1次', value: '每周1次', text: '每周1次'},
+    {key: '每周2次', value: '每周2次', text: '每周2次'},
+    {key: '每周3次', value: '每周3次', text: '每周3次'},
+    {key: '每周4次', value: '每周4次', text: '每周4次'},
+    {key: '每周5次', value: '每周5次', text: '每周5次'},
+]
 
 export class CreateModal extends React.Component {
 
@@ -58,7 +78,8 @@ export class CreateModal extends React.Component {
         failed: PropTypes.string,
         successful: PropTypes.string,
         closeFailed: PropTypes.func,
-        closeSuccess: PropTypes.func
+        closeSuccess: PropTypes.func,
+        formFailed: PropTypes.func
     };
 
     constructor(props) {
@@ -66,8 +87,13 @@ export class CreateModal extends React.Component {
     }
 
     handleFinishClick = () => {
-        this.props.createRisk(this.props.projectId, this.props.currentType, this.props.currentDescription, this.props.currentLevel, this.props.currentImpact,
-            this.props.currentCountermeasure, this.props.currentStatus, this.props.currentFrequency, this.props.currentResponsiblePerson);
+        if(this.props.currentType === '' || this.props.currentDescription === '' || this.props.currentLevel === '' || this.props.currentImpact === '' ||
+            this.props.currentCountermeasure === '' || this.props.currentStatus === '' || this.props.currentFrequency === '' || this.prop.currentResponsiblePerson === []){
+            this.props.formFailed('createRisk');
+        }else{
+            this.props.createRisk(this.props.projectId, this.props.currentType, this.props.currentDescription, this.props.currentLevel, this.props.currentImpact,
+                this.props.currentCountermeasure, this.props.currentStatus, this.props.currentFrequency, this.props.currentResponsiblePerson);
+        }
     }
 
     render() {
@@ -101,38 +127,71 @@ export class CreateModal extends React.Component {
                                     fluid
                                     search
                                     selection
-                                    options={options}
+                                    options={typeOptions}
+                                    value={this.props.currentType}
                                     onChange={this.props.changeRiskType}
                                 />
                             </div>
                             <div className="field">
                                 <label>风险描述</label>
-                                <input type="text" placeholder="描述" onChange={this.props.changeRiskDescription}/>
+                                <input type="text" placeholder="描述" value={this.props.currentDescription} onChange={this.props.changeRiskDescription}/>
                             </div>
                             <div className="field">
                                 <label>风险级别</label>
-                                <input type="text" placeholder="级别" onChange={this.props.changeRiskLevel}/>
+                                <Dropdown
+                                    placeholder='选择风险级别'
+                                    fluid
+                                    search
+                                    selection
+                                    options={levelOptions}
+                                    value={this.props.currentLevel}
+                                    onChange={this.props.changeRiskLevel}
+                                />
                             </div>
                             <div className="field">
                                 <label>风险影响度</label>
-                                <input type="text" placeholder="影响" onChange={this.props.changeRiskImpact}/>
+                                <Dropdown
+                                    placeholder='选择风险影响度'
+                                    fluid
+                                    search
+                                    selection
+                                    options={levelOptions}
+                                    value={this.props.currentImpact}
+                                    onChange={this.props.changeRiskImpact}
+                                />
                             </div>
                             <div className="field">
                                 <label>风险应对策略</label>
-                                <input type="text" placeholder="应对策略" onChange={this.props.changeRiskCounter}/>
+                                <input type="text" placeholder="应对策略" value={this.props.currentCountermeasure} onChange={this.props.changeRiskCounter}/>
                             </div>
                             <div className="field">
                                 <label>风险状态</label>
-                                <input type="text" placeholder="状态" onChange={this.props.changeRiskStatus}/>
+                                <Dropdown
+                                    placeholder='选择风险状态'
+                                    fluid
+                                    search
+                                    selection
+                                    options={stateOptions}
+                                    value={this.props.currentStatus}
+                                    onChange={this.props.changeRiskStatus}
+                                />
                             </div>
                             <div className="field">
                                 <label>风险跟踪频度</label>
-                                <input type="text" placeholder="跟踪频度" onChange={this.props.changeRiskFrequency}/>
+                                <Dropdown
+                                    placeholder='选择风险跟踪频度'
+                                    fluid
+                                    search
+                                    selection
+                                    options={frequencyOptions}
+                                    value={this.props.currentFrequency}
+                                    onChange={this.props.changeRiskFrequency}
+                                />
                             </div>
                             <div className="field">
-                                <label>风险相关者</label>
+                                <label>风险负责人</label>
                                 <Dropdown
-                                    placeholder='选择相关者'
+                                    placeholder='选择负责人'
                                     fluid
                                     multiple
                                     search
@@ -211,6 +270,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     closeSuccess: () => {
         dispatch(closeSuccess())
+    },
+    formFailed: (form) => {
+        dispatch(formFailed(form));
     }
 });
 

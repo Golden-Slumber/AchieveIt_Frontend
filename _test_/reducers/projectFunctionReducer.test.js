@@ -85,9 +85,11 @@ describe('projectFunctionReducer test', () => {
             currentFunctionId: '',
             currentSuperiorId: '',
             currentDescription: '',
-            superiorFunctions: [{
-                superior: 'superior'
-            }],
+            superiorFunctions: {
+                superiorFunctions: [{
+                    superior: 'superior'
+                }]
+            },
             uploadData: '',
             downloadData: []
         });
@@ -260,7 +262,7 @@ describe('projectFunctionReducer test', () => {
             isManaging: false,
             isUploading: false,
             uploadedData: '',
-            manageState: 'null',
+            manageState: '',
             currentFunctionId: '',
             currentSuperiorId: '',
             currentDescription: '',
@@ -281,7 +283,7 @@ describe('projectFunctionReducer test', () => {
             isManaging: false,
             isUploading: false,
             uploadedData: '',
-            manageState: 'null',
+            manageState: '',
             currentFunctionId: '',
             currentSuperiorId: '',
             currentDescription: '',
@@ -297,7 +299,7 @@ describe('projectFunctionReducer test', () => {
             isManaging: false,
             isUploading: false,
             uploadedData: '',
-            manageState: 'null',
+            manageState: '',
             currentFunctionId: '',
             currentSuperiorId: '',
             currentDescription: '',

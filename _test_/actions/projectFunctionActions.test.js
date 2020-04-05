@@ -197,7 +197,7 @@ describe('projectFunctionActions Test', () => {
             payload: 'functionId'
         };
 
-        expect(projectFunctionActions.setSuperiorId('functionId')).toEqual(expectedAction);
+        expect(projectFunctionActions.setFunctionId('functionId')).toEqual(expectedAction);
 
     });
 
@@ -233,7 +233,7 @@ describe('projectFunctionActions Test', () => {
         const expectedActions = [
                 {type: types.GET_FUNCTIONS,
                 payload: {
-                    'firstFunctions': {'functionId': '001', 'superiorId': '001', 'functionDescription': '001'},
+                    'firstFunctions': [{'functionId': '001', 'superiorId': '001', 'functionDescription': '001'}],
                     'secondFunctions': []
                 }},
             ],
@@ -267,7 +267,7 @@ describe('projectFunctionActions Test', () => {
 
         const expectedActions = [
                 {type: types.CHANGE_DOWNLOADDATA,
-                    payload: ['res']},
+                    payload: [['res']]},
             ],
             store = mockStore();
 
@@ -277,20 +277,17 @@ describe('projectFunctionActions Test', () => {
     });
 
     it('should create to upload functions', function () {
+        let formData = new FormData();
+        formData.append('project_id', 'projectId');
+        formData.append('csv_file', 'uploadData');
         nock(BASE_URL)
-            .post('/project/functionParse', 'project_id=projectId&csv_file=uploadData')
-            .reply(200, {'status': 'SUCCESS', 'result': [{'id_for_display': '001', 'superior_display_id': '001', 'description': '001'}]});
+            .post('/project/functionParse', formData)
+            .reply(200, {'status': 'SUCCESS', 'result': {'functions': [{'id_for_display': '001', 'superior_display_id': '001', 'description': '001'}]}});
 
-        const expectedActions = [
-                {type: types.GET_FUNCTIONS,
-                    payload: {
-                        'firstFunctions': {'functionId': '001', 'superiorId': '001', 'functionDescription': '001'},
-                        'secondFunctions': []
-                    }},
-            ],
+        const expectedActions = [],
             store = mockStore();
 
-        return store.dispatch(projectFunctionActions.updateFunction('projectId', 'uploadData')).then(() => {
+        return store.dispatch(projectFunctionActions.uploadFunctions('projectId', 'uploadData')).then(() => {
             expect(store.getActions()).toEqual(expectedActions);
         })
     });

@@ -131,10 +131,7 @@ describe('projectHomeActions Test', () => {
             .post('/project/listRelative', {'page_size': '10', 'current_page': 'currentPage'})
             .reply(200, {'status': 'SUCCESS', 'result': [{'project_id': 'id', 'project_name': 'name', 'status': 'status'}]});
 
-        const expectedActions = [
-                {type: types.GET_RELATIVE_PROJECTS, payload: [{'id': 'id', 'name': 'name', 'status': 'status'}]},
-                {type: types.CHANGE_MOREPROJECT, payload: false}
-            ],
+        const expectedActions = [],
             store = mockStore();
 
         return store.dispatch(projectHomeActions.getRelativeProjects('currentPage')).then(() => {
@@ -145,12 +142,12 @@ describe('projectHomeActions Test', () => {
     it('should create an action to get relative projects by status', function () {
         nock(BASE_URL)
             .post('/project/getByStatus', {'status': 'status'})
-            .reply(200, {'status': 'SUCCESS', 'result': [{'id': 'id', 'name': 'name', 'status': 'status'}]});
+            .reply(200, {'status': 'SUCCESS', 'result': [{'project_id': 'id', 'project_name': 'name', 'status': 'status'}]});
 
         const expectedActions = [
                 {type: types.GET_RELATIVE_PROJECTSBYSTATUS, payload: {
                         type: 'status',
-                        projects: [{'id': 'id', 'name': 'name', 'status': 'status'}]
+                        relativeProjects: [{'id': 'id', 'name': 'name', 'status': 'status'}]
                     }},
                 {type: types.CHANGE_MOREPROJECT, payload: false}
             ],
@@ -167,9 +164,7 @@ describe('projectHomeActions Test', () => {
             .reply(200, {'status': 'SUCCESS', 'result': [{'project_id': 'id', 'project_name': 'name', 'status': 'status'}]});
 
         const expectedActions = [
-                {type: types.CHANGE_KEYWORD, payload: ''},
-                {type: types.SEARCH_PROJECT, payload: [{'id': 'id', 'name': 'name', 'status': 'status'}]},
-                {type: types.CHANGE_MOREPROJECT, payload: false}
+                {type: types.CHANGE_FAILEDSTATE, payload: 'search'}
             ],
             store = mockStore();
 

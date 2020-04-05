@@ -34,14 +34,14 @@ ReactDOM.render(
                         <Route exact path="/" component={Home}/>
                         <Route path="/login" component={LoginForm}/>
                         <Route path="/project" component={requireAuthentication(Project)}/>
-                        <Route path="/setUp" component={SetUp} />
-                        <Route path="/projectDetail" component={ProjectDetail} />
-                        <Route path="/projectMember" component={ProjectMember} />
-                        <Route path="/projectFunction" component={ProjectFunction} />
-                        <Route path="/projectHour" component={ProjectHour} />
-                        <Route path="/projectDevice" component={ProjectDevice} />
-                        <Route path="/projectRisk" component={ProjectRisk} />
-                        <Route path="/projectDefect" component={ProjectDefect} />
+                        <Route path="/setUp" component={requireAuthentication(SetUp)} />
+                        <Route path="/projectDetail" component={requireAuthentication(ProjectDetail)} />
+                        <Route path="/projectMember" component={requireAuthentication(ProjectMember)} />
+                        <Route path="/projectFunction" component={requireAuthentication(ProjectFunction)} />
+                        <Route path="/projectHour" component={requireAuthentication(ProjectHour)} />
+                        <Route path="/projectDevice" component={requireAuthentication(ProjectDevice)} />
+                        <Route path="/projectRisk" component={requireAuthentication(ProjectRisk)} />
+                        <Route path="/projectDefect" component={requireAuthentication(ProjectDefect)} />
                         <Redirect to="/project"/>
                     </Switch>
                 </div>

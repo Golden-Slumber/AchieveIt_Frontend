@@ -154,11 +154,11 @@ export function modifyProjectInfo(projectId, projectName, customer, startTime, e
 
 export function cancelModify(projectId){
     return async (dispatch) => {
-        dispatch(getProjectDetail(projectId));
         dispatch({
             type: CHANGE_MODIFYSTATE,
             payload: false
-        })
+        });
+        dispatch(getProjectDetail(projectId));
     }
 }
 

@@ -100,7 +100,7 @@ export class ProjectDevice extends React.Component {
             mainBody = (
                 <div>
                     {modal}
-                    <table className="ui fixed single line celled table">
+                    <table className="ui celled padded table">
                         <thead>
                         <tr>
                             <th>设备ID</th>

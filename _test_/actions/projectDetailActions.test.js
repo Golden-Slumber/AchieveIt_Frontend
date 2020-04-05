@@ -109,7 +109,7 @@ describe('projectDetailActions Test', () => {
             payload: false
         }
 
-        expect(projectDetailActions.cancelPushing('projectId')).toEqual(expectedAction);
+        expect(projectDetailActions.cancelModify('projectId')).toEqual(expectedAction);
     });
 
     it('should create an action to start pushing', function () {
@@ -185,7 +185,8 @@ describe('projectDetailActions Test', () => {
 
         const expectedActions = [
                 {type: types.CHANGE_PUSHSTATE, payload: false},
-                {type: types.CHANGE_PROJECTSTATE, payload: 'projectStatus'}
+                {type: types.CHANGE_PROJECTSTATE, payload: 'projectStatus'},
+                {type: types.CHNAGE_SUCCESSSTATE, payload: 'push'}
             ],
             store = mockStore();
 
@@ -196,7 +197,7 @@ describe('projectDetailActions Test', () => {
 
     it('should create an action to confirm configuration', function () {
         nock(BASE_URL)
-            .put('/project/confirmConfigEstablished', {'project_id': 'projectId'})
+            .post('/project/confirmConfigEstablished', {'project_id': 'projectId'})
             .reply(200, {'status': 'SUCCESS'});
 
         const expectedActions = [

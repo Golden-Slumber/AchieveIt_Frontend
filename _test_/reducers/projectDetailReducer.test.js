@@ -3,7 +3,7 @@ import * as types from '../../src/redux/actions/actionTypes';
 import {PROJECTID_SET} from "../../src/redux/actions/actionTypes";
 
 const initialState = {
-    projectId: 'PeojectID',
+    projectId: 'ProjectID',
     projectName: '',
     customer: '',
     startTime: '',

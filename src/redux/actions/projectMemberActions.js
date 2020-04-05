@@ -130,11 +130,9 @@ export function createMember(user_id, superior_id, project_role_id, project_role
         project_role_name: project_role_name
     }
 
-    return async (dispatch) => {
-        dispatch({
-            type: CREATE_MEMBER,
-            payload: member
-        })
+    return {
+        type: CREATE_MEMBER,
+        payload: member
     }
 }
 
@@ -173,11 +171,9 @@ export function modifyMember(userId, projectId, permissions){
 
 export function deleteMember(userId){
 
-    return async (dispatch) => {
-        dispatch({
-            type: DELETE_MEMBER,
-            payload: userId
-        })
+    return {
+        type: DELETE_MEMBER,
+        payload: userId
     }
 }
 
