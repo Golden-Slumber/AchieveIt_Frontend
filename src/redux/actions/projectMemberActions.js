@@ -276,14 +276,9 @@ export function setRoleOptions(globalRole, members, user_id){
             if(members[i].project_role_name === 'EPG' && members[i].user_id === user_id)
                 roleOptions = [];
         }
-    }else if(globalRole === 'ConfigurationManager'){
-        roleOptions = [{key: '294226531868213248', value: '294226531868213248 PropertyAdmin', text: 'PropertyAdmin'}];
-        for(let i=0; i<members.length; i++){
-            if(members[i].project_role_name === 'PropertyAdmin' && members[i].user_id === user_id)
-                roleOptions = [];
-        }
     }else{
         roleOptions = [
+            {key: '294226531868213248', value: '294226531868213248 PropertyAdmin', text: 'PropertyAdmin'},
             {key: '290089467161608193', value: '290089467161608193 DevelopmentLeader', text: 'DevelopmentLeader'},
             {key: '294226508208144384', value: '294226508208144384 TestLeader', text: 'TestLeader'},
             {key: '294226509294469120', value: '294226509294469120 DevelopmentStaff', text: 'DevelopmentStaff'},

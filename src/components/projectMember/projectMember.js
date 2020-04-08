@@ -117,7 +117,7 @@ export class ProjectMember extends React.Component {
         }
 
         let modifyButton;
-        if(this.props.globalRole!=='CommonUser'&&this.props.globalRole!=='ProjectSuperior'&&this.checkProjectState(this.props.projectState)){
+        if(this.props.globalRole!=='CommonUser'&&this.props.globalRole!=='ProjectSuperior'&&this.props.globalRole!=='ConfigurationManager'&&this.checkProjectState(this.props.projectState)){
             modifyButton = (
                 <Button content={'修改项目人员信息'} onClick={this.handleManageClick}/>
             );
