@@ -25,7 +25,7 @@ import {getDownloadData, getProjectFunction} from "../../redux/actions/projectFu
 import {changeCurrentDevicePage, getDevices} from "../../redux/actions/projectDeviceActions";
 import {getRisks} from "../../redux/actions/projectRiskActions";
 import {getUrl} from "../../redux/actions/projectDefectActions";
-import {checkPropertyAdmin} from "../../redux/actions/userActions";
+import {checkPropertyAdmin, setPermissions} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -39,6 +39,7 @@ export class ProjectMenu extends React.Component {
     static propTypes = {
         globalRole: PropTypes.string,
         projectId: PropTypes.string,
+        user_id: PropTypes.string,
         detail: PropTypes.string,
         member: PropTypes.string,
         function: PropTypes.string,
@@ -67,7 +68,8 @@ export class ProjectMenu extends React.Component {
         getMemberDetail: PropTypes.func,
         members: PropTypes.array,
         clearDetailMembers: PropTypes.func,
-        switchDetailMembers: PropTypes.func
+        switchDetailMembers: PropTypes.func,
+        getPermissions: PropTypes.func
     };
 
     handleDetailClick = () => {
@@ -91,6 +93,7 @@ export class ProjectMenu extends React.Component {
     handleHourClick = () => {
         this.props.switchHour();
         this.props.getWorkHours(this.props.projectId);
+        this.props.getPermissions(this.props.projectId, this.props.user_id);
     }
 
     handleDeviceClick = () => {
@@ -151,7 +154,8 @@ const mapStateToProps = (state, ownProps) => ({
     risk: state._projectMenu.risk,
     defect: state._projectMenu.defect,
     projectRoles: state._userReducer.projectRoles,
-    members: state._projectMember.members
+    members: state._projectMember.members,
+    user_id: state._userReducer.user_id
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -214,6 +218,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     switchDetailMembers: (detailed) => {
         dispatch(switchDetailMembers(detailed));
+    },
+    getPermissions: (projectId, user_id) => {
+        dispatch(setPermissions(projectId, user_id));
     }
 });
 
