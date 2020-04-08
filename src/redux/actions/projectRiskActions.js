@@ -3,7 +3,7 @@ import {
     CHANGE_RISKDESCRIPTION,
     CHANGE_RISKIMPACT,
     CHANGE_RISKLEVEL,
-    CHANGE_RISKMODAL, CHANGE_RISKPERSON, CHANGE_RISKSTATUS, CHANGE_RISKTRACK,
+    CHANGE_RISKMODAL, CHANGE_RISKPERSON, CHANGE_RISKRELATED, CHANGE_RISKSTATUS, CHANGE_RISKTRACK,
     CHANGE_RISKTYPE,
     CREATE_RISK, GET_PROJECTMEMBERSOPTIONS, GET_RISKS
 } from "./actionTypes";
@@ -77,7 +77,7 @@ export function cancelCreating(){
     }
 }
 
-export function createRisk(projectId, type, description, level, impact, counter, status, frequency, person){
+export function createRisk(projectId, type, description, level, impact, counter, status, frequency, person, related){
 
     let newRisk = {
         risk_type:type,
@@ -87,8 +87,11 @@ export function createRisk(projectId, type, description, level, impact, counter,
         risk_countermeasure:counter,
         risk_status:status,
         risk_track_frequency:frequency,
-        risk_responsible_person:person
+        risk_responsible_person:person,
+        risk_related_person: related
     }
+
+    console.log(newRisk);
 
     return async (dispatch) => {
         await fetch(BASE_URL+'/project/risk/'+projectId, {
@@ -170,5 +173,12 @@ export function changeRiskPerson(person){
     return {
         type: CHANGE_RISKPERSON,
         payload: person
+    }
+}
+
+export function changeRiskRelated(related){
+    return {
+        type: CHANGE_RISKRELATED,
+        payload: related
     }
 }

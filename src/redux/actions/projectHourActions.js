@@ -323,12 +323,13 @@ export function setActivityOptions(){
         ).then(data => {
             if(data.status === 'SUCCESS'){
                 let activityOptions = [];
-                let arr = data.status.result;
+                let arr = data.result;
                 for(let i=0; i<arr.length; i++){
                     activityOptions.push({
-                       key: arr[i].activity_type_id, value: arr[i].activity_type_id, text: arr[i].level_1_description+' '+arr[i].level_2_description
+                       key: arr[i].activicy_type_id, value: arr[i].activicy_type_id, text: arr[i].level_1_description+' '+arr[i].level_2_description
                     });
                 }
+                console.log(activityOptions);
                 dispatch({
                     type: SET_ACTIVITYOPTIONS,
                     payload: activityOptions

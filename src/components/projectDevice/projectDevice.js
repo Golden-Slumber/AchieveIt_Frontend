@@ -6,7 +6,7 @@ import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Icon} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
-    changeCurrentDevicePage, getDevices,
+    changeCurrentDevicePage, getAdminOptions, getDeviceOptions, getDevices,
     startChecking,
     startReturning,
     startTenancying, startVerifying
@@ -39,19 +39,27 @@ export class ProjectDevice extends React.Component {
         startVerifying: PropTypes.func,
         changeCurrentDevicePage: PropTypes.func,
         getDevices: PropTypes.func,
-        isPropertyAdmin: PropTypes.bool
+        isPropertyAdmin: PropTypes.bool,
+        getDeviceOptions: PropTypes.func,
+        getAdminOptions: PropTypes.func
     };
 
     handleMoreclick = () => {
         this.props.changeCurrentDevicePage(this.props.currentPage+1);
-        this.props.getDevices(this.props.currentPage);
+        this.props.getDevices(this.props.currentPage, this.props.projectId);
+    }
+
+    handleTenancyClick = () => {
+        this.props.getDeviceOptions();
+        this.props.getAdminOptions(this.props.projectId);
+        this.props.startTenancying();
     }
 
     handleOperationClick = (deviceId, deviceStatus) => {
-        if(deviceStatus === 'Available'){
-            this.props.startTenancying(deviceId);
-        }else if(deviceStatus === 'Maintaining'){
+        if(deviceStatus === 'LentOut'){
             this.props.startReturning(deviceId);
+        }else if(deviceStatus === 'Maintaining'){
+            this.props.startVerifying(deviceId);
         }else if(deviceStatus === 'ToBeChecked'){
             this.props.startVerifying(deviceId);
         }
@@ -66,11 +74,13 @@ export class ProjectDevice extends React.Component {
                     <td>{item.deviceName}</td>
                     <td>{item.deviceStatus}</td>
                     <td>{
-                        ((this.props.isPropertyAdmin && item.deviceStatus === 'ToBeChecked') || (!this.props.isPropertyAdmin&&(item.deviceStatus==='Available' ||
-                            item.deviceStatus === 'Maintaining'))) ?
+                        ((this.props.isPropertyAdmin && (item.deviceStatus === 'ToBeChecked' || item.deviceStatus === 'Maintaining')) || (!this.props.isPropertyAdmin&&item.deviceStatus==='LentOut')) ?
                             <Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
                                 this.handleOperationClick(item.deviceId, item.deviceStatus);
-                            }}/> : null
+                            }}/> :
+                            <Icon disabled name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
+                                this.handleOperationClick(item.deviceId, item.deviceStatus);
+                            }}/>
                     }</td>
                 </tr>
             );
@@ -100,6 +110,15 @@ export class ProjectDevice extends React.Component {
             moreButton = null;
         }
 
+        let createButton;
+        if(!this.props.isPropertyAdmin){
+            createButton = (
+                <Button  content={'登记新设备'} onClick={this.handleTenancyClick}/>
+            );
+        }else{
+            createButton = null;
+        }
+
         let mainBody;
         if(this.props.devicePage !== 'check'){
             mainBody = (
@@ -119,6 +138,7 @@ export class ProjectDevice extends React.Component {
                         </tbody>
                     </table>
 
+                    {createButton}
                     {moreButton}
                 </div>
             );
@@ -163,8 +183,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     startChecking: () => {
         dispatch(startChecking())
     },
-    startTenancying: (deviceId) => {
-        dispatch(startTenancying(deviceId))
+    startTenancying: () => {
+        dispatch(startTenancying())
     },
     startReturning: (deviceId) => {
         dispatch(startReturning(deviceId))
@@ -172,11 +192,17 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     changeCurrentDevicePage: (currentPage) => {
         dispatch(changeCurrentDevicePage(currentPage))
     },
-    getDevices: (currentPage) => {
-        dispatch(getDevices(currentPage));
+    getDevices: (currentPage, projectId) => {
+        dispatch(getDevices(currentPage, projectId));
     },
     startVerifying: (deviceId) => {
         dispatch(startVerifying(deviceId));
+    },
+    getDeviceOptions: () => {
+        dispatch(getDeviceOptions())
+    },
+    getAdminOptions: (projectId) => {
+        dispatch(getAdminOptions(projectId))
     }
 });
 

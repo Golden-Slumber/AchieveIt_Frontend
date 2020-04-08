@@ -54,6 +54,7 @@ export class ProjectRisk extends React.Component {
                     <td>{item.risk_status}</td>
                     <td>{item.risk_track_frequency}</td>
                     <td>{item.risk_responsible_person}</td>
+                    <td>{item.risk_related_person}</td>
                 </tr>
             );
         });
@@ -91,6 +92,7 @@ export class ProjectRisk extends React.Component {
                                     <th>状态</th>
                                     <th>跟踪频度</th>
                                     <th>负责人</th>
+                                    <th>相关人员</th>
                                 </tr>
                                 </thead>
                                 <tbody>

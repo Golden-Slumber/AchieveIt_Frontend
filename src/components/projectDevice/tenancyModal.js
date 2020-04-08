@@ -39,7 +39,9 @@ export class TenancyModal extends React.Component {
         successful: PropTypes.string,
         closeFailed: PropTypes.func,
         closeSuccess: PropTypes.func,
-        formFailed: PropTypes.func
+        formFailed: PropTypes.func,
+        deviceOptions: PropTypes.array,
+        adminOptions: PropTypes.array
     };
 
     constructor(props) {
@@ -49,7 +51,7 @@ export class TenancyModal extends React.Component {
     handleFinishClick = () => {
         let time1 = new Date(this.props.currentTime.replace('-', '/'));
         let time2 = new Date(this.props.currentReturnTime.replace('-', '/'));
-        if(this.props.currentTime === '' || this.props.currentReturnTime === '' || this.props.currentDeviceManager === '' ||
+        if(this.props.currentDeviceId === '' || this.props.currentTime === '' || this.props.currentReturnTime === '' || this.props.currentDeviceManager === '' ||
             time1 >= time2){
             this.props.formFailed('tenancyDevice');
         }else{
@@ -82,7 +84,15 @@ export class TenancyModal extends React.Component {
                     <div className="description">
                         <form className="ui form">
                             <div className="field">
-                                <label>设备ID {this.props.currentDeviceId}</label>
+                                <label>设备ID</label>
+                                <Dropdown
+                                    placeholder='选择登记的设备ID'
+                                    fluid
+                                    search
+                                    selection
+                                    options={this.props.deviceOptions}
+                                    onChange={this.props.setDeviceId}
+                                />
                             </div>
                             <div className="field">
                                 <label>登记时间</label>
@@ -94,7 +104,14 @@ export class TenancyModal extends React.Component {
                             </div>
                             <div className="field">
                                 <label>资产管理人员</label>
-                                <input type="text" placeholder="资产管理人员" onChange={this.props.changeDeviceManager}/>
+                                <Dropdown
+                                    placeholder='选择资产管理人员'
+                                    fluid
+                                    search
+                                    selection
+                                    options={this.props.adminOptions}
+                                    onChange={this.props.changeDeviceManager}
+                                />
                             </div>
                         </form>
                         {updateFailedMessage}
@@ -122,7 +139,9 @@ const mapStateToProps = (state, ownProps) => ({
     currentDeviceManager: state._projectDevice.currentDeviceManager,
     currentTime: state._projectDevice.currentTime,
     failed: state._userReducer.failed,
-    successful: state._userReducer.succesful
+    successful: state._userReducer.successful,
+    deviceOptions: state._projectDevice.deviceOptions,
+    adminOptions: state._projectDevice.adminOptions
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -135,8 +154,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     changeReturnTime: (e) => {
         dispatch(changeReturnTime(e.target.value));
     },
-    changeDeviceManager: (e) => {
-        dispatch(changeDeviceManager(e.target.value));
+    changeDeviceManager: (e, data) => {
+        dispatch(changeDeviceManager(data.value));
     },
     tenancyDevice: (deviceId, projectId, currentTime, returnTime, deviceManager) => {
         dispatch(tenancyDevice(deviceId, projectId, currentTime, returnTime, deviceManager));

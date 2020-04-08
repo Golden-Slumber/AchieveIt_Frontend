@@ -33,6 +33,7 @@ export class ReturnModal extends React.Component {
     }
 
     handleFinishClick = () => {
+        console.log(this.props.currentDeviceId);
         this.props.returnDevice(this.props.projectId, this.props.currentDeviceId);
     }
 
@@ -77,8 +78,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     cancelDeviceModal: () => {
         dispatch(cancelDeviceModal())
     },
-    returnDevice: (deviceId) => {
-        dispatch(returnDevice(deviceId));
+    returnDevice: (projectId, deviceId) => {
+        dispatch(returnDevice(projectId, deviceId));
     }
 });
 

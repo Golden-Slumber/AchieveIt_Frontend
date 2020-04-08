@@ -1,10 +1,18 @@
 import {
-    CHANGE_CURRENTDEVICEPAGE, CHANGE_CURRENTTIME,
+    CHANGE_CURRENTDEVICEPAGE,
+    CHANGE_CURRENTTIME,
     CHANGE_DEVICEMANAGER,
     CHANGE_DEVICEMODAL,
-    CHANGE_DEVICEPAGE, CHANGE_DEVICESTATE, CHANGE_MOREDEVICE, CHANGE_RETURNTIME, CHANGE_VERIFYSTATE, GET_DEVICE,
+    CHANGE_DEVICEPAGE,
+    CHANGE_DEVICESTATE,
+    CHANGE_MOREDEVICE,
+    CHANGE_RETURNTIME,
+    CHANGE_VERIFYSTATE, GET_ADMINOPTIONS,
+    GET_DEVICE,
+    GET_DEVICEOPTIONS,
     RETURN_DEVICE,
-    SET_DEVICEID, SET_DEVICES,
+    SET_DEVICEID,
+    SET_DEVICES,
     TENANCY_DEVICE,
     VERIFY_DEVICE
 } from "./actionTypes";
@@ -18,7 +26,7 @@ export function changeCurrentDevicePage(currentPage){
     }
 }
 
-export function getDevices(currentPage){
+export function getDevices(currentPage, projectId){
     return async (dispatch) => {
         await fetch(BASE_URL+'/project/device', {
             method: 'POST',
@@ -26,7 +34,7 @@ export function getDevices(currentPage){
                 'Content-Type': 'application/json'
             },
             credentials: 'include',
-            body: JSON.stringify({page_size: PAGE_SIZE, current_page: currentPage})
+            body: JSON.stringify({project_id: projectId, page_size: PAGE_SIZE, current_page: currentPage})
         }).then(res => res.json()
         ).then(data => {
             if(data.status === 'SUCCESS'){
@@ -40,6 +48,65 @@ export function getDevices(currentPage){
                 dispatch({
                     type: CHANGE_MOREDEVICE,
                     payload: arr.length >= PAGE_SIZE
+                })
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+}
+
+export function getDeviceOptions(){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/device', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({device_status: 'Available', page_size: 10000, current_page: 1})
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                let arr = data.result.devices.map((item, index) => {
+                   return {key: item.device_id, value: item.device_id, text: item.device_id+item.device_name}
+                });
+                dispatch({
+                    type: GET_DEVICEOPTIONS,
+                    payload: arr
+                });
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+}
+
+export function getAdminOptions(projectId){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/user/projectMember', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({project_id: projectId})
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                let arr = [];
+                for (let i=0; i<data.result.length; i++){
+                    if(data.result[i].project_role_name === 'PropertyAdmin'){
+                        arr.push({key: data.result[i].user_id, value: data.result[i].user_id, text: data.result[i].user_id});
+                    }
+                }
+                dispatch({
+                    type: GET_ADMINOPTIONS,
+                    payload: arr
                 })
             }else{
                 console.log(data.status);
@@ -71,12 +138,8 @@ export function cancelDeviceModal(){
     }
 }
 
-export function startTenancying(deviceId){
+export function startTenancying(){
     return async (dispatch) => {
-        dispatch({
-            type: SET_DEVICEID,
-            payload: deviceId
-        });
         dispatch({
             type: CHANGE_DEVICEMODAL,
             payload: 'tenancy'
@@ -135,7 +198,7 @@ export function tenancyDevice(deviceId, projectId, currentTime, returnTime, devi
                     payload: ''
                 });
                 dispatch(changeCurrentDevicePage(1));
-                dispatch(getDevices(1));
+                dispatch(getDevices(1, projectId));
             }else{
                 console.log(data.status);
                 dispatch(formFailed('tenancyDevice'));
@@ -164,7 +227,7 @@ export function returnDevice(projectId, deviceId){
                     payload: ''
                 });
                 dispatch(changeCurrentDevicePage(1));
-                dispatch(getDevices(1));
+                dispatch(getDevices(1, projectId));
             }else {
                 console.log(data.status);
             }
@@ -174,7 +237,7 @@ export function returnDevice(projectId, deviceId){
     }
 }
 
-export function verifyDevice(deviceId, currentTime, manager, verifyState){
+export function verifyDevice(projectId, deviceId, currentTime, manager, verifyState){
 
     let content = {
         referred_device_id: deviceId,
@@ -198,7 +261,7 @@ export function verifyDevice(deviceId, currentTime, manager, verifyState){
                     payload: ''
                 });
                 dispatch(changeCurrentDevicePage(1));
-                dispatch(getDevices(1));
+                dispatch(getDevices(1, projectId));
             }else{
                 console.log(data.status);
                 dispatch(formFailed('verifyDevice'));

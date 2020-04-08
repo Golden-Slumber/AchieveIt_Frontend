@@ -23,17 +23,16 @@ const globalStyles = {
 };
 
 const permissionOptions = [
-    {key: '294208701688971264', value: '294208701688971264', text: 'issue_tracker_modification'},
-    {key: '294208702120984576', value: '294208702120984576', text: 'issue_tracker_access'},
-    {key: '294208708563435520', value: '294208708563435520', text: 'working_hour_modification'},
-    {key: '294208716280954880', value: '294208716280954880', text: 'working_hour_access'},
-    {key: '294208717023346688', value: '294208717023346688', text: 'working_hour_verification'},
-    {key: '294208731082653696', value: '294208731082653696', text: 'project_git_modification'},
-    {key: '294208732491939840', value: '294208732491939840', text: 'project_git_access'},
-    {key: '294208733922197504', value: '294208733922197504', text: 'mail_list_modification'},
-    {key: '294208740175904768', value: '294208740175904768', text: 'mail_list_access'},
-    {key: '294208748191219712', value: '294208748191219712', text: 'file_system_modification'},
-    {key: '294208755745161216', value: '294208755745161216', text: 'file_system_access'}
+    {key: '294208702120984576', value: 'issue_tracker_access', text: 'issue_tracker_access'},
+    {key: '294208708563435520', value: 'working_hour_modification', text: 'working_hour_modification'},
+    {key: '294208716280954880', value: 'working_hour_access', text: 'working_hour_access'},
+    {key: '294208717023346688', value: 'working_hour_verification', text: 'working_hour_verification'},
+    {key: '294208731082653696', value: 'project_git_modification', text: 'project_git_modification'},
+    {key: '294208732491939840', value: 'project_git_access', text: 'project_git_access'},
+    {key: '294208733922197504', value: 'mail_list_modification', text: 'mail_list_modification'},
+    {key: '294208740175904768', value: 'mail_list_access', text: 'mail_list_access'},
+    {key: '294208748191219712', value: 'file_system_modification', text: 'file_system_modification'},
+    {key: '294208755745161216', value: 'file_system_access', text: 'file_system_access'}
 ];
 
 export class ModifyModal extends React.Component {

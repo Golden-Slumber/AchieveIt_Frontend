@@ -26,7 +26,7 @@ export default function projectDependency(state = initialState, action) {
             return {...state, businessFieldsOptions: arr3};
         case GET_PERSONNEL:
             let arr4 = action.payload.map((item, index) => {
-                return {key: item.user_id, value: item.user_id, text: item.user_id}
+                return {key: item.user_id, value: item.user_id, text: item.user_id+' '+item.user_name}
             })
             console.log(action.payload);
             console.log(arr4);

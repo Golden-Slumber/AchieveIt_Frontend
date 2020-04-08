@@ -26,6 +26,7 @@ const globalStyles = {
 export class ReturnModal extends React.Component {
 
     static propTypes = {
+        projectId: PropTypes.string,
         currentDeviceId: PropTypes.string,
         verifyState: PropTypes.string,
         currentTime: PropTypes.string,
@@ -50,7 +51,7 @@ export class ReturnModal extends React.Component {
         if(this.props.currentTime === '' || this.props.currentDeviceManager === '' || this.props.verifyState === ''){
             this.props.formFailed('verifyDevice');
         }else{
-            this.props.verifyDevice(this.props.currentDeviceId, this.props.currentTime, this.props.currentDeviceManager, this.props.verifyState);
+            this.props.verifyDevice(this.props.projectId, this.props.currentDeviceId, this.props.currentTime, this.props.currentDeviceManager, this.props.verifyState);
         }
     }
 
@@ -131,7 +132,8 @@ const mapStateToProps = (state, ownProps) => ({
     currentTime: state._projectDevice.currentTime,
     currentDeviceManager: state._projectDevice.currentDeviceManager,
     failed: state._userReducer.failed,
-    successful: state._userReducer.succesful,
+    successful: state._userReducer.successful,
+    projectId: state._projectDetail.projectId
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

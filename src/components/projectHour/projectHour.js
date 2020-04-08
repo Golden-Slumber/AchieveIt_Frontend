@@ -38,6 +38,7 @@ export class ProjectHour extends React.Component {
         successful: PropTypes.string,
         closeFailed: PropTypes.func,
         closeSuccess: PropTypes.func,
+        permissions: PropTypes.array
     };
 
     constructor(props) {
@@ -55,6 +56,22 @@ export class ProjectHour extends React.Component {
         this.props.getVerifyHours(this.props.projectId);
     }
 
+    checkManagePermission = () => {
+        for (let i = 0; i < this.props.permissions.length; i++) {
+            if (this.props.permissions[i] === 'working_hour_modification')
+                return true;
+        }
+        return false;
+    }
+
+    checkVerifyPermission = () => {
+        for (let i = 0; i < this.props.permissions.length; i++) {
+            if (this.props.permissions[i] === 'working_hour_verification')
+                return true;
+        }
+        return false;
+    }
+
     render() {
         let showWorkingHours = this.props.workingHours.map((item, index) => {
             return (
@@ -68,7 +85,7 @@ export class ProjectHour extends React.Component {
         });
 
         let getHoursFailedMessage;
-        if(this.props.failed === 'getHoursFailed'){
+        if (this.props.failed === 'getHoursFailed') {
             getHoursFailedMessage = (
                 <Message negative={true}>
                     <i className={'close icon'} onClick={this.props.closeFailed}/>
@@ -76,20 +93,20 @@ export class ProjectHour extends React.Component {
                     <p>或许您并没有足够的权限。</p>
                 </Message>
             );
-        }else{
+        } else {
             getHoursFailedMessage = null;
         }
 
         let mainBody;
-        if(this.props.hourPageState === 'manage'){
+        if (this.props.hourPageState === 'manage') {
             mainBody = (
-                <ProjectHourManage />
+                <ProjectHourManage/>
             );
-        }else if(this.props.hourPageState === 'verify'){
+        } else if (this.props.hourPageState === 'verify') {
             mainBody = (
-                <ProjectHourVerify />
+                <ProjectHourVerify/>
             );
-        }else{
+        } else {
             mainBody = (
                 <div>
                     <table className="ui celled padded table">
@@ -107,8 +124,18 @@ export class ProjectHour extends React.Component {
                     </table>
 
                     {getHoursFailedMessage}
-                    <Button  content={'管理工时记录'} onClick={this.handleManageClick}/>
-                    <Button  content={'去审核'}  onClick={this.handleVerifyClick} style={{float: 'right'}}/>
+                    {
+                        this.checkManagePermission() ?
+                            <Button content={'管理工时记录'} onClick={this.handleManageClick}/>
+                            :
+                            null
+                    }
+                    {
+                        this.checkVerifyPermission() ?
+                            <Button content={'去审核'} onClick={this.handleVerifyClick} style={{float: 'right'}}/>
+                            :
+                            null
+                    }
                 </div>
             );
         }
@@ -122,7 +149,7 @@ export class ProjectHour extends React.Component {
                         <h1 className="ui header">{this.props.projectId}</h1>
 
                         <Segment style={{minHeight: '30em'}}>
-                            <ProjectMenu />
+                            <ProjectMenu/>
 
                             {mainBody}
                         </Segment>
@@ -139,7 +166,8 @@ const mapStateToProps = (state, ownProps) => ({
     workingHours: state._projectHour.workingHours,
     hourPageState: state._projectHour.hourPageState,
     failed: state._userReducer.failed,
-    successful: state._userReducer.succesful,
+    successful: state._userReducer.successful,
+    permissions: state._userReducer.permissions
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

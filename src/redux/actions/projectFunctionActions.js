@@ -115,6 +115,13 @@ export function functionManaging(){
     }
 }
 
+export function exitFunctionManage() {
+    return {
+        type: CHANGE_FUNCTIONMANAGE,
+        payload: false
+    }
+}
+
 export function cancelFunctionManage(){
     return {
         type: FUNCTION_MANAGESTATE,
@@ -356,9 +363,11 @@ export function uploadFunctions(projectId, uploadData){
                 dispatch(cancelUploading());
             }else{
                 console.log(data.status);
+                dispatch(formFailed('uploadData'))
             }
         }).catch(error => {
             console.log(error);
+            dispatch(formFailed('uploadData'))
         })
     }
 }

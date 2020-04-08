@@ -13,7 +13,7 @@ import {
     startModifying,
     startDeleting,
     updateFunction,
-    setSuperiorFunctionOptions, startUploading
+    setSuperiorFunctionOptions, startUploading, exitFunctionManage
 } from "../../redux/actions/projectFunctionActions";
 import UploadForm from "./uploadForm";
 import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
@@ -42,7 +42,8 @@ export class ProjectFunctionManage extends React.Component {
         failed: PropTypes.string,
         successful: PropTypes.string,
         closeFailed: PropTypes.func,
-        closeSuccess: PropTypes.func
+        closeSuccess: PropTypes.func,
+        exitFunctionManage: PropTypes.func
     };
 
     constructor(props) {
@@ -64,6 +65,10 @@ export class ProjectFunctionManage extends React.Component {
 
     handleDeleteClick = (functionId) => {
         this.props.startDeleting(functionId);
+    }
+
+    handleCancelClick = () => {
+        this.props.exitFunctionManage();
     }
 
     handleFinishClick = () => {
@@ -180,6 +185,7 @@ export class ProjectFunctionManage extends React.Component {
                 <Button content={'创建新功能'} onClick={this.handleCreateClick}/>
                 <Button icon='upload' onClick={this.handleUploadClick}/>
                 <Button content={'完成'} onClick={this.handleFinishClick} style={{float: 'right'}}/>
+                <Button content={'取消'} onClick={this.handleCancelClick} style={{float: 'right'}}/>
             </div>
         );
     };
@@ -219,6 +225,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     closeSuccess: () => {
         dispatch(closeSuccess())
+    },
+    exitFunctionManage: () => {
+        dispatch(exitFunctionManage());
     }
 });
 

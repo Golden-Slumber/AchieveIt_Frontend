@@ -16,6 +16,7 @@ import {
 import Radio from "semantic-ui-react/dist/commonjs/addons/Radio";
 import {propTypes} from "react-csv/src/metaProps";
 import {closeFailed} from "../../redux/actions/userActions";
+import Form from "semantic-ui-react/dist/commonjs/collections/Form";
 
 
 const globalStyles = {
@@ -93,20 +94,26 @@ export class PushModal extends React.Component {
         if(this.props.projectState === 'Applied' || this.props.projectState === 'ReadyArchive'){
             choicePart = (
                 <div className="description">
-                    <Radio
-                        label='不通过'
-                        name='radioGroup'
-                        value='false'
-                        checked={this.props.choice === 'false'}
-                        onChange={this.handleChange}
-                    />
-                    <Radio
-                        label='通过'
-                        name='radioGroup'
-                        value='true'
-                        checked={this.props.choice === 'true'}
-                        onChange={this.handleChange}
-                    />
+                    <Form>
+                        <Form.Field>
+                            <Radio
+                                label='不通过'
+                                name='radioGroup'
+                                value='false'
+                                checked={this.props.choice === 'false'}
+                                onChange={this.handleChange}
+                            />
+                        </Form.Field>
+                        <Form.Field>
+                            <Radio
+                                label='通过'
+                                name='radioGroup'
+                                value='true'
+                                checked={this.props.choice === 'true'}
+                                onChange={this.handleChange}
+                            />
+                        </Form.Field>
+                    </Form>
                 </div>
             );
         }else{

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
@@ -14,7 +14,12 @@ import {
     switchMember, switchRisk
 } from "../../redux/actions/projectMenuActions";
 import {getProjectDetail, } from "../../redux/actions";
-import {getProjectMembers} from "../../redux/actions/projectMemberActions";
+import {
+    clearDetailMembers,
+    getMemberDetail,
+    getProjectMembers,
+    switchDetailMembers
+} from "../../redux/actions/projectMemberActions";
 import {getWorkHours} from "../../redux/actions/projectHourActions";
 import {getDownloadData, getProjectFunction} from "../../redux/actions/projectFunctionActions";
 import {changeCurrentDevicePage, getDevices} from "../../redux/actions/projectDeviceActions";
@@ -58,7 +63,11 @@ export class ProjectMenu extends React.Component {
         getRisks: PropTypes.func,
         getUrl: PropTypes.func,
         projectRoles: PropTypes.array,
-        checkPropertyAdmin: PropTypes.func
+        checkPropertyAdmin: PropTypes.func,
+        getMemberDetail: PropTypes.func,
+        members: PropTypes.array,
+        clearDetailMembers: PropTypes.func,
+        switchDetailMembers: PropTypes.func
     };
 
     handleDetailClick = () => {
@@ -68,6 +77,8 @@ export class ProjectMenu extends React.Component {
 
     handleMemberClick = () => {
         this.props.switchMember();
+        this.props.switchDetailMembers(false);
+        this.props.clearDetailMembers();
         this.props.getProjectMembers(this.props.projectId);
     }
 
@@ -85,7 +96,7 @@ export class ProjectMenu extends React.Component {
     handleDeviceClick = () => {
         this.props.switchDevice();
         this.props.changeCurrentDevicePage(1);
-        this.props.getDevices(1);
+        this.props.getDevices(1, this.props.projectId);
         this.props.checkPropertyAdmin(this.props.projectRoles);
     }
 
@@ -139,7 +150,8 @@ const mapStateToProps = (state, ownProps) => ({
     device: state._projectMenu.device,
     risk: state._projectMenu.risk,
     defect: state._projectMenu.defect,
-    projectRoles: state._userReducer.projectRoles
+    projectRoles: state._userReducer.projectRoles,
+    members: state._projectMember.members
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -182,8 +194,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     changeCurrentDevicePage: (currentPage) => {
         dispatch(changeCurrentDevicePage(currentPage));
     },
-    getDevices: (currentPage) => {
-        dispatch(getDevices(currentPage));
+    getDevices: (currentPage, projectId) => {
+        dispatch(getDevices(currentPage, projectId));
     },
     getRisks: (projectId) => {
         dispatch(getRisks(projectId));
@@ -193,6 +205,15 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     checkPropertyAdmin: (projectRoles) => {
         dispatch(checkPropertyAdmin(projectRoles));
+    },
+    getMemberDetail: (index, user_id) => {
+        dispatch(getMemberDetail(index, user_id));
+    },
+    clearDetailMembers: () => {
+        dispatch(clearDetailMembers());
+    },
+    switchDetailMembers: (detailed) => {
+        dispatch(switchDetailMembers(detailed));
     }
 });
 

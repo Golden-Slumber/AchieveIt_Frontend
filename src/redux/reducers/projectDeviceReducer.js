@@ -3,7 +3,7 @@ import {
     CHANGE_DEVICEMANAGER,
     CHANGE_DEVICEMODAL,
     CHANGE_DEVICEPAGE, CHANGE_DEVICESTATE,
-    CHANGE_MODIFYSTATE, CHANGE_MOREDEVICE, CHANGE_RETURNTIME, GET_DEVICE,
+    CHANGE_MODIFYSTATE, CHANGE_MOREDEVICE, CHANGE_RETURNTIME, GET_ADMINOPTIONS, GET_DEVICE, GET_DEVICEOPTIONS,
     MODIFY_BUNIESSFIELD,
     MODIFY_CUSTOMER,
     MODIFY_ENDTIME, MODIFY_MAINFUNCTION, MODIFY_MAINTECH,
@@ -25,7 +25,9 @@ const initialState = {
     currentTime: '',
     currentReturnTime: '',
     currentDeviceManager: '',
-    verifyState: ''
+    verifyState: '',
+    deviceOptions: [],
+    adminOptions: []
 };
 
 export default function projectDevice(state = initialState, action) {
@@ -56,6 +58,10 @@ export default function projectDevice(state = initialState, action) {
             return {...state, currentTime: action.payload}
         case CHANGE_DEVICESTATE:
             return {...state, verifyState: action.payload}
+        case GET_DEVICEOPTIONS:
+            return {...state, deviceOptions: action.payload}
+        case GET_ADMINOPTIONS:
+            return {...state, adminOptions: action.payload}
         default:
             return state;
     }

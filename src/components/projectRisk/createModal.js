@@ -10,7 +10,7 @@ import {
     changeRiskCounter,
     changeRiskDescription, changeRiskFrequency,
     changeRiskImpact,
-    changeRiskLevel, changeRiskPerson, changeRiskStatus,
+    changeRiskLevel, changeRiskPerson, changeRiskRelated, changeRiskStatus,
     changeRiskType, createRisk
 } from "../../redux/actions/projectRiskActions";
 import {closeFailed, closeSuccess, formFailed} from "../../redux/actions/userActions";
@@ -64,7 +64,8 @@ export class CreateModal extends React.Component {
         currentStatus: PropTypes.string,
         currentFrequency: PropTypes.string,
         membersOptions: PropTypes.array,
-        currentResponsiblePerson: PropTypes.array,
+        currentResponsiblePerson: PropTypes.string,
+        currentRelatedPerson: PropTypes.array,
         changeRiskType: PropTypes.func,
         changeRiskDescription: PropTypes.func,
         changeRiskLevel: PropTypes.func,
@@ -73,6 +74,7 @@ export class CreateModal extends React.Component {
         changeRiskStatus: PropTypes.func,
         changeRiskFrequency: PropTypes.func,
         changeRiskPerson: PropTypes.func,
+        changeRiskRelated: PropTypes.func,
         createRisk: PropTypes.func,
         cancelCreating: PropTypes.func,
         failed: PropTypes.string,
@@ -88,11 +90,12 @@ export class CreateModal extends React.Component {
 
     handleFinishClick = () => {
         if(this.props.currentType === '' || this.props.currentDescription === '' || this.props.currentLevel === '' || this.props.currentImpact === '' ||
-            this.props.currentCountermeasure === '' || this.props.currentStatus === '' || this.props.currentFrequency === '' || this.prop.currentResponsiblePerson === []){
+            this.props.currentCountermeasure === '' || this.props.currentStatus === '' || this.props.currentFrequency === '' || this.props.currentResponsiblePerson === ''
+            || this.props.currentRelatedPerson === []){
             this.props.formFailed('createRisk');
         }else{
             this.props.createRisk(this.props.projectId, this.props.currentType, this.props.currentDescription, this.props.currentLevel, this.props.currentImpact,
-                this.props.currentCountermeasure, this.props.currentStatus, this.props.currentFrequency, this.props.currentResponsiblePerson);
+                this.props.currentCountermeasure, this.props.currentStatus, this.props.currentFrequency, this.props.currentResponsiblePerson, this.props.currentRelatedPerson);
         }
     }
 
@@ -193,11 +196,22 @@ export class CreateModal extends React.Component {
                                 <Dropdown
                                     placeholder='选择负责人'
                                     fluid
-                                    multiple
                                     search
                                     selection
                                     options={this.props.membersOptions}
                                     onChange={this.props.changeRiskPerson}
+                                />
+                            </div>
+                            <div className="field">
+                                <label>风险相关人员</label>
+                                <Dropdown
+                                    placeholder='选择相关人员'
+                                    fluid
+                                    multiple
+                                    search
+                                    selection
+                                    options={this.props.membersOptions}
+                                    onChange={this.props.changeRiskRelated}
                                 />
                             </div>
                         </form>
@@ -229,9 +243,10 @@ const mapStateToProps = (state, ownProps) => ({
     currentStatus: state._projectRisk.currentStatus,
     currentFrequency: state._projectRisk.currentFrequency,
     currentResponsiblePerson: state._projectRisk.currentResponsiblePerson,
+    currentRelatedPerson: state._projectRisk.currentRelatedPerson,
     membersOptions: state._projectRisk.membersOptions,
     failed: state._userReducer.failed,
-    successful: state._userReducer.succesful
+    successful: state._userReducer.successful
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -256,11 +271,14 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     changeRiskFrequency: (e, data) => {
         dispatch(changeRiskFrequency(data.value))
     },
-    changeRiskPerson: (e, {value}) => {
-        dispatch(changeRiskPerson(value))
+    changeRiskPerson: (e, data) => {
+        dispatch(changeRiskPerson(data.value))
     },
-    createRisk: (projectId, type, description, level, impact, counter, status, frequency, person) => {
-        dispatch(createRisk(projectId, type, description, level, impact, counter, status, frequency, person))
+    changeRiskRelated: (e, {value}) => {
+        dispatch(changeRiskRelated(value))
+    },
+    createRisk: (projectId, type, description, level, impact, counter, status, frequency, person, related) => {
+        dispatch(createRisk(projectId, type, description, level, impact, counter, status, frequency, person, related))
     },
     cancelCreating: () => {
         dispatch(cancelCreating())
@@ -274,6 +292,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     formFailed: (form) => {
         dispatch(formFailed(form));
     }
+
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateModal);

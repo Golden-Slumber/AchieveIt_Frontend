@@ -139,7 +139,7 @@ const mapStateToProps = (state, ownProps) => ({
     functionHourOptions: state._projectHour.functionHourOptions,
     activityOptions: state._projectHour.activityOptions,
     failed: state._userReducer.failed,
-    successful: state._userReducer.succesful,
+    successful: state._userReducer.successful,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

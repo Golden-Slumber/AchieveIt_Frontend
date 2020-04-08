@@ -2,7 +2,7 @@ import {
     CHANGE_ADMIN,
     CHANGE_FAILEDSTATE,
     CHNAGE_SUCCESSSTATE,
-    SET_GLOBALROLE,
+    SET_GLOBALROLE, SET_PERMISSIONS,
     SET_PROJECTROLES,
     SET_USERNAME
 } from "./actionTypes";
@@ -84,6 +84,31 @@ export function setProjectRoles(projectId, user_id){
                 dispatch({
                     type: SET_PROJECTROLES,
                     payload: data.result.project_role_id_list
+                })
+            }else{
+                console.log(data.status);
+            }
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+}
+
+export function setPermissions(projectId, user_id){
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/user/permission', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({project_id: projectId, user_id: user_id})
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch({
+                    type: SET_PERMISSIONS,
+                    payload: data.result
                 });
             }else{
                 console.log(data.status);
@@ -96,10 +121,12 @@ export function setProjectRoles(projectId, user_id){
 
 export function checkPropertyAdmin(projectRoles){
     let check = false;
-    for(let i=0; i<projectRoles.length; i++){
-        if(projectRoles[i].project_role_name === 'PropertyAdmin'){
-            check = true;
-            break;
+    if(projectRoles !== undefined){
+        for(let i=0; i<projectRoles.length; i++){
+            if(projectRoles[i].project_role_name === 'PropertyAdmin'){
+                check = true;
+                break;
+            }
         }
     }
     return {

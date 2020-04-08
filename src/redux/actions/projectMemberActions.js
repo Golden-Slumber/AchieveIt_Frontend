@@ -3,16 +3,16 @@ import {
     CHANGE_PERISSIONS,
     CHANGE_ROLES,
     CHANGE_SUPERIOR_ID,
-    CHANGE_USER_ID,
+    CHANGE_USER_ID, CLEAR_DETAILMEMBERS,
     CREATE_MEMBER,
-    DELETE_MEMBER,
+    DELETE_MEMBER, GET_MEMBERDETAIL,
     GET_MEMBERS,
     MODIFY_MANAGESTATE,
     MODIFY_MEMBER,
-    SET_ROLEOPTIONS, SET_SUPERIOROPTIONS,
+    SET_ROLEOPTIONS, SET_SUPERIOROPTIONS, SWITCH_DETAILMEMBERS,
     UPDATE_MEMBER
 } from "./actionTypes";
-import {BASE_URL} from "../../constants";
+import {BASE_URL, DEPENDENCY_URL} from "../../constants";
 import {formFailed, formSuccess} from "./userActions";
 
 export function getProjectMembers(projectId) {
@@ -30,6 +30,9 @@ export function getProjectMembers(projectId) {
                     type: GET_MEMBERS,
                     payload: data.result
                 });
+                for(let i=0; i<data.result.length; i++){
+                    dispatch(getMemberDetail(i, data.result[i].user_id));
+                }
             }else{
                 console.log(data.status);
             }
@@ -44,6 +47,13 @@ export function startManaging(){
     return {
         type: CHANGE_MANAGEMEMBER,
         payload: true
+    }
+}
+
+export function cancelMemberManage(){
+    return {
+        type: CHANGE_MANAGEMEMBER,
+        payload: false
     }
 }
 
@@ -143,6 +153,8 @@ export function modifyMember(userId, projectId, permissions){
         privilege_list: permissions
     }
 
+    console.log(content);
+
     return async (dispatch) => {
         await fetch(BASE_URL+'/user/permission', {
             method: 'PUT',
@@ -211,6 +223,42 @@ export function updateMember(projectId, members){
             console.log(error);
             dispatch(formFailed('updateMember'));
         })
+    }
+}
+
+export function getMemberDetail(index, user_id){
+    return async (dispatch) => {
+        await fetch(DEPENDENCY_URL+'/personnel/byId', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({user_id: user_id})
+        }).then(res => res.json()
+        ).then(data => {
+            dispatch({
+                type: GET_MEMBERDETAIL,
+                payload: {
+                    index: index,
+                    detail: data
+                }
+            });
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+}
+
+export function switchDetailMembers(detailed){
+    return {
+        type: SWITCH_DETAILMEMBERS,
+        payload: detailed
+    }
+}
+
+export function clearDetailMembers(){
+    return {
+        type: CLEAR_DETAILMEMBERS
     }
 }
 

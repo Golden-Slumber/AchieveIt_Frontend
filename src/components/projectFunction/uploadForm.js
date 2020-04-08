@@ -3,7 +3,7 @@ import 'semantic-ui-css/semantic.min.css';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
-import {Button, Container, Icon, Dropdown} from "semantic-ui-react";
+import {Button, Container, Icon, Dropdown, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import classNames from 'classnames'
 import {
@@ -14,6 +14,7 @@ import {
 import CSVReader from 'react-csv-reader';
 import Files from 'react-files';
 import Dropzone from 'react-dropzone';
+import {closeFailed, formFailed} from "../../redux/actions/userActions";
 
 
 const globalStyles = {
@@ -33,7 +34,10 @@ export class UploadForm extends React.Component {
         projectId: PropTypes.string,
         cancelUpload: PropTypes.func,
         changeUploadData: PropTypes.func,
-        uploadFunctions: PropTypes.func
+        uploadFunctions: PropTypes.func,
+        failed: PropTypes.string,
+        formFailed: PropTypes.func,
+        closeFailed: PropTypes.func
     };
 
     constructor(props) {
@@ -41,12 +45,14 @@ export class UploadForm extends React.Component {
 
         this.state = {
             uploadedFile: null,
+            fileName: ''
         };
     }
 
     onFileDrop(files) {
         this.setState({
-            uploadedFile: files[0]
+            uploadedFile: files[0],
+            fileName: files[0].name
         });
         console.log(this.state.uploadedFile);
     }
@@ -55,7 +61,24 @@ export class UploadForm extends React.Component {
         this.props.uploadFunctions(this.props.projectId, this.state.uploadedFile);
     }
 
+    handleFailClick = () => {
+        this.props.formFailed('uploadData');
+    }
+
     render() {
+
+        let uploadFailMessage;
+        if(this.props.failed === 'uploadData'){
+            uploadFailMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>请检查一下您所填写的内容，确保它们是正确的。</p>
+                </Message>
+            );
+        }else{
+            uploadFailMessage = null;
+        }
 
         return (
 
@@ -74,9 +97,7 @@ export class UploadForm extends React.Component {
                                 multiple={false}
                                 maxSize={100000}
                                 accept={'.csv'}
-                                onDropRejected={() => {
-                                    alert('rejected!');
-                                }}
+                                onDropRejected={this.handleFailClick}
                             >
                                 {({getRootProps, getInputProps, isDragActive}) => {
                                     return (
@@ -88,7 +109,7 @@ export class UploadForm extends React.Component {
                                             {
                                                 this.state.uploadedFile === null ?
                                                     <p>拖拽或点击此处选择文件上传</p> :
-                                                    <p>点击确认按钮导入功能数据</p>
+                                                    <p>{this.state.fileName}</p>
                                             }
                                         </Segment>
                                     )
@@ -96,6 +117,7 @@ export class UploadForm extends React.Component {
                             </Dropzone>
                         </form>
                     </div>
+                    {uploadFailMessage}
                 </div>
                 <div className="actions">
                     <div className="ui black deny button" onClick={this.props.cancelUpload}>
@@ -114,7 +136,8 @@ export class UploadForm extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
     projectId: state._projectDetail.projectId,
-    uploadData: state._projectFunction.uploadData
+    uploadData: state._projectFunction.uploadData,
+    failed: state._userReducer.failed
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -126,6 +149,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     uploadFunctions: (projectId, uploadData) => {
         dispatch(uploadFunctions(projectId, uploadData));
+    },
+    formFailed: (form) => {
+        dispatch(formFailed(form));
+    },
+    closeFailed: () => {
+        dispatch(closeFailed());
     }
 });
 

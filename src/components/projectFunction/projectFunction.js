@@ -57,7 +57,7 @@ export class ProjectFunction extends React.Component {
             manageButton = (
                 <div>
                     <Button content={'修改项目功能'} onClick={this.props.startFunctionManaging}/>
-                    <CSVLink  data={this.props.downloadData}><Button icon='download' onClick={this.handleDownloadClick} style={{float: 'right'}}/></CSVLink>
+                    <CSVLink  data={this.props.downloadData} enclosingCharacter={``}><Button icon='download' onClick={this.handleDownloadClick} style={{float: 'right'}}/></CSVLink>
                 </div>
             );
         }else{

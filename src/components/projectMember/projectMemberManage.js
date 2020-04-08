@@ -6,7 +6,8 @@ import Segment from "semantic-ui-react/dist/commonjs/elements/Segment";
 import {Button, Container, Icon, Message} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import {
-    changeUserId, checkGlobalRole, checkProjectRole,
+    cancelMemberManage,
+    changeUserId, checkGlobalRole, checkProjectRole, clearDetailMembers,
     startDeleting,
     updateMember
 } from "../../redux/actions/projectMemberActions";
@@ -40,7 +41,11 @@ export class ProjectMemberManage extends React.Component {
         failed: PropTypes.string,
         successful: PropTypes.string,
         closeFailed: PropTypes.func,
-        closeSuccess: PropTypes.func
+        closeSuccess: PropTypes.func,
+        currentPermissions: PropTypes.array,
+        currentUserId: PropTypes.string,
+        cancelMemberManage: PropTypes.func,
+        clearDetailMembers: PropTypes.func
     };
 
     constructor(props) {
@@ -64,8 +69,12 @@ export class ProjectMemberManage extends React.Component {
         this.props.updateMember(this.props.projectId, this.props.members);
     }
 
+    handleCancelClick = () => {
+        this.props.cancelMemberManage();
+    }
+
     checkProjectRole = (role) => {
-        return role === 'ProjectManager' || role === 'DevelopmentLeader' || role === 'TestLeader';
+        return role === 'ProjectManager';
     }
 
     checkGlobalRole = (role) => {
@@ -73,23 +82,25 @@ export class ProjectMemberManage extends React.Component {
     }
 
     render() {
+        // let arr = this.props.members;
         let showMembers = this.props.members.map((item, index) => {
+            // let trueleader = false;
+            // for(let i=0; i<arr.length; i++){
+            //     if(arr[i].superiorId === item.user_id && item.user_id !== arr[i].user_id){
+            //         trueleader = true;
+            //         break;
+            //     }
+            // }
             return (
                 <tr>
                     <td>{item.project_role_name}</td>
                     <td>{item.user_id}</td>
                     <td>{item.superior_id}</td>
+                    <td><Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
+                        this.handleModifyClick(item.user_id);
+                    }}/></td>
                     <td>{
-                        this.checkGlobalRole(this.props.globalRole) && item.project_role_name!=='ProjectManager' ?
-                            <Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
-                                this.handleModifyClick(item.user_id);
-                            }}/> :
-                            <Icon disabled name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
-                                this.handleModifyClick(item.user_id);
-                            }}/>
-                    }</td>
-                    <td>{
-                        !this.checkGlobalRole(this.props.globalRole)||this.checkProjectRole(item.project_role_name) ?
+                        item.trueLeader||this.checkProjectRole(item.project_role_name) ?
                             <Icon disabled name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
                                 this.handleDeleteClick(item.user_id);
                             }}/> :
@@ -120,7 +131,7 @@ export class ProjectMemberManage extends React.Component {
                 <Message positive={true}>
                     <i className={'close icon'} onClick={this.props.closeSuccess}/>
                     <div className={'header'}>更新已完成</div>
-                    <p>人员权限的更新完成了。</p>
+                    <p>人员{this.props.currentUserId}的权限已被更新。</p>
                 </Message>
             );
         }else{
@@ -153,7 +164,7 @@ export class ProjectMemberManage extends React.Component {
                         <th>角色</th>
                         <th>成员ID</th>
                         <th>上级</th>
-                        <th>修改</th>
+                        <th>修改权限</th>
                         <th>删除</th>
                     </tr>
                     </thead>
@@ -163,6 +174,7 @@ export class ProjectMemberManage extends React.Component {
                 </table>
                 <Button content={'导入新成员'} onClick={this.handleCreateClick}/>
                 <Button content={'完成'} onClick={this.handleFinishClick} style={{float: 'right'}}/>
+                <Button content={'取消'} onClick={this.handleCancelClick} style={{float: 'right'}}/>
             </div>
         );
     };
@@ -174,7 +186,9 @@ const mapStateToProps = (state, ownProps) => ({
     globalRole: state._userReducer.globalRole,
     projectId: state._projectDetail.projectId,
     failed: state._userReducer.failed,
-    successful: state._userReducer.succesful,
+    successful: state._userReducer.successful,
+    currentPermissions: state._projectMember.currentPermissions,
+    currentUserId: state._projectMember.currentUserId
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -201,6 +215,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     closeSuccess: () => {
         dispatch(closeSuccess())
+    },
+    cancelMemberManage: () => {
+        dispatch(cancelMemberManage())
+    },
+    clearDetailMembers: () => {
+        dispatch(clearDetailMembers())
     }
 });
 

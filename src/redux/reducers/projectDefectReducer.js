@@ -1,5 +1,5 @@
 import {
-    CHANGE_CURRENTDEVICEPAGE, CHANGE_CURRENTTIME,
+    CHANGE_CURRENTDEVICEPAGE, CHANGE_CURRENTTIME, CHANGE_CURRENTURL, CHANGE_DEFECTSTATE,
     CHANGE_DEVICEMANAGER,
     CHANGE_DEVICEMODAL,
     CHANGE_DEVICEPAGE, CHANGE_DEVICESTATE,
@@ -12,16 +12,21 @@ import {
     MODIFY_STARTTIME,
     PROJECTID_SET, RETURN_DEVICE, SET_DEVICEID, SET_DEVICES, TENANCY_DEVICE, VERIFY_DEVICE
 } from "../actions";
-import currentPage from "./currentPageReducer";
 
 const initialState = {
-    url: ''
+    isChanging: false,
+    url: '',
+    currentUrl: ''
 };
 
 export default function projectDefect(state = initialState, action) {
     switch (action.type) {
         case GET_URL:
             return {...state, url: action.payload}
+        case CHANGE_DEFECTSTATE:
+            return {...state, isChanging: action.payload}
+        case CHANGE_CURRENTURL:
+            return {...state, currentUrl: action.payload}
         default:
             return state;
     }

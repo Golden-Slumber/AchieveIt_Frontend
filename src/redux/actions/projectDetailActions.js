@@ -104,9 +104,11 @@ export function getProjectDetail(projectId){
                 dispatch(modifyMainFunction(data.result.main_function));
             }else{
                 console.log(data.status);
+                dispatch(formFailed('getProjectDetail'));
             }
         }).catch(error => {
             console.log(error);
+            dispatch(formFailed('getProjectDetail'));
         });
     }
 }

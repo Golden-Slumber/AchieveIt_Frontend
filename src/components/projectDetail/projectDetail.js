@@ -11,6 +11,7 @@ import {getBusinessFields, getCustomers} from "../../redux/actions/dependencyAct
 import ProjectMenu from "../projectMenu/projectMenu";
 import PushModal from "./pushModal";
 import {closeFailed, closeSuccess} from "../../redux/actions/userActions";
+import history from "../../history";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -52,6 +53,11 @@ export class ProjectDetail extends React.Component {
     }
 
     render() {
+
+        if(this.props.failed === 'getProjectDetail'){
+            history.push('/project');
+        }
+
         let modifybutton;
         if(this.props.globalRole === 'ProjectManager'){
             modifybutton = (
@@ -133,7 +139,7 @@ export class ProjectDetail extends React.Component {
         }
 
         let confirmFailedMessage;
-        if(this.props.successful === 'push'){
+        if(this.props.failed === 'confirm'){
             confirmFailedMessage = (
                 <Message negative={true}>
                     <i className={'close icon'} onClick={this.props.closeFailed}/>
@@ -151,6 +157,10 @@ export class ProjectDetail extends React.Component {
                 <div>
                     <table className="ui fixed single line celled table">
                         <tbody>
+                        <tr>
+                            <td>项目状态</td>
+                            <td>{this.props.projectState}</td>
+                        </tr>
                         <tr>
                             <td>项目名</td>
                             <td>{this.props.projectName}</td>
@@ -201,9 +211,7 @@ export class ProjectDetail extends React.Component {
             <div>
                 <Segment style={globalStyles}>
                     <Container className='main ui' style={{margin: '100px, 100px, 0px, 100px'}}>
-
                         <h1 className="ui header">{this.props.projectId}</h1>
-
                         <Segment style={{minHeight: '30em'}}>
                             <ProjectMenu />
                             {pushModal}

@@ -15,7 +15,7 @@ import {
 import {setProjectId} from "../../redux/actions";
 import currentPage from "../../redux/reducers/currentPageReducer";
 import {getBusinessFields, getCustomers, getProjectIds} from "../../redux/actions/dependencyActions";
-import {closeFailed, formFailed, setProjectRoles} from "../../redux/actions/userActions";
+import {closeFailed, formFailed, setPermissions, setProjectRoles} from "../../redux/actions/userActions";
 import {switchDetail} from "../../redux/actions/projectMenuActions";
 
 const globalStyles = {
@@ -45,7 +45,8 @@ export class Project extends React.Component{
         closeFailed: PropTypes.func,
         formFailed: PropTypes.func,
         switchDetail: PropTypes.func,
-        setProjectRoles: PropTypes.func
+        setProjectRoles: PropTypes.func,
+        setPermissions: PropTypes.func
     };
 
     constructor(props) {
@@ -70,6 +71,7 @@ export class Project extends React.Component{
         this.props.getProjectDetail(projectId);
         this.props.setProjectState(projectState);
         this.props.setProjectRoles(projectId, this.props.user_id);
+        this.props.setPermissions(projectId, this.props.user_id);
         this.props.switchDetail();
     }
 
@@ -135,6 +137,19 @@ export class Project extends React.Component{
             searchFailMessage = null;
         }
 
+        let detailFailMessage;
+        if(this.props.failed === 'getProjectDetail'){
+            detailFailMessage = (
+                <Message negative={true}>
+                    <i className={'close icon'} onClick={this.props.closeFailed}/>
+                    <div className={'header'}>出了一点小小的问题</div>
+                    <p>可能您没有权限查看该项目。</p>
+                </Message>
+            );
+        }else{
+            detailFailMessage = null;
+        }
+
         return (
 
             <div>
@@ -151,6 +166,7 @@ export class Project extends React.Component{
                             {setUpButton}
                         </Segment>
                         {searchFailMessage}
+                        {detailFailMessage}
                         <table className="ui single line table" style={{margin: '10px, 0px, 0px, 0px'}}>
                             <thead>
                             <tr>
@@ -220,6 +236,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     setProjectRoles: (projectId, user_id) => {
         dispatch(setProjectRoles(projectId, user_id));
+    },
+    setPermissions: (projectId, user_id) => {
+        dispatch(setPermissions(projectId, user_id));
     }
 });
 

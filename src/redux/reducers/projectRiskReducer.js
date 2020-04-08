@@ -4,7 +4,7 @@ import {
     CHANGE_RISKDESCRIPTION,
     CHANGE_RISKIMPACT,
     CHANGE_RISKLEVEL,
-    CHANGE_RISKMODAL, CHANGE_RISKPERSON,
+    CHANGE_RISKMODAL, CHANGE_RISKPERSON, CHANGE_RISKRELATED,
     CHANGE_RISKSTATUS, CHANGE_RISKTRACK,
     CHANGE_RISKTYPE,
     CHANGE_ROLES,
@@ -29,7 +29,8 @@ const initialState = {
     currentCountermeasure: '',
     currentStatus: '',
     currentFrequency: '',
-    currentResponsiblePerson: [],
+    currentResponsiblePerson: '',
+    currentRelatedPerson: [],
     membersOptions: []
 }
 
@@ -57,6 +58,8 @@ export default function projectRisk(state=initialState, action){
             return {...state, currentFrequency: action.payload};
         case CHANGE_RISKPERSON:
             return {...state, currentResponsiblePerson: action.payload};
+        case CHANGE_RISKRELATED:
+            return {...state, currentRelatedPerson: action.payload}
         case GET_PROJECTMEMBERSOPTIONS:
             return {...state, membersOptions: action.payload};
         default:
