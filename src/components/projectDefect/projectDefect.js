@@ -19,6 +19,7 @@ export class ProjectDefect extends React.Component {
 
     static propTypes = {
         projectId: PropTypes.string,
+        globalRole: PropTypes.string,
         url: PropTypes.string,
         failed: PropTypes.string,
         closeFailed: PropTypes.func,
@@ -90,7 +91,12 @@ export class ProjectDefect extends React.Component {
                     <Segment >
                         <label>缺陷系统地址：{this.props.url === '' ? '暂无' : this.props.url}</label>
                     </Segment>
-                    <Button content={'修改外挂缺陷系统地址'} style={{float: 'right'}} onClick={this.props.startChangeUrl}/>
+                    {
+                        this.props.globalRole === 'ProjectManager' ?
+                            <Button content={'修改外挂缺陷系统地址'} style={{float: 'right'}} onClick={this.props.startChangeUrl}/>
+                            :
+                            null
+                    }
                 </div>
             );
         }
@@ -118,6 +124,7 @@ export class ProjectDefect extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
     projectId: state._projectDetail.projectId,
+    globalRole: state._userReducer.globalRole,
     url: state._projectDefect.url,
     failed: state._userReducer.failed,
     isChanging: state._projectDefect.isChanging,

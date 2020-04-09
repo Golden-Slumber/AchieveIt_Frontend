@@ -14,6 +14,7 @@ import {
     changeCurrentTime
 } from "../../redux/actions/projectDeviceActions"
 import {closeFailed, closeSuccess, formFailed} from "../../redux/actions/userActions";
+import {CONFIGURATION_MANAGER_ID} from "../../constants";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -51,11 +52,11 @@ export class TenancyModal extends React.Component {
     handleFinishClick = () => {
         let time1 = new Date(this.props.currentTime.replace('-', '/'));
         let time2 = new Date(this.props.currentReturnTime.replace('-', '/'));
-        if(this.props.currentDeviceId === '' || this.props.currentTime === '' || this.props.currentReturnTime === '' || this.props.currentDeviceManager === '' ||
+        if(this.props.currentDeviceId === '' || this.props.currentTime === '' || this.props.currentReturnTime === '' ||
             time1 >= time2){
             this.props.formFailed('tenancyDevice');
         }else{
-            this.props.tenancyDevice(this.props.currentDeviceId, this.props.projectId, this.props.currentTime, this.props.currentReturnTime, this.props.currentDeviceManager);
+            this.props.tenancyDevice(this.props.currentDeviceId, this.props.projectId, this.props.currentTime, this.props.currentReturnTime, CONFIGURATION_MANAGER_ID);
         }
     }
 
@@ -101,17 +102,6 @@ export class TenancyModal extends React.Component {
                             <div className="field">
                                 <label>预计归还时间</label>
                                 <input type="text" placeholder="归还时间：格式为yyyy-MM-dd HH:mm:ss" onChange={this.props.changeReturnTime}/>
-                            </div>
-                            <div className="field">
-                                <label>资产管理人员</label>
-                                <Dropdown
-                                    placeholder='选择资产管理人员'
-                                    fluid
-                                    search
-                                    selection
-                                    options={this.props.adminOptions}
-                                    onChange={this.props.changeDeviceManager}
-                                />
                             </div>
                         </form>
                         {updateFailedMessage}

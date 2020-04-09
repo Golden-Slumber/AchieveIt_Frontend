@@ -7,7 +7,7 @@ import {
     CHANGE_MAINTECH,
     CHANGE_MILESTONE, CHANGE_MOREPROJECT, CHANGE_PROJECTID,
     CHANGE_PROJECTNAME, CHANGE_PROJECTPAGE,
-    CHANGE_STARTTIME, CHNAGE_SUCCESSSTATE, GET_RELATIVE_PROJECTS, GET_RELATIVE_PROJECTSBYSTATUS,
+    CHANGE_STARTTIME, CHNAGE_SUCCESSSTATE, CLEAR_PROJECTS, GET_RELATIVE_PROJECTS, GET_RELATIVE_PROJECTSBYSTATUS,
     PROJECT_SETUP,
     SEARCH_PROJECT
 } from "./actionTypes";
@@ -63,6 +63,12 @@ export function getRelativeProjectsbyStatus(status){
         }).catch(error => {
            console.log(error);
         });
+    }
+}
+
+export function clearProjects(){
+    return {
+        type: CLEAR_PROJECTS
     }
 }
 

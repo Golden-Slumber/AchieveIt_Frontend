@@ -278,7 +278,6 @@ export function setRoleOptions(globalRole, members, user_id){
         }
     }else{
         roleOptions = [
-            {key: '294226531868213248', value: '294226531868213248 PropertyAdmin', text: 'PropertyAdmin'},
             {key: '290089467161608193', value: '290089467161608193 DevelopmentLeader', text: 'DevelopmentLeader'},
             {key: '294226508208144384', value: '294226508208144384 TestLeader', text: 'TestLeader'},
             {key: '294226509294469120', value: '294226509294469120 DevelopmentStaff', text: 'DevelopmentStaff'},
@@ -307,16 +306,14 @@ export function setSuperiorOptions(role, members, user_id) {
         case 'QaStaff':
         case 'EPG':
         case 'PropertyAdmin':
+        case 'DevelopmentLeader':
+        case 'TestLeader':
             for (let i=0; i<members.length; i++){
                 if(members[i].project_role_name === 'ProjectManager'){
                     options.push({key: members[i].user_id, value: members[i].user_id, text: members[i].user_id});
                     break;
                 }
             }
-            break;
-        case 'DevelopmentLeader':
-        case 'TestLeader':
-            options.push({key: user_id, value: user_id, text: user_id});
             break;
         case 'DevelopmentStaff':
             for (let i=0; i<members.length; i++){

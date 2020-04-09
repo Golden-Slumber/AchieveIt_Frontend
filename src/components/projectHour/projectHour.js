@@ -80,6 +80,12 @@ export class ProjectHour extends React.Component {
                     <td>{item.function_description_snapshot}</td>
                     <td>{item.start_time}</td>
                     <td>{item.end_time}</td>
+                    <td>{
+                        item.verified ?
+                            '已审核通过'
+                            :
+                            '尚未通过审核'
+                    }</td>
                 </tr>
             );
         });
@@ -116,6 +122,7 @@ export class ProjectHour extends React.Component {
                             <th>功能</th>
                             <th>开始时间</th>
                             <th>结束时间</th>
+                            <th>审核状态</th>
                         </tr>
                         </thead>
                         <tbody>

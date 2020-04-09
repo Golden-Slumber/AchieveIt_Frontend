@@ -10,7 +10,7 @@ import {
     MODIFY_MILESTONE,
     MODIFY_PROJECTNAME,
     MODIFY_STARTTIME,
-    PROJECTID_SET, RETURN_DEVICE, SET_DEVICEID, SET_DEVICES, TENANCY_DEVICE, VERIFY_DEVICE
+    PROJECTID_SET, RETURN_DEVICE, SET_CURRENTDEVICESTATE, SET_DEVICEID, SET_DEVICES, TENANCY_DEVICE, VERIFY_DEVICE
 } from "../actions";
 import currentPage from "./currentPageReducer";
 
@@ -27,7 +27,8 @@ const initialState = {
     currentDeviceManager: '',
     verifyState: '',
     deviceOptions: [],
-    adminOptions: []
+    adminOptions: [],
+    currentDeviceState: ''
 };
 
 export default function projectDevice(state = initialState, action) {
@@ -62,6 +63,8 @@ export default function projectDevice(state = initialState, action) {
             return {...state, deviceOptions: action.payload}
         case GET_ADMINOPTIONS:
             return {...state, adminOptions: action.payload}
+        case SET_CURRENTDEVICESTATE:
+            return {...state, currentDeviceState: action.payload}
         default:
             return state;
     }

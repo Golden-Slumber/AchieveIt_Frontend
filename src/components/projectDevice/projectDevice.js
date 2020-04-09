@@ -16,7 +16,7 @@ import ReturnModal from "./returnModal";
 import ProjectDeviceCheck from "./projectDeviceCheck";
 import ProjectMenu from "../projectMenu/projectMenu";
 import currentPage from "../../redux/reducers/currentPageReducer";
-import VerifyModal from "../projectHour/verifyModal";
+import VerifyModal from "../projectDevice/verifyModal";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -28,6 +28,7 @@ export class ProjectDevice extends React.Component {
 
     static propTypes = {
         projectId: PropTypes.string,
+        globalRole: PropTypes.string,
         devices: PropTypes.array,
         devicePage: PropTypes.string,
         deviceModal: PropTypes.string,
@@ -57,11 +58,15 @@ export class ProjectDevice extends React.Component {
 
     handleOperationClick = (deviceId, deviceStatus) => {
         if(deviceStatus === 'LentOut'){
-            this.props.startReturning(deviceId);
+            if(this.props.globalRole === 'ConfigurationManager'){
+                this.props.startVerifying(deviceId, deviceStatus);
+            }else{
+                this.props.startReturning(deviceId);
+            }
         }else if(deviceStatus === 'Maintaining'){
-            this.props.startVerifying(deviceId);
+            this.props.startVerifying(deviceId, deviceStatus);
         }else if(deviceStatus === 'ToBeChecked'){
-            this.props.startVerifying(deviceId);
+            this.props.startVerifying(deviceId, deviceStatus);
         }
     }
 
@@ -74,7 +79,7 @@ export class ProjectDevice extends React.Component {
                     <td>{item.deviceName}</td>
                     <td>{item.deviceStatus}</td>
                     <td>{
-                        ((this.props.isPropertyAdmin && (item.deviceStatus === 'ToBeChecked' || item.deviceStatus === 'Maintaining')) || (!this.props.isPropertyAdmin&&item.deviceStatus==='LentOut')) ?
+                        ((this.props.globalRole === 'ConfigurationManager' && (item.deviceStatus === 'ToBeChecked' || item.deviceStatus === 'Maintaining' || item.deviceStatus === 'LentOut')) || (this.props.globalRole!=='ConfigurationManager'&&item.deviceStatus==='LentOut')) ?
                             <Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
                                 this.handleOperationClick(item.deviceId, item.deviceStatus);
                             }}/> :
@@ -111,7 +116,7 @@ export class ProjectDevice extends React.Component {
         }
 
         let createButton;
-        if(!this.props.isPropertyAdmin){
+        if(this.props.globalRole!=='ConfigurationManager'){
             createButton = (
                 <Button  content={'登记新设备'} onClick={this.handleTenancyClick}/>
             );
@@ -171,6 +176,7 @@ export class ProjectDevice extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
     projectId: state._projectDetail.projectId,
+    globalRole: state._userReducer.globalRole,
     devices: state._projectDevice.devices,
     devicePage: state._projectDevice.devicePage,
     deviceModal: state._projectDevice.deviceModal,
@@ -195,8 +201,8 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     getDevices: (currentPage, projectId) => {
         dispatch(getDevices(currentPage, projectId));
     },
-    startVerifying: (deviceId) => {
-        dispatch(startVerifying(deviceId));
+    startVerifying: (deviceId, deviceStatus) => {
+        dispatch(startVerifying(deviceId, deviceStatus));
     },
     getDeviceOptions: () => {
         dispatch(getDeviceOptions())

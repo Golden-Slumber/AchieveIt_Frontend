@@ -10,7 +10,7 @@ import {
     CHANGE_VERIFYSTATE, GET_ADMINOPTIONS,
     GET_DEVICE,
     GET_DEVICEOPTIONS,
-    RETURN_DEVICE,
+    RETURN_DEVICE, SET_CURRENTDEVICESTATE,
     SET_DEVICEID,
     SET_DEVICES,
     TENANCY_DEVICE,
@@ -41,9 +41,12 @@ export function getDevices(currentPage, projectId){
                 let arr = data.result.devices.map((item, index) => {
                     return {deviceId: item.device_id, deviceName: item.device_name, deviceStatus: item.device_status}
                 })
+                let arr1 = arr.filter((item) => {
+                    return item.deviceStatus !== 'Available'
+                })
                 dispatch({
                     type: GET_DEVICE,
-                    payload: arr
+                    payload: arr1
                 })
                 dispatch({
                     type: CHANGE_MOREDEVICE,
@@ -160,12 +163,16 @@ export function startReturning(deviceId){
     }
 }
 
-export function startVerifying(deviceId){
+export function startVerifying(deviceId, deviceStatus){
     return async (dispatch) => {
         dispatch({
             type: SET_DEVICEID,
             payload: deviceId
         });
+        dispatch({
+            type: SET_CURRENTDEVICESTATE,
+            payload: deviceStatus
+        })
         dispatch({
             type: CHANGE_DEVICEMODAL,
             payload: 'verify'
@@ -237,12 +244,45 @@ export function returnDevice(projectId, deviceId){
     }
 }
 
-export function verifyDevice(projectId, deviceId, currentTime, manager, verifyState){
+export function verifyDevice(projectId, deviceId, verifyState){
 
+    let content = {
+        project_id: projectId,
+        device_status: verifyState
+    }
+    return async (dispatch) => {
+        await fetch(BASE_URL+'/project/device/'+deviceId, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(content)
+        }).then(res => res.json()
+        ).then(data => {
+            if(data.status === 'SUCCESS'){
+                dispatch({
+                    type: CHANGE_DEVICEMODAL,
+                    payload: ''
+                });
+                dispatch(changeCurrentDevicePage(1));
+                dispatch(getDevices(1, projectId));
+            }else{
+                console.log(data.status);
+                dispatch(formFailed('verifyDevice'));
+            }
+        }).catch(error => {
+            console.log(error);
+            dispatch(formFailed('verifyDevice'));
+        })
+    }
+}
+
+export function fakeVerifyDevice(projectId, deviceId, currentTime, manager, verifyState){
     let content = {
         referred_device_id: deviceId,
         examination_time: currentTime,
-        referred_test_id: manager,
+        referred_tester_id: manager,
         test_result: verifyState
     }
     return async (dispatch) => {
@@ -260,8 +300,6 @@ export function verifyDevice(projectId, deviceId, currentTime, manager, verifySt
                     type: CHANGE_DEVICEMODAL,
                     payload: ''
                 });
-                dispatch(changeCurrentDevicePage(1));
-                dispatch(getDevices(1, projectId));
             }else{
                 console.log(data.status);
                 dispatch(formFailed('verifyDevice'));

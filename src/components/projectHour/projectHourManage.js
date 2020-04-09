@@ -47,10 +47,19 @@ export class ProjectHourManage extends React.Component {
                     <td>{item.start_time}</td>
                     <td>{item.end_time}</td>
                     <td>{
-                        diff <= 3 ?
+                        item.verified ?
+                            '已审核通过'
+                            :
+                            '尚未通过审核'
+                    }</td>
+                    <td>{
+                        diff <= 3 && !item.verified  ?
                             <Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
                                 this.handleModifyClick(item.working_hour_id);
-                            }}/> : null
+                            }}/> :
+                            <Icon disabled name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
+                                this.handleModifyClick(item.working_hour_id);
+                            }}/>
                     }</td>
                 </tr>
             );
@@ -76,6 +85,7 @@ export class ProjectHourManage extends React.Component {
                         <th>功能</th>
                         <th>开始时间</th>
                         <th>结束时间</th>
+                        <th>审核状态</th>
                         <th>修改</th>
                     </tr>
                     </thead>

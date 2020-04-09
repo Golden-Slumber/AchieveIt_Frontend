@@ -37,6 +37,7 @@ export class VerifyModal extends React.Component {
     }
 
     handleFinishClick = () => {
+        console.log(this.props.currentWorkingHourId);
         this.props.judgeWorkingHour(this.props.projectId, this.props.currentWorkingHourId, this.props.verifyState);
     }
 
@@ -108,7 +109,7 @@ const mapStateToProps = (state, ownProps) => ({
     verifyState: state._projectHour.verifyState,
     currentWorkingHourId: state._projectHour.currentWorkingHourId,
     failed: state._userReducer.failed,
-    successful: state._userReducer.succesful
+    successful: state._userReducer.successful
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

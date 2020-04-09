@@ -89,8 +89,8 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    startJudging: () => {
-        dispatch(startJudging());
+    startJudging: (workingHourId) => {
+        dispatch(startJudging(workingHourId));
     },
     finishVerifying: () => {
         dispatch(finishVerifying());

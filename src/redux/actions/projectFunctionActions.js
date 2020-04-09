@@ -338,7 +338,10 @@ export function uploadFunctions(projectId, uploadData){
                 let firstFunctions = [];
                 let secondFunctions = [];
                 let arr = data.result.functions;
+                let flag = false;
                 for(let i=0; i<arr.length; i++){
+                    if(arr[i].description === '')
+                        flag = true;
                     if(arr[i].id_for_display.length === 3){
                         firstFunctions.push({
                             functionId: arr[i].id_for_display, superiorId: arr[i].id_for_display, functionDescription: arr[i].description
@@ -353,14 +356,18 @@ export function uploadFunctions(projectId, uploadData){
                         });
                     }
                 }
-                dispatch({
-                    type: GET_FUNCTIONS,
-                    payload: {
-                        firstFunctions: firstFunctions,
-                        secondFunctions: secondFunctions
-                    }
-                })
-                dispatch(cancelUploading());
+                if(flag){
+                    dispatch(formFailed('uploadData'));
+                }else{
+                    dispatch({
+                        type: GET_FUNCTIONS,
+                        payload: {
+                            firstFunctions: firstFunctions,
+                            secondFunctions: secondFunctions
+                        }
+                    })
+                    dispatch(cancelUploading());
+                }
             }else{
                 console.log(data.status);
                 dispatch(formFailed('uploadData'))

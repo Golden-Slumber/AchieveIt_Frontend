@@ -17,6 +17,7 @@ import currentPage from "../../redux/reducers/currentPageReducer";
 import {getBusinessFields, getCustomers, getProjectIds} from "../../redux/actions/dependencyActions";
 import {closeFailed, formFailed, setPermissions, setProjectRoles} from "../../redux/actions/userActions";
 import {switchDetail} from "../../redux/actions/projectMenuActions";
+import {getProjectFunction} from "../../redux/actions/projectFunctionActions";
 
 const globalStyles = {
     backgroundColor: 'rgb(238, 239, 239)',
@@ -46,7 +47,8 @@ export class Project extends React.Component{
         formFailed: PropTypes.func,
         switchDetail: PropTypes.func,
         setProjectRoles: PropTypes.func,
-        setPermissions: PropTypes.func
+        setPermissions: PropTypes.func,
+        getProjectFunctions: PropTypes.func
     };
 
     constructor(props) {
@@ -72,6 +74,7 @@ export class Project extends React.Component{
         this.props.setProjectState(projectState);
         this.props.setProjectRoles(projectId, this.props.user_id);
         this.props.setPermissions(projectId, this.props.user_id);
+        this.props.getProjectFunctions(projectId);
         this.props.switchDetail();
     }
 
@@ -239,6 +242,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     setPermissions: (projectId, user_id) => {
         dispatch(setPermissions(projectId, user_id));
+    },
+    getProjectFunctions: (projectId) => {
+        dispatch(getProjectFunction(projectId))
     }
 });
 

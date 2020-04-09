@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import 'semantic-ui-css/semantic.min.css';
 import {
-    changeKeyword, changeProjectPage,
+    changeKeyword, changeProjectPage, clearProjects,
     getRelativeProjects, getRelativeProjectsbyStatus,
     logOut
 } from "../../redux/actions";
@@ -48,7 +48,8 @@ export class StickyMenu extends React.Component {
         onLogOut: PropTypes.func,
         changeKeyword: PropTypes.func,
         getRelativeProjects: PropTypes.func,
-        getRelativeProjectsbyStatus: PropTypes.func
+        getRelativeProjectsbyStatus: PropTypes.func,
+        clearProjects: PropTypes.func
     };
 
     state = {
@@ -59,14 +60,14 @@ export class StickyMenu extends React.Component {
     unStickTopMenu = () => this.setState({menuFixed: false});
 
     handleProjectClick = () => {
+        this.props.clearProjects();
         this.props.changeProjectPage(1);
         if(this.props.globalRole === 'ProjectSuperior'){
-            this.props.getRelativeProjectsbyStatus('Applied');
+            this.props.getRelativeProjectsbyStatus(['Applied']);
         }else if(this.props.globalRole === 'ConfigurationManager'){
-            this.props.getRelativeProjectsbyStatus('Initiated');
-            this.props.getRelativeProjectsbyStatus('ReadyArchive');
+            this.props.getRelativeProjectsbyStatus(['Initiated', 'Developing', 'Delivered', 'Finished', 'ReadyArchive', 'ArchiveDeclined', 'Archived']);
         }else if(this.props.globalRole === 'QaManager' || this.props.globalRole === 'EpgManager'){
-            this.props.getRelativeProjectsbyStatus('Initiated');
+            this.props.getRelativeProjectsbyStatus(['Initiated']);
         }else{
             console.log(this.props.currentPage);
             this.props.getRelativeProjects(this.props.currentPage);
@@ -139,6 +140,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     getRelativeProjectsbyStatus: (status) => {
         dispatch(getRelativeProjectsbyStatus(status))
+    },
+    clearProjects: () => {
+        dispatch(clearProjects());
     }
 });
 

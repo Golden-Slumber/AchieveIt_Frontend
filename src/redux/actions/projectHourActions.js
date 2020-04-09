@@ -52,17 +52,23 @@ export function getVerifyHours(projectId) {
         }).then(res => res.json()
         ).then(data => {
             if(data.status === 'SUCCESS'){
+                let arr;
+                if(data.result === null){
+                    arr = [];
+                }else{
+                    arr = data.result;
+                }
                 dispatch({
                     type: GET_VERIFYHOURS,
-                    payload: data.result
+                    payload: arr
                 })
             }else{
                 console.log(data.status);
-                dispatch(formFailed('getHoursFailed'));
+                dispatch(formFailed('getVerifyHoursFailed'));
             }
         }).catch(error => {
             console.log(error);
-            dispatch(formFailed('getHoursFailed'));
+            dispatch(formFailed('getVerifyHoursFailed'));
         })
     }
 }
@@ -139,8 +145,8 @@ export function startJudging(workinghourId) {
 
 export function createWorkingHour(projectId, activityType, functionType, startTime, endTime){
     let newWorkingHour = {
-        activity_type_id: activityType,
-        function_id: functionType,
+        referred_activity_type_id: activityType,
+        referred_function_id: functionType,
         start_time: startTime,
         end_time: endTime
     }
@@ -326,7 +332,7 @@ export function setActivityOptions(){
                 let arr = data.result;
                 for(let i=0; i<arr.length; i++){
                     activityOptions.push({
-                       key: arr[i].activicy_type_id, value: arr[i].activicy_type_id, text: arr[i].level_1_description+' '+arr[i].level_2_description
+                       key: arr[i].activity_type_id, value: arr[i].activity_type_id, text: arr[i].level_1_description+' '+arr[i].level_2_description
                     });
                 }
                 console.log(activityOptions);

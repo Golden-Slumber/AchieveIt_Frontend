@@ -41,7 +41,8 @@ export class ProjectDetail extends React.Component {
         closeSuccess: PropTypes.func,
         confirmConfiguration: PropTypes.func,
         failed: PropTypes.string,
-        closeFailed: PropTypes.func
+        closeFailed: PropTypes.func,
+        firstFunctions: PropTypes.array
     };
 
     constructor(props) {
@@ -80,9 +81,17 @@ export class ProjectDetail extends React.Component {
         if(!this.props.isModifying){
             if(this.props.globalRole === 'ProjectManager'){
                 if(this.props.projectState !== 'Applied' && this.props.projectState !== 'ReadyArchive' && this.props.projectState !== 'Archived'){
-                    pushButton = (
-                        <Button  content={'推进项目状态'} style={{backgroundColor: '#1BB394', color: '#E5FFFB', float: 'right'}} onClick={this.props.startPushing}/>
-                    );
+                    if(this.props.projectState === 'Initiated'){
+                        if(this.props.firstFunctions.length!==0){
+                            pushButton = (
+                                <Button  content={'推进项目状态'} style={{backgroundColor: '#1BB394', color: '#E5FFFB', float: 'right'}} onClick={this.props.startPushing}/>
+                            );
+                        }
+                    }else{
+                        pushButton = (
+                            <Button  content={'推进项目状态'} style={{backgroundColor: '#1BB394', color: '#E5FFFB', float: 'right'}} onClick={this.props.startPushing}/>
+                        );
+                    }
                 }
             }else if(this.props.globalRole === 'ProjectSuperior'){
                 if(this.props.projectState === 'Applied'){
@@ -245,7 +254,8 @@ const mapStateToProps = (state, ownProps) => ({
     isModifying: state._projectDetail.isModifying,
     isPushing: state._projectDetail.isPushing,
     successful: state._userReducer.successful,
-    failed: state._userReducer.failed
+    failed: state._userReducer.failed,
+    firstFunctions: state._projectFunction.firstFunctions
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

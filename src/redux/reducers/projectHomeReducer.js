@@ -10,7 +10,12 @@ import {
     PROJECT_SETUP,
     CHANGE_PROJECTID,
     CHANGE_CUSTOMER,
-    CHANGE_BUNIESSFIELD, GET_RELATIVE_PROJECTS, CHANGE_PROJECTPAGE, CHANGE_MOREPROJECT, GET_RELATIVE_PROJECTSBYSTATUS
+    CHANGE_BUNIESSFIELD,
+    GET_RELATIVE_PROJECTS,
+    CHANGE_PROJECTPAGE,
+    CHANGE_MOREPROJECT,
+    GET_RELATIVE_PROJECTSBYSTATUS,
+    CLEAR_PROJECTS
 } from "../actions";
 import currentPage from "./currentPageReducer";
 
@@ -49,14 +54,9 @@ export default function projectHome(state = initialState, action) {
             }
             return {...state, projects: arr1};
         case GET_RELATIVE_PROJECTSBYSTATUS:
-            let arr3;
-            if(action.payload.type === 'ReadyArchive'){
-                arr3 = state.projects.concat(action.payload.relativeProjects);
-            }else{
-                arr3 = action.payload.relativeProjects;
-            }
-            console.log(arr3);
-            return {...state, projects: arr3}
+            return {...state, projects: action.payload.relativeProjects}
+        case CLEAR_PROJECTS:
+            return {...state, projects: []}
         case SEARCH_PROJECT:
             let arr2 = action.payload.map((item, index) => {
                 return {id: item.project_id, name: item.project_name, status: item.status}
