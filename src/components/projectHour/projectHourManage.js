@@ -40,20 +40,25 @@ export class ProjectHourManage extends React.Component {
             let time2 = new Date();
             let aDay = 24 * 60 * 60 * 1000;
             let diff = (time2 - time1) / aDay;
+            let str;
+            if(item.verified === null){
+                str = '尚未审核';
+            }else{
+                if(item.verified === false) {
+                    str = '审核不通过';
+                }else{
+                    str = '已审核通过';
+                }
+            }
             return (
                 <tr>
                     <td>{item.referred_activity_type_id}</td>
                     <td>{item.function_description_snapshot}</td>
                     <td>{item.start_time}</td>
                     <td>{item.end_time}</td>
+                    <td>{str}</td>
                     <td>{
-                        item.verified ?
-                            '已审核通过'
-                            :
-                            '尚未通过审核'
-                    }</td>
-                    <td>{
-                        diff <= 3 && !item.verified  ?
+                        diff <= 3 && (item.verified === null || item.verified === false)  ?
                             <Icon name={"arrow right"} style={{color: '#1BB394'}} onClick={() => {
                                 this.handleModifyClick(item.working_hour_id);
                             }}/> :

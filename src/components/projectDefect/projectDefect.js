@@ -89,7 +89,7 @@ export class ProjectDefect extends React.Component {
             mainBody = (
                 <div>
                     <Segment >
-                        <label>缺陷系统地址：{this.props.url === '' ? '暂无' : this.props.url}</label>
+                        <label>缺陷系统地址：{this.props.url === '' || this.props.url === null ? '暂无' : this.props.url}</label>
                     </Segment>
                     {
                         this.props.globalRole === 'ProjectManager' ?

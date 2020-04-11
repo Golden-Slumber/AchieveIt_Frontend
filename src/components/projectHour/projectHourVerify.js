@@ -20,7 +20,8 @@ export class ProjectHourVerify extends React.Component {
         verifyList: PropTypes.array,
         hourModalState: PropTypes.string,
         startJudging: PropTypes.func,
-        finishVerifying: PropTypes.func
+        finishVerifying: PropTypes.func,
+        activityOptions: PropTypes.array
     };
 
     constructor(props) {
@@ -33,10 +34,18 @@ export class ProjectHourVerify extends React.Component {
 
     render() {
         let showWorkingHours = this.props.verifyList.map((item, index) => {
+            let activityName = '';
+            for(let i=0; i<this.props.activityOptions.length; i++){
+                if(item.referred_activity_type_id === this.props.activityOptions[i].value){
+                    activityName = this.props.activityOptions[i].text;
+                    break;
+                }
+            }
             return (
                 <tr>
                     <td>{item.working_hour_id}</td>
-                    <td>{item.referred_activity_type_id}</td>
+                    <td>{item.referred_user_id}</td>
+                    <td>{activityName}</td>
                     <td>{item.function_description_snapshot}</td>
                     <td>{item.start_time}</td>
                     <td>{item.end_time}</td>
@@ -65,6 +74,7 @@ export class ProjectHourVerify extends React.Component {
                     <thead>
                     <tr>
                         <th>工时ID</th>
+                        <th>用户ID</th>
                         <th>活动类型</th>
                         <th>功能类型</th>
                         <th>开始时间</th>
@@ -86,6 +96,7 @@ export class ProjectHourVerify extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
     verifyList: state._projectHour.verifyList,
     hourModalState: state._projectHour.hourModalState,
+    activityOptions: state._projectHour.activityOptions
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

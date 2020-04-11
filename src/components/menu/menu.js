@@ -11,6 +11,7 @@ import {connect} from "react-redux";
 import history from "../../history";
 import {Button, Container, Menu, Segment} from "semantic-ui-react";
 import currentPage from "../../redux/reducers/currentPageReducer";
+import {getBusinessFields, getCustomers} from "../../redux/actions/dependencyActions";
 
 
 const menuStyle = {
@@ -49,7 +50,9 @@ export class StickyMenu extends React.Component {
         changeKeyword: PropTypes.func,
         getRelativeProjects: PropTypes.func,
         getRelativeProjectsbyStatus: PropTypes.func,
-        clearProjects: PropTypes.func
+        clearProjects: PropTypes.func,
+        getCustomers: PropTypes.func,
+        getBusinessFields: PropTypes.func
     };
 
     state = {
@@ -73,6 +76,8 @@ export class StickyMenu extends React.Component {
             this.props.getRelativeProjects(this.props.currentPage);
             this.props.changeKeyword('');
         }
+        this.props.getCustomers();
+        this.props.getBusinessFields();
     }
 
     render() {
@@ -143,6 +148,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     clearProjects: () => {
         dispatch(clearProjects());
+    },
+    getCustomers: () => {
+        dispatch(getCustomers());
+    },
+    getBusinessFields: () => {
+        dispatch(getBusinessFields());
     }
 });
 

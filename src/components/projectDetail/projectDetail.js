@@ -42,7 +42,9 @@ export class ProjectDetail extends React.Component {
         confirmConfiguration: PropTypes.func,
         failed: PropTypes.string,
         closeFailed: PropTypes.func,
-        firstFunctions: PropTypes.array
+        firstFunctions: PropTypes.array,
+        customersOptions: PropTypes.array,
+        businessFieldsOptions: PropTypes.array
     };
 
     constructor(props) {
@@ -162,6 +164,23 @@ export class ProjectDetail extends React.Component {
 
         let mainBody;
         if(!this.props.isModifying) {
+
+            let showCustomer = this.props.customer;
+            for (let i=0; i<this.props.customersOptions.length; i++){
+                if(this.props.customersOptions[i].value === this.props.customer){
+                    showCustomer = this.props.customersOptions[i].text;
+                    break;
+                }
+            }
+            console.log(this.props.businessFieldsOptions);
+            let showBusinessField = this.props.businessField;
+            for(let i=0; i<this.props.businessFieldsOptions.length; i++){
+                if(this.props.businessFieldsOptions[i].value === this.props.businessField){
+                    showBusinessField = this.props.businessFieldsOptions[i].text;
+                    break;
+                }
+            }
+
             mainBody = (
                 <div>
                     <table className="ui fixed single line celled table">
@@ -176,7 +195,7 @@ export class ProjectDetail extends React.Component {
                         </tr>
                         <tr>
                             <td>客户信息</td>
-                            <td>{this.props.customer}</td>
+                            <td>{showCustomer}</td>
                         </tr>
                         <tr>
                             <td>开始时间</td>
@@ -196,7 +215,7 @@ export class ProjectDetail extends React.Component {
                         </tr>
                         <tr>
                             <td>业务领域</td>
-                            <td>{this.props.businessField}</td>
+                            <td>{showBusinessField}</td>
                         </tr>
                         <tr>
                             <td>主要功能</td>
@@ -255,7 +274,9 @@ const mapStateToProps = (state, ownProps) => ({
     isPushing: state._projectDetail.isPushing,
     successful: state._userReducer.successful,
     failed: state._userReducer.failed,
-    firstFunctions: state._projectFunction.firstFunctions
+    firstFunctions: state._projectFunction.firstFunctions,
+    customersOptions: state._projectDependency.customersOptions,
+    businessFieldsOptions: state._projectDependency.businessFieldsOptions
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

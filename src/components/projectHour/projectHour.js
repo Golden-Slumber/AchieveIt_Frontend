@@ -54,6 +54,7 @@ export class ProjectHour extends React.Component {
     handleVerifyClick = () => {
         this.props.startVerifying();
         this.props.getVerifyHours(this.props.projectId);
+        this.props.setActivityOptions();
     }
 
     checkManagePermission = () => {
@@ -74,18 +75,23 @@ export class ProjectHour extends React.Component {
 
     render() {
         let showWorkingHours = this.props.workingHours.map((item, index) => {
+            let str;
+            if(item.verified === null){
+                str = '尚未审核';
+            }else{
+                if(item.verified === false) {
+                    str = '审核不通过';
+                }else{
+                    str = '已审核通过';
+                }
+            }
             return (
                 <tr>
                     <td>{item.referred_activity_type_id}</td>
                     <td>{item.function_description_snapshot}</td>
                     <td>{item.start_time}</td>
                     <td>{item.end_time}</td>
-                    <td>{
-                        item.verified ?
-                            '已审核通过'
-                            :
-                            '尚未通过审核'
-                    }</td>
+                    <td>{str}</td>
                 </tr>
             );
         });

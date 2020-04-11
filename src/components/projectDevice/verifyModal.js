@@ -24,7 +24,7 @@ const globalStyles = {
     minHeight: '100em',
 };
 
-export class ReturnModal extends React.Component {
+export class VerifyModal extends React.Component {
 
     static propTypes = {
         projectId: PropTypes.string,
@@ -195,4 +195,4 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReturnModal);
+export default connect(mapStateToProps, mapDispatchToProps)(VerifyModal);

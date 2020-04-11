@@ -25,6 +25,7 @@ export function getWorkHours(projectId) {
         }).then(res => res.json()
         ).then(data => {
             if(data.status === 'SUCCESS'){
+                console.log(data.result);
                 dispatch({
                     type: GET_WORKHOURS,
                     payload: data.result
