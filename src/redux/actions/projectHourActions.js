@@ -183,8 +183,8 @@ export function createWorkingHour(projectId, activityType, functionType, startTi
 export function modifyWorkingHour(projectId, workingHourId, activityType, functionType, startTime, endTime){
     let newWorkingHour = {
         working_hour_id: workingHourId,
-        activity_type_id: activityType,
-        function_id: functionType,
+        referred_activity_type_id: activityType,
+        referred_function_id: functionType,
         start_time: startTime,
         end_time: endTime
     }
